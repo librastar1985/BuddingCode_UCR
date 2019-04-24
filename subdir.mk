@@ -12,7 +12,6 @@ LIBS:=  -lpugixml -L/$(current_dir)/pugixml/lib64
 #-lgsl -lgslcblas
 
 ILIBS_cuda8 = -I/opt/linux/centos/7.x/x86_64/pkgs/cuda/8.0/include/
-ILIBS_cuda9 := -I/opt/linux/centos/7.x/x86_64/pkgs/cuda/9.1/include/
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
@@ -30,7 +29,7 @@ CPP_SRCS += \
 ../System.cu \
 ../Edgeswap_test.cpp \
 ../SystemBuilder.cpp \
-../Storage.cpp \
+../Storage.cu \
 ../main.cpp
 
 
@@ -80,4 +79,4 @@ CPP_DEPS += \
 	
 #cuda files
 %.o : ./%.cu 
-	$(NVCC) $(NVCCFLAGS) $(ILIBS_cuda9) -dc -o $@ $^
+	$(NVCC) $(NVCCFLAGS) $(ILIBS_cuda8) -dc -o $@ $^

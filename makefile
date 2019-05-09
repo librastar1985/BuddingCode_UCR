@@ -39,7 +39,7 @@ all: virus-model
 
 #Flags 
 #CXXFLAGS=-O3 -std=c++0x -pg -g -c -Wall
-NVCCFLAGS= -std=c++11
+NVCCFLAGS= -std=c++11 -g -G
 #  -g -G -O2
 
 

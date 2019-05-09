@@ -70,7 +70,8 @@ void ComputeLinearSprings(
     int endKey = thrust::get<0>(
         thrust::reduce_by_key(
             linearSpringInfoVecs.tempNodeIdUnreduced.begin(), 
-            linearSpringInfoVecs.tempNodeIdUnreduced.end() + (2*(coordInfoVecs.num_edges-1)),
+            //linearSpringInfoVecs.tempNodeIdUnreduced.end() + (2*(coordInfoVecs.num_edges-1)),
+            linearSpringInfoVecs.tempNodeIdUnreduced.begin() + (2*(coordInfoVecs.num_edges-1)),//why -1?????
         thrust::make_zip_iterator(
             thrust::make_tuple(
                 linearSpringInfoVecs.tempNodeForceXUnreduced.begin(),

@@ -7,14 +7,8 @@ class Growth {
     public:
     void growth (int ielem, 
         GeneralParams& generalParams,
-        CoordInfoVecs& coordInfoVecs);
-	
-    void transferHtoD(CoordInfoVecs& coordInfoVecs,
-        HostSetInfoVecs& hostSetInfoVecs);
-    
-    void transferDtoH(CoordInfoVecs& coordInfoVecs,
-        HostSetInfoVecs& hostSetInfoVecs);
-
+        CoordInfoVecs& coordInfoVecs,
+        AreaTriangleInfoVecs& areaTriangleInfoVecs);
 };
 
 #endif

@@ -1,0 +1,1972 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+<settings>
+<resistance>3.769911184308</resistance>
+
+<Tau>1.0</Tau>
+<KBT>1.0</KBT>
+<Linear_Const>40.0</Linear_Const>
+<Area_Const>40.0</Area_Const>
+<Bend_Const>15.0</Bend_Const>
+<LJ_Eps>0.0</LJ_Eps>
+<LJ_Rmin>3.5</LJ_Rmin>
+<LJ_Rmax>3.90512484</LJ_Rmax>
+<LJ_Const>1.0</LJ_Const>
+<LJ_X>0.0</LJ_X>
+<LJ_Y>0.0</LJ_Y>
+<LJ_Z>0.0</LJ_Z>
+
+</settings>
+    <nodes default-mass="1.0">
+        <node> 0    2.8252    1.7461</node>
+<node>         0    2.8252   -1.7461</node>
+<node>    2.8252    1.7461         0</node>
+<node>    2.8252   -1.7461         0</node>
+<node>         0   -2.8252   -1.7461</node>
+<node>         0   -2.8252    1.7461</node>
+<node>    1.7461         0    2.8252</node>
+<node>   -1.7461         0    2.8252</node>
+<node>    1.7461         0   -2.8252</node>
+<node>   -1.7461         0   -2.8252</node>
+<node>   -2.8252    1.7461         0</node>
+<node>   -2.8252   -1.7461         0</node>
+<node>         0    3.3444         0</node>
+<node>    1.6722    2.7057    1.0335</node>
+<node>    1.0335    1.6722    2.7057</node>
+<node>   -1.0335    1.6722    2.7057</node>
+<node>   -1.6722    2.7057    1.0335</node>
+<node>    1.6722    2.7057   -1.0335</node>
+<node>    1.0335    1.6722   -2.7057</node>
+<node>   -1.0335    1.6722   -2.7057</node>
+<node>   -1.6722    2.7057   -1.0335</node>
+<node>    3.3444         0         0</node>
+<node>    2.7057    1.0335    1.6722</node>
+<node>    2.7057    1.0335   -1.6722</node>
+<node>    1.6722   -2.7057   -1.0335</node>
+<node>    1.6722   -2.7057    1.0335</node>
+<node>    2.7057   -1.0335    1.6722</node>
+<node>    2.7057   -1.0335   -1.6722</node>
+<node>         0   -3.3444         0</node>
+<node>    1.0335   -1.6722   -2.7057</node>
+<node>   -1.0335   -1.6722   -2.7057</node>
+<node>   -1.6722   -2.7057   -1.0335</node>
+<node>    1.0335   -1.6722    2.7057</node>
+<node>   -1.0335   -1.6722    2.7057</node>
+<node>   -1.6722   -2.7057    1.0335</node>
+<node>         0         0    3.3444</node>
+<node>   -2.7057    1.0335    1.6722</node>
+<node>   -2.7057   -1.0335    1.6722</node>
+<node>         0         0   -3.3444</node>
+<node>   -2.7057    1.0335   -1.6722</node>
+<node>   -2.7057   -1.0335   -1.6722</node>
+<node>   -3.3444         0         0</node>
+<node>         0    3.2298    0.9962</node>
+<node>    0.8090    2.9208    1.4962</node>
+<node>    0.5000    2.4208    2.3052</node>
+<node>   -0.5000    2.4208    2.3052</node>
+<node>   -0.8090    2.9208    1.4962</node>
+<node>         0    3.2298   -0.9962</node>
+<node>    0.8090    2.9208   -1.4962</node>
+<node>    0.5000    2.4208   -2.3052</node>
+<node>   -0.5000    2.4208   -2.3052</node>
+<node>   -0.8090    2.9208   -1.4962</node>
+<node>    2.4208    2.3052    0.5000</node>
+<node>    2.4208    2.3052   -0.5000</node>
+<node>    3.2298    0.9962         0</node>
+<node>    2.9208    1.4962    0.8090</node>
+<node>    2.9208    1.4962   -0.8090</node>
+<node>    3.2298   -0.9962         0</node>
+<node>    2.4208   -2.3052   -0.5000</node>
+<node>    2.4208   -2.3052    0.5000</node>
+<node>    2.9208   -1.4962    0.8090</node>
+<node>    2.9208   -1.4962   -0.8090</node>
+<node>    0.8090   -2.9208   -1.4962</node>
+<node>         0   -3.2298   -0.9962</node>
+<node>    0.5000   -2.4208   -2.3052</node>
+<node>   -0.5000   -2.4208   -2.3052</node>
+<node>   -0.8090   -2.9208   -1.4962</node>
+<node>    0.8090   -2.9208    1.4962</node>
+<node>         0   -3.2298    0.9962</node>
+<node>    0.5000   -2.4208    2.3052</node>
+<node>   -0.5000   -2.4208    2.3052</node>
+<node>   -0.8090   -2.9208    1.4962</node>
+<node>    1.4962    0.8090    2.9208</node>
+<node>    2.3052    0.5000    2.4208</node>
+<node>    2.3052   -0.5000    2.4208</node>
+<node>    1.4962   -0.8090    2.9208</node>
+<node>    0.9962         0    3.2298</node>
+<node>   -1.4962    0.8090    2.9208</node>
+<node>   -1.4962   -0.8090    2.9208</node>
+<node>   -0.9962         0    3.2298</node>
+<node>   -2.3052    0.5000    2.4208</node>
+<node>   -2.3052   -0.5000    2.4208</node>
+<node>    1.4962    0.8090   -2.9208</node>
+<node>    2.3052    0.5000   -2.4208</node>
+<node>    2.3052   -0.5000   -2.4208</node>
+<node>    1.4962   -0.8090   -2.9208</node>
+<node>    0.9962         0   -3.2298</node>
+<node>   -1.4962    0.8090   -2.9208</node>
+<node>   -1.4962   -0.8090   -2.9208</node>
+<node>   -0.9962         0   -3.2298</node>
+<node>   -2.3052    0.5000   -2.4208</node>
+<node>   -2.3052   -0.5000   -2.4208</node>
+<node>   -2.4208    2.3052    0.5000</node>
+<node>   -2.4208    2.3052   -0.5000</node>
+<node>   -2.9208    1.4962    0.8090</node>
+<node>   -2.9208    1.4962   -0.8090</node>
+<node>   -3.2298    0.9962         0</node>
+<node>   -2.4208   -2.3052   -0.5000</node>
+<node>   -2.4208   -2.3052    0.5000</node>
+<node>   -2.9208   -1.4962    0.8090</node>
+<node>   -2.9208   -1.4962   -0.8090</node>
+<node>   -3.2298   -0.9962         0</node>
+<node>    0.9092    3.2295    0.5248</node>
+<node>   -0.9092    3.2295    0.5248</node>
+<node>    0.9092    3.2295   -0.5248</node>
+<node>   -0.9092    3.2295   -0.5248</node>
+<node>    1.4711    2.3203    1.9960</node>
+<node>    1.7584    2.9052         0</node>
+<node>    2.3203    1.9960    1.4711</node>
+<node>         0    1.7584    2.9052</node>
+<node>    1.9960    1.4711    2.3203</node>
+<node>    0.5248    0.9092    3.2295</node>
+<node>   -1.4711    2.3203    1.9960</node>
+<node>   -0.5248    0.9092    3.2295</node>
+<node>   -1.9960    1.4711    2.3203</node>
+<node>   -1.7584    2.9052         0</node>
+<node>   -2.3203    1.9960    1.4711</node>
+<node>    1.4711    2.3203   -1.9960</node>
+<node>    2.3203    1.9960   -1.4711</node>
+<node>         0    1.7584   -2.9052</node>
+<node>    1.9960    1.4711   -2.3203</node>
+<node>    0.5248    0.9092   -3.2295</node>
+<node>   -1.4711    2.3203   -1.9960</node>
+<node>   -0.5248    0.9092   -3.2295</node>
+<node>   -1.9960    1.4711   -2.3203</node>
+<node>   -2.3203    1.9960   -1.4711</node>
+<node>    3.2295    0.5248    0.9092</node>
+<node>    3.2295    0.5248   -0.9092</node>
+<node>    3.2295   -0.5248    0.9092</node>
+<node>    3.2295   -0.5248   -0.9092</node>
+<node>    2.9052         0    1.7584</node>
+<node>    2.9052         0   -1.7584</node>
+<node>    1.7584   -2.9052         0</node>
+<node>    2.3203   -1.9960   -1.4711</node>
+<node>    0.9092   -3.2295   -0.5248</node>
+<node>    1.4711   -2.3203   -1.9960</node>
+<node>    2.3203   -1.9960    1.4711</node>
+<node>    0.9092   -3.2295    0.5248</node>
+<node>    1.4711   -2.3203    1.9960</node>
+<node>    1.9960   -1.4711    2.3203</node>
+<node>    1.9960   -1.4711   -2.3203</node>
+<node>   -0.9092   -3.2295   -0.5248</node>
+<node>   -0.9092   -3.2295    0.5248</node>
+<node>         0   -1.7584   -2.9052</node>
+<node>    0.5248   -0.9092   -3.2295</node>
+<node>   -1.4711   -2.3203   -1.9960</node>
+<node>   -0.5248   -0.9092   -3.2295</node>
+<node>   -1.9960   -1.4711   -2.3203</node>
+<node>   -1.7584   -2.9052         0</node>
+<node>   -2.3203   -1.9960   -1.4711</node>
+<node>         0   -1.7584    2.9052</node>
+<node>    0.5248   -0.9092    3.2295</node>
+<node>   -1.4711   -2.3203    1.9960</node>
+<node>   -0.5248   -0.9092    3.2295</node>
+<node>   -1.9960   -1.4711    2.3203</node>
+<node>   -2.3203   -1.9960    1.4711</node>
+<node>   -2.9052         0    1.7584</node>
+<node>   -3.2295    0.5248    0.9092</node>
+<node>   -3.2295   -0.5248    0.9092</node>
+<node>   -2.9052         0   -1.7584</node>
+<node>   -3.2295    0.5248   -0.9092</node>
+<node>   -3.2295   -0.5248   -0.9092</node>
+
+
+    </nodes>
+
+<nndatas>
+<nndata>43    44    45    46    47     0     0     0     0     0     0     0</nndata>
+<nndata>    48    49    50    51    52     0     0     0     0     0     0     0</nndata>
+<nndata>    53    54    55    56    57     0     0     0     0     0     0     0</nndata>
+<nndata>    58    59    60    61    62     0     0     0     0     0     0     0</nndata>
+<nndata>    63    64    65    66    67     0     0     0     0     0     0     0</nndata>
+<nndata>    68    69    70    71    72     0     0     0     0     0     0     0</nndata>
+<nndata>    73    74    75    76    77     0     0     0     0     0     0     0</nndata>
+<nndata>    78    79    80    81    82     0     0     0     0     0     0     0</nndata>
+<nndata>    83    84    85    86    87     0     0     0     0     0     0     0</nndata>
+<nndata>    88    89    90    91    92     0     0     0     0     0     0     0</nndata>
+<nndata>    93    94    95    96    97     0     0     0     0     0     0     0</nndata>
+<nndata>    98    99   100   101   102     0     0     0     0     0     0     0</nndata>
+<nndata>    43    48   103   104   105   106     0     0     0     0     0     0</nndata>
+<nndata>    44    53   103   107   108   109     0     0     0     0     0     0</nndata>
+<nndata>    45    73   107   110   111   112     0     0     0     0     0     0</nndata>
+<nndata>    46    78   110   113   114   115     0     0     0     0     0     0</nndata>
+<nndata>    47    93   104   113   116   117     0     0     0     0     0     0</nndata>
+<nndata>    49    54   105   108   118   119     0     0     0     0     0     0</nndata>
+<nndata>    50    83   118   120   121   122     0     0     0     0     0     0</nndata>
+<nndata>    51    88   120   123   124   125     0     0     0     0     0     0</nndata>
+<nndata>    52    94   106   116   123   126     0     0     0     0     0     0</nndata>
+<nndata>    55    58   127   128   129   130     0     0     0     0     0     0</nndata>
+<nndata>    56    74   109   111   127   131     0     0     0     0     0     0</nndata>
+<nndata>    57    84   119   121   128   132     0     0     0     0     0     0</nndata>
+<nndata>    59    63   133   134   135   136     0     0     0     0     0     0</nndata>
+<nndata>    60    68   133   137   138   139     0     0     0     0     0     0</nndata>
+<nndata>    61    75   129   131   137   140     0     0     0     0     0     0</nndata>
+<nndata>    62    85   130   132   134   141     0     0     0     0     0     0</nndata>
+<nndata>    64    69   135   138   142   143     0     0     0     0     0     0</nndata>
+<nndata>    65    86   136   141   144   145     0     0     0     0     0     0</nndata>
+<nndata>    66    89   144   146   147   148     0     0     0     0     0     0</nndata>
+<nndata>    67    98   142   146   149   150     0     0     0     0     0     0</nndata>
+<nndata>    70    76   139   140   151   152     0     0     0     0     0     0</nndata>
+<nndata>    71    79   151   153   154   155     0     0     0     0     0     0</nndata>
+<nndata>    72    99   143   149   153   156     0     0     0     0     0     0</nndata>
+<nndata>    77    80   112   114   152   154     0     0     0     0     0     0</nndata>
+<nndata>    81    95   115   117   157   158     0     0     0     0     0     0</nndata>
+<nndata>    82   100   155   156   157   159     0     0     0     0     0     0</nndata>
+<nndata>    87    90   122   124   145   147     0     0     0     0     0     0</nndata>
+<nndata>    91    96   125   126   160   161     0     0     0     0     0     0</nndata>
+<nndata>    92   101   148   150   160   162     0     0     0     0     0     0</nndata>
+<nndata>    97   102   158   159   161   162     0     0     0     0     0     0</nndata>
+<nndata>     1    13    44    47   103   104     0     0     0     0     0     0</nndata>
+<nndata>     1    14    43    45   103   107     0     0     0     0     0     0</nndata>
+<nndata>     1    15    44    46   107   110     0     0     0     0     0     0</nndata>
+<nndata>     1    16    45    47   110   113     0     0     0     0     0     0</nndata>
+<nndata>     1    17    43    46   104   113     0     0     0     0     0     0</nndata>
+<nndata>     2    13    49    52   105   106     0     0     0     0     0     0</nndata>
+<nndata>     2    18    48    50   105   118     0     0     0     0     0     0</nndata>
+<nndata>     2    19    49    51   118   120     0     0     0     0     0     0</nndata>
+<nndata>     2    20    50    52   120   123     0     0     0     0     0     0</nndata>
+<nndata>     2    21    48    51   106   123     0     0     0     0     0     0</nndata>
+<nndata>     3    14    54    56   108   109     0     0     0     0     0     0</nndata>
+<nndata>     3    18    53    57   108   119     0     0     0     0     0     0</nndata>
+<nndata>     3    22    56    57   127   128     0     0     0     0     0     0</nndata>
+<nndata>     3    23    53    55   109   127     0     0     0     0     0     0</nndata>
+<nndata>     3    24    54    55   119   128     0     0     0     0     0     0</nndata>
+<nndata>     4    22    61    62   129   130     0     0     0     0     0     0</nndata>
+<nndata>     4    25    60    62   133   134     0     0     0     0     0     0</nndata>
+<nndata>     4    26    59    61   133   137     0     0     0     0     0     0</nndata>
+<nndata>     4    27    58    60   129   137     0     0     0     0     0     0</nndata>
+<nndata>     4    28    58    59   130   134     0     0     0     0     0     0</nndata>
+<nndata>     5    25    64    65   135   136     0     0     0     0     0     0</nndata>
+<nndata>     5    29    63    67   135   142     0     0     0     0     0     0</nndata>
+<nndata>     5    30    63    66   136   144     0     0     0     0     0     0</nndata>
+<nndata>     5    31    65    67   144   146     0     0     0     0     0     0</nndata>
+<nndata>     5    32    64    66   142   146     0     0     0     0     0     0</nndata>
+<nndata>     6    26    69    70   138   139     0     0     0     0     0     0</nndata>
+<nndata>     6    29    68    72   138   143     0     0     0     0     0     0</nndata>
+<nndata>     6    33    68    71   139   151     0     0     0     0     0     0</nndata>
+<nndata>     6    34    70    72   151   153     0     0     0     0     0     0</nndata>
+<nndata>     6    35    69    71   143   153     0     0     0     0     0     0</nndata>
+<nndata>     7    15    74    77   111   112     0     0     0     0     0     0</nndata>
+<nndata>     7    23    73    75   111   131     0     0     0     0     0     0</nndata>
+<nndata>     7    27    74    76   131   140     0     0     0     0     0     0</nndata>
+<nndata>     7    33    75    77   140   152     0     0     0     0     0     0</nndata>
+<nndata>     7    36    73    76   112   152     0     0     0     0     0     0</nndata>
+<nndata>     8    16    80    81   114   115     0     0     0     0     0     0</nndata>
+<nndata>     8    34    80    82   154   155     0     0     0     0     0     0</nndata>
+<nndata>     8    36    78    79   114   154     0     0     0     0     0     0</nndata>
+<nndata>     8    37    78    82   115   157     0     0     0     0     0     0</nndata>
+<nndata>     8    38    79    81   155   157     0     0     0     0     0     0</nndata>
+<nndata>     9    19    84    87   121   122     0     0     0     0     0     0</nndata>
+<nndata>     9    24    83    85   121   132     0     0     0     0     0     0</nndata>
+<nndata>     9    28    84    86   132   141     0     0     0     0     0     0</nndata>
+<nndata>     9    30    85    87   141   145     0     0     0     0     0     0</nndata>
+<nndata>     9    39    83    86   122   145     0     0     0     0     0     0</nndata>
+<nndata>    10    20    90    91   124   125     0     0     0     0     0     0</nndata>
+<nndata>    10    31    90    92   147   148     0     0     0     0     0     0</nndata>
+<nndata>    10    39    88    89   124   147     0     0     0     0     0     0</nndata>
+<nndata>    10    40    88    92   125   160     0     0     0     0     0     0</nndata>
+<nndata>    10    41    89    91   148   160     0     0     0     0     0     0</nndata>
+<nndata>    11    17    94    95   116   117     0     0     0     0     0     0</nndata>
+<nndata>    11    21    93    96   116   126     0     0     0     0     0     0</nndata>
+<nndata>    11    37    93    97   117   158     0     0     0     0     0     0</nndata>
+<nndata>    11    40    94    97   126   161     0     0     0     0     0     0</nndata>
+<nndata>    11    42    95    96   158   161     0     0     0     0     0     0</nndata>
+<nndata>    12    32    99   101   149   150     0     0     0     0     0     0</nndata>
+<nndata>    12    35    98   100   149   156     0     0     0     0     0     0</nndata>
+<nndata>    12    38    99   102   156   159     0     0     0     0     0     0</nndata>
+<nndata>    12    41    98   102   150   162     0     0     0     0     0     0</nndata>
+<nndata>    12    42   100   101   159   162     0     0     0     0     0     0</nndata>
+<nndata>    13    14    43    44   105   108     0     0     0     0     0     0</nndata>
+<nndata>    13    17    43    47   106   116     0     0     0     0     0     0</nndata>
+<nndata>    13    18    48    49   103   108     0     0     0     0     0     0</nndata>
+<nndata>    13    21    48    52   104   116     0     0     0     0     0     0</nndata>
+<nndata>    14    15    44    45   109   111     0     0     0     0     0     0</nndata>
+<nndata>    14    18    53    54   103   105     0     0     0     0     0     0</nndata>
+<nndata>    14    23    53    56   107   111     0     0     0     0     0     0</nndata>
+<nndata>    15    16    45    46   112   114     0     0     0     0     0     0</nndata>
+<nndata>    15    23    73    74   107   109     0     0     0     0     0     0</nndata>
+<nndata>    15    36    73    77   110   114     0     0     0     0     0     0</nndata>
+<nndata>    16    17    46    47   115   117     0     0     0     0     0     0</nndata>
+<nndata>    16    36    78    80   110   112     0     0     0     0     0     0</nndata>
+<nndata>    16    37    78    81   113   117     0     0     0     0     0     0</nndata>
+<nndata>    17    21    93    94   104   106     0     0     0     0     0     0</nndata>
+<nndata>    17    37    93    95   113   115     0     0     0     0     0     0</nndata>
+<nndata>    18    19    49    50   119   121     0     0     0     0     0     0</nndata>
+<nndata>    18    24    54    57   118   121     0     0     0     0     0     0</nndata>
+<nndata>    19    20    50    51   122   124     0     0     0     0     0     0</nndata>
+<nndata>    19    24    83    84   118   119     0     0     0     0     0     0</nndata>
+<nndata>    19    39    83    87   120   124     0     0     0     0     0     0</nndata>
+<nndata>    20    21    51    52   125   126     0     0     0     0     0     0</nndata>
+<nndata>    20    39    88    90   120   122     0     0     0     0     0     0</nndata>
+<nndata>    20    40    88    91   123   126     0     0     0     0     0     0</nndata>
+<nndata>    21    40    94    96   123   125     0     0     0     0     0     0</nndata>
+<nndata>    22    23    55    56   129   131     0     0     0     0     0     0</nndata>
+<nndata>    22    24    55    57   130   132     0     0     0     0     0     0</nndata>
+<nndata>    22    27    58    61   127   131     0     0     0     0     0     0</nndata>
+<nndata>    22    28    58    62   128   132     0     0     0     0     0     0</nndata>
+<nndata>    23    27    74    75   127   129     0     0     0     0     0     0</nndata>
+<nndata>    24    28    84    85   128   130     0     0     0     0     0     0</nndata>
+<nndata>    25    26    59    60   135   138     0     0     0     0     0     0</nndata>
+<nndata>    25    28    59    62   136   141     0     0     0     0     0     0</nndata>
+<nndata>    25    29    63    64   133   138     0     0     0     0     0     0</nndata>
+<nndata>    25    30    63    65   134   141     0     0     0     0     0     0</nndata>
+<nndata>    26    27    60    61   139   140     0     0     0     0     0     0</nndata>
+<nndata>    26    29    68    69   133   135     0     0     0     0     0     0</nndata>
+<nndata>    26    33    68    70   137   140     0     0     0     0     0     0</nndata>
+<nndata>    27    33    75    76   137   139     0     0     0     0     0     0</nndata>
+<nndata>    28    30    85    86   134   136     0     0     0     0     0     0</nndata>
+<nndata>    29    32    64    67   143   149     0     0     0     0     0     0</nndata>
+<nndata>    29    35    69    72   142   149     0     0     0     0     0     0</nndata>
+<nndata>    30    31    65    66   145   147     0     0     0     0     0     0</nndata>
+<nndata>    30    39    86    87   144   147     0     0     0     0     0     0</nndata>
+<nndata>    31    32    66    67   148   150     0     0     0     0     0     0</nndata>
+<nndata>    31    39    89    90   144   145     0     0     0     0     0     0</nndata>
+<nndata>    31    41    89    92   146   150     0     0     0     0     0     0</nndata>
+<nndata>    32    35    98    99   142   143     0     0     0     0     0     0</nndata>
+<nndata>    32    41    98   101   146   148     0     0     0     0     0     0</nndata>
+<nndata>    33    34    70    71   152   154     0     0     0     0     0     0</nndata>
+<nndata>    33    36    76    77   151   154     0     0     0     0     0     0</nndata>
+<nndata>    34    35    71    72   155   156     0     0     0     0     0     0</nndata>
+<nndata>    34    36    79    80   151   152     0     0     0     0     0     0</nndata>
+<nndata>    34    38    79    82   153   156     0     0     0     0     0     0</nndata>
+<nndata>    35    38    99   100   153   155     0     0     0     0     0     0</nndata>
+<nndata>    37    38    81    82   158   159     0     0     0     0     0     0</nndata>
+<nndata>    37    42    95    97   157   159     0     0     0     0     0     0</nndata>
+<nndata>    38    42   100   102   157   158     0     0     0     0     0     0</nndata>
+<nndata>    40    41    91    92   161   162     0     0     0     0     0     0</nndata>
+<nndata>    40    42    96    97   160   162     0     0     0     0     0     0</nndata>
+<nndata>    41    42   101   102   160   161     0     0     0     0     0     0</nndata>
+</nndatas>
+	
+    <edgeinfos>
+		<edgeinfo>	1    43</edgeinfo>
+<edgeinfo>     1    44</edgeinfo>
+<edgeinfo>    45     1</edgeinfo>
+<edgeinfo>    46     1</edgeinfo>
+<edgeinfo>     1    47</edgeinfo>
+<edgeinfo>    48     2</edgeinfo>
+<edgeinfo>    49     2</edgeinfo>
+<edgeinfo>     2    50</edgeinfo>
+<edgeinfo>     2    51</edgeinfo>
+<edgeinfo>    52     2</edgeinfo>
+<edgeinfo>    53     3</edgeinfo>
+<edgeinfo>     3    54</edgeinfo>
+<edgeinfo>    55     3</edgeinfo>
+<edgeinfo>    56     3</edgeinfo>
+<edgeinfo>     3    57</edgeinfo>
+<edgeinfo>     4    58</edgeinfo>
+<edgeinfo>    59     4</edgeinfo>
+<edgeinfo>    60     4</edgeinfo>
+<edgeinfo>    61     4</edgeinfo>
+<edgeinfo>     4    62</edgeinfo>
+<edgeinfo>     5    63</edgeinfo>
+<edgeinfo>     5    64</edgeinfo>
+<edgeinfo>    65     5</edgeinfo>
+<edgeinfo>    66     5</edgeinfo>
+<edgeinfo>     5    67</edgeinfo>
+<edgeinfo>     6    68</edgeinfo>
+<edgeinfo>    69     6</edgeinfo>
+<edgeinfo>     6    70</edgeinfo>
+<edgeinfo>     6    71</edgeinfo>
+<edgeinfo>    72     6</edgeinfo>
+<edgeinfo>     7    73</edgeinfo>
+<edgeinfo>     7    74</edgeinfo>
+<edgeinfo>     7    75</edgeinfo>
+<edgeinfo>    76     7</edgeinfo>
+<edgeinfo>    77     7</edgeinfo>
+<edgeinfo>     8    78</edgeinfo>
+<edgeinfo>    79     8</edgeinfo>
+<edgeinfo>     8    80</edgeinfo>
+<edgeinfo>     8    81</edgeinfo>
+<edgeinfo>    82     8</edgeinfo>
+<edgeinfo>    83     9</edgeinfo>
+<edgeinfo>    84     9</edgeinfo>
+<edgeinfo>    85     9</edgeinfo>
+<edgeinfo>    86     9</edgeinfo>
+<edgeinfo>     9    87</edgeinfo>
+<edgeinfo>    88    10</edgeinfo>
+<edgeinfo>    10    89</edgeinfo>
+<edgeinfo>    90    10</edgeinfo>
+<edgeinfo>    91    10</edgeinfo>
+<edgeinfo>    92    10</edgeinfo>
+<edgeinfo>    93    11</edgeinfo>
+<edgeinfo>    11    94</edgeinfo>
+<edgeinfo>    95    11</edgeinfo>
+<edgeinfo>    11    96</edgeinfo>
+<edgeinfo>    97    11</edgeinfo>
+<edgeinfo>    98    12</edgeinfo>
+<edgeinfo>    12    99</edgeinfo>
+<edgeinfo>    12   100</edgeinfo>
+<edgeinfo>   101    12</edgeinfo>
+<edgeinfo>    12   102</edgeinfo>
+<edgeinfo>    43    13</edgeinfo>
+<edgeinfo>    13    48</edgeinfo>
+<edgeinfo>   103    13</edgeinfo>
+<edgeinfo>   104    13</edgeinfo>
+<edgeinfo>    13   105</edgeinfo>
+<edgeinfo>    13   106</edgeinfo>
+<edgeinfo>    44    14</edgeinfo>
+<edgeinfo>    14    53</edgeinfo>
+<edgeinfo>   103    14</edgeinfo>
+<edgeinfo>   107    14</edgeinfo>
+<edgeinfo>   108    14</edgeinfo>
+<edgeinfo>    14   109</edgeinfo>
+<edgeinfo>    15    45</edgeinfo>
+<edgeinfo>    73    15</edgeinfo>
+<edgeinfo>   107    15</edgeinfo>
+<edgeinfo>    15   110</edgeinfo>
+<edgeinfo>   111    15</edgeinfo>
+<edgeinfo>   112    15</edgeinfo>
+<edgeinfo>    16    46</edgeinfo>
+<edgeinfo>    78    16</edgeinfo>
+<edgeinfo>    16   110</edgeinfo>
+<edgeinfo>   113    16</edgeinfo>
+<edgeinfo>   114    16</edgeinfo>
+<edgeinfo>   115    16</edgeinfo>
+<edgeinfo>    47    17</edgeinfo>
+<edgeinfo>    17    93</edgeinfo>
+<edgeinfo>   104    17</edgeinfo>
+<edgeinfo>   113    17</edgeinfo>
+<edgeinfo>   116    17</edgeinfo>
+<edgeinfo>    17   117</edgeinfo>
+<edgeinfo>    18    49</edgeinfo>
+<edgeinfo>    54    18</edgeinfo>
+<edgeinfo>    18   105</edgeinfo>
+<edgeinfo>   108    18</edgeinfo>
+<edgeinfo>   118    18</edgeinfo>
+<edgeinfo>   119    18</edgeinfo>
+<edgeinfo>    50    19</edgeinfo>
+<edgeinfo>    19    83</edgeinfo>
+<edgeinfo>   118    19</edgeinfo>
+<edgeinfo>   120    19</edgeinfo>
+<edgeinfo>    19   121</edgeinfo>
+<edgeinfo>   122    19</edgeinfo>
+<edgeinfo>    51    20</edgeinfo>
+<edgeinfo>    20    88</edgeinfo>
+<edgeinfo>   120    20</edgeinfo>
+<edgeinfo>   123    20</edgeinfo>
+<edgeinfo>    20   124</edgeinfo>
+<edgeinfo>    20   125</edgeinfo>
+<edgeinfo>    21    52</edgeinfo>
+<edgeinfo>    94    21</edgeinfo>
+<edgeinfo>    21   106</edgeinfo>
+<edgeinfo>   116    21</edgeinfo>
+<edgeinfo>   123    21</edgeinfo>
+<edgeinfo>   126    21</edgeinfo>
+<edgeinfo>    22    55</edgeinfo>
+<edgeinfo>    58    22</edgeinfo>
+<edgeinfo>    22   127</edgeinfo>
+<edgeinfo>   128    22</edgeinfo>
+<edgeinfo>   129    22</edgeinfo>
+<edgeinfo>   130    22</edgeinfo>
+<edgeinfo>    23    56</edgeinfo>
+<edgeinfo>    74    23</edgeinfo>
+<edgeinfo>    23   109</edgeinfo>
+<edgeinfo>   111    23</edgeinfo>
+<edgeinfo>    23   127</edgeinfo>
+<edgeinfo>   131    23</edgeinfo>
+<edgeinfo>    57    24</edgeinfo>
+<edgeinfo>    24    84</edgeinfo>
+<edgeinfo>   119    24</edgeinfo>
+<edgeinfo>    24   121</edgeinfo>
+<edgeinfo>   128    24</edgeinfo>
+<edgeinfo>    24   132</edgeinfo>
+<edgeinfo>    25    59</edgeinfo>
+<edgeinfo>    63    25</edgeinfo>
+<edgeinfo>    25   133</edgeinfo>
+<edgeinfo>   134    25</edgeinfo>
+<edgeinfo>   135    25</edgeinfo>
+<edgeinfo>   136    25</edgeinfo>
+<edgeinfo>    26    60</edgeinfo>
+<edgeinfo>    68    26</edgeinfo>
+<edgeinfo>    26   133</edgeinfo>
+<edgeinfo>    26   137</edgeinfo>
+<edgeinfo>   138    26</edgeinfo>
+<edgeinfo>   139    26</edgeinfo>
+<edgeinfo>    27    61</edgeinfo>
+<edgeinfo>    75    27</edgeinfo>
+<edgeinfo>   129    27</edgeinfo>
+<edgeinfo>   131    27</edgeinfo>
+<edgeinfo>    27   137</edgeinfo>
+<edgeinfo>   140    27</edgeinfo>
+<edgeinfo>    62    28</edgeinfo>
+<edgeinfo>    28    85</edgeinfo>
+<edgeinfo>   130    28</edgeinfo>
+<edgeinfo>    28   132</edgeinfo>
+<edgeinfo>   134    28</edgeinfo>
+<edgeinfo>    28   141</edgeinfo>
+<edgeinfo>    64    29</edgeinfo>
+<edgeinfo>    29    69</edgeinfo>
+<edgeinfo>   135    29</edgeinfo>
+<edgeinfo>   138    29</edgeinfo>
+<edgeinfo>   142    29</edgeinfo>
+<edgeinfo>    29   143</edgeinfo>
+<edgeinfo>    65    30</edgeinfo>
+<edgeinfo>    86    30</edgeinfo>
+<edgeinfo>   136    30</edgeinfo>
+<edgeinfo>    30   141</edgeinfo>
+<edgeinfo>    30   144</edgeinfo>
+<edgeinfo>   145    30</edgeinfo>
+<edgeinfo>    31    66</edgeinfo>
+<edgeinfo>    89    31</edgeinfo>
+<edgeinfo>    31   144</edgeinfo>
+<edgeinfo>   146    31</edgeinfo>
+<edgeinfo>   147    31</edgeinfo>
+<edgeinfo>   148    31</edgeinfo>
+<edgeinfo>    67    32</edgeinfo>
+<edgeinfo>    32    98</edgeinfo>
+<edgeinfo>   142    32</edgeinfo>
+<edgeinfo>   146    32</edgeinfo>
+<edgeinfo>   149    32</edgeinfo>
+<edgeinfo>    32   150</edgeinfo>
+<edgeinfo>    70    33</edgeinfo>
+<edgeinfo>    33    76</edgeinfo>
+<edgeinfo>   139    33</edgeinfo>
+<edgeinfo>   140    33</edgeinfo>
+<edgeinfo>   151    33</edgeinfo>
+<edgeinfo>    33   152</edgeinfo>
+<edgeinfo>    71    34</edgeinfo>
+<edgeinfo>    34    79</edgeinfo>
+<edgeinfo>   151    34</edgeinfo>
+<edgeinfo>   153    34</edgeinfo>
+<edgeinfo>   154    34</edgeinfo>
+<edgeinfo>    34   155</edgeinfo>
+<edgeinfo>    35    72</edgeinfo>
+<edgeinfo>    99    35</edgeinfo>
+<edgeinfo>    35   143</edgeinfo>
+<edgeinfo>   149    35</edgeinfo>
+<edgeinfo>   153    35</edgeinfo>
+<edgeinfo>   156    35</edgeinfo>
+<edgeinfo>    36    77</edgeinfo>
+<edgeinfo>    80    36</edgeinfo>
+<edgeinfo>   112    36</edgeinfo>
+<edgeinfo>   114    36</edgeinfo>
+<edgeinfo>    36   152</edgeinfo>
+<edgeinfo>   154    36</edgeinfo>
+<edgeinfo>    81    37</edgeinfo>
+<edgeinfo>    37    95</edgeinfo>
+<edgeinfo>   115    37</edgeinfo>
+<edgeinfo>    37   117</edgeinfo>
+<edgeinfo>   157    37</edgeinfo>
+<edgeinfo>    37   158</edgeinfo>
+<edgeinfo>    38    82</edgeinfo>
+<edgeinfo>   100    38</edgeinfo>
+<edgeinfo>    38   155</edgeinfo>
+<edgeinfo>   156    38</edgeinfo>
+<edgeinfo>   157    38</edgeinfo>
+<edgeinfo>   159    38</edgeinfo>
+<edgeinfo>    87    39</edgeinfo>
+<edgeinfo>    39    90</edgeinfo>
+<edgeinfo>   122    39</edgeinfo>
+<edgeinfo>    39   124</edgeinfo>
+<edgeinfo>   145    39</edgeinfo>
+<edgeinfo>   147    39</edgeinfo>
+<edgeinfo>    40    91</edgeinfo>
+<edgeinfo>    96    40</edgeinfo>
+<edgeinfo>    40   125</edgeinfo>
+<edgeinfo>   126    40</edgeinfo>
+<edgeinfo>    40   160</edgeinfo>
+<edgeinfo>   161    40</edgeinfo>
+<edgeinfo>    92    41</edgeinfo>
+<edgeinfo>   101    41</edgeinfo>
+<edgeinfo>   148    41</edgeinfo>
+<edgeinfo>    41   150</edgeinfo>
+<edgeinfo>    41   160</edgeinfo>
+<edgeinfo>   162    41</edgeinfo>
+<edgeinfo>    42    97</edgeinfo>
+<edgeinfo>   102    42</edgeinfo>
+<edgeinfo>    42   158</edgeinfo>
+<edgeinfo>   159    42</edgeinfo>
+<edgeinfo>   161    42</edgeinfo>
+<edgeinfo>   162    42</edgeinfo>
+<edgeinfo>    43    44</edgeinfo>
+<edgeinfo>    47    43</edgeinfo>
+<edgeinfo>   103    43</edgeinfo>
+<edgeinfo>    43   104</edgeinfo>
+<edgeinfo>    44    45</edgeinfo>
+<edgeinfo>    44   103</edgeinfo>
+<edgeinfo>   107    44</edgeinfo>
+<edgeinfo>    45    46</edgeinfo>
+<edgeinfo>    45   107</edgeinfo>
+<edgeinfo>   110    45</edgeinfo>
+<edgeinfo>    46    47</edgeinfo>
+<edgeinfo>    46   110</edgeinfo>
+<edgeinfo>   113    46</edgeinfo>
+<edgeinfo>   104    47</edgeinfo>
+<edgeinfo>    47   113</edgeinfo>
+<edgeinfo>    49    48</edgeinfo>
+<edgeinfo>    48    52</edgeinfo>
+<edgeinfo>    48   105</edgeinfo>
+<edgeinfo>   106    48</edgeinfo>
+<edgeinfo>    50    49</edgeinfo>
+<edgeinfo>   105    49</edgeinfo>
+<edgeinfo>    49   118</edgeinfo>
+<edgeinfo>    51    50</edgeinfo>
+<edgeinfo>   118    50</edgeinfo>
+<edgeinfo>    50   120</edgeinfo>
+<edgeinfo>    52    51</edgeinfo>
+<edgeinfo>   120    51</edgeinfo>
+<edgeinfo>    51   123</edgeinfo>
+<edgeinfo>    52   106</edgeinfo>
+<edgeinfo>   123    52</edgeinfo>
+<edgeinfo>    53    54</edgeinfo>
+<edgeinfo>    56    53</edgeinfo>
+<edgeinfo>   108    53</edgeinfo>
+<edgeinfo>    53   109</edgeinfo>
+<edgeinfo>    54    57</edgeinfo>
+<edgeinfo>    54   108</edgeinfo>
+<edgeinfo>   119    54</edgeinfo>
+<edgeinfo>    55    56</edgeinfo>
+<edgeinfo>    57    55</edgeinfo>
+<edgeinfo>   127    55</edgeinfo>
+<edgeinfo>    55   128</edgeinfo>
+<edgeinfo>   109    56</edgeinfo>
+<edgeinfo>    56   127</edgeinfo>
+<edgeinfo>    57   119</edgeinfo>
+<edgeinfo>   128    57</edgeinfo>
+<edgeinfo>    61    58</edgeinfo>
+<edgeinfo>    58    62</edgeinfo>
+<edgeinfo>    58   129</edgeinfo>
+<edgeinfo>   130    58</edgeinfo>
+<edgeinfo>    59    60</edgeinfo>
+<edgeinfo>    62    59</edgeinfo>
+<edgeinfo>   133    59</edgeinfo>
+<edgeinfo>    59   134</edgeinfo>
+<edgeinfo>    60    61</edgeinfo>
+<edgeinfo>    60   133</edgeinfo>
+<edgeinfo>   137    60</edgeinfo>
+<edgeinfo>   129    61</edgeinfo>
+<edgeinfo>    61   137</edgeinfo>
+<edgeinfo>    62   130</edgeinfo>
+<edgeinfo>   134    62</edgeinfo>
+<edgeinfo>    64    63</edgeinfo>
+<edgeinfo>    63    65</edgeinfo>
+<edgeinfo>    63   135</edgeinfo>
+<edgeinfo>   136    63</edgeinfo>
+<edgeinfo>    67    64</edgeinfo>
+<edgeinfo>   135    64</edgeinfo>
+<edgeinfo>    64   142</edgeinfo>
+<edgeinfo>    65    66</edgeinfo>
+<edgeinfo>    65   136</edgeinfo>
+<edgeinfo>   144    65</edgeinfo>
+<edgeinfo>    66    67</edgeinfo>
+<edgeinfo>    66   144</edgeinfo>
+<edgeinfo>   146    66</edgeinfo>
+<edgeinfo>   142    67</edgeinfo>
+<edgeinfo>    67   146</edgeinfo>
+<edgeinfo>    68    69</edgeinfo>
+<edgeinfo>    70    68</edgeinfo>
+<edgeinfo>   138    68</edgeinfo>
+<edgeinfo>    68   139</edgeinfo>
+<edgeinfo>    69    72</edgeinfo>
+<edgeinfo>    69   138</edgeinfo>
+<edgeinfo>   143    69</edgeinfo>
+<edgeinfo>    71    70</edgeinfo>
+<edgeinfo>   139    70</edgeinfo>
+<edgeinfo>    70   151</edgeinfo>
+<edgeinfo>    72    71</edgeinfo>
+<edgeinfo>   151    71</edgeinfo>
+<edgeinfo>    71   153</edgeinfo>
+<edgeinfo>    72   143</edgeinfo>
+<edgeinfo>   153    72</edgeinfo>
+<edgeinfo>    73    74</edgeinfo>
+<edgeinfo>    77    73</edgeinfo>
+<edgeinfo>   111    73</edgeinfo>
+<edgeinfo>    73   112</edgeinfo>
+<edgeinfo>    74    75</edgeinfo>
+<edgeinfo>    74   111</edgeinfo>
+<edgeinfo>   131    74</edgeinfo>
+<edgeinfo>    75    76</edgeinfo>
+<edgeinfo>    75   131</edgeinfo>
+<edgeinfo>   140    75</edgeinfo>
+<edgeinfo>    76    77</edgeinfo>
+<edgeinfo>    76   140</edgeinfo>
+<edgeinfo>   152    76</edgeinfo>
+<edgeinfo>   112    77</edgeinfo>
+<edgeinfo>    77   152</edgeinfo>
+<edgeinfo>    78    80</edgeinfo>
+<edgeinfo>    81    78</edgeinfo>
+<edgeinfo>   114    78</edgeinfo>
+<edgeinfo>    78   115</edgeinfo>
+<edgeinfo>    80    79</edgeinfo>
+<edgeinfo>    79    82</edgeinfo>
+<edgeinfo>    79   154</edgeinfo>
+<edgeinfo>   155    79</edgeinfo>
+<edgeinfo>    80   114</edgeinfo>
+<edgeinfo>   154    80</edgeinfo>
+<edgeinfo>    82    81</edgeinfo>
+<edgeinfo>   115    81</edgeinfo>
+<edgeinfo>    81   157</edgeinfo>
+<edgeinfo>    82   155</edgeinfo>
+<edgeinfo>   157    82</edgeinfo>
+<edgeinfo>    84    83</edgeinfo>
+<edgeinfo>    83    87</edgeinfo>
+<edgeinfo>    83   121</edgeinfo>
+<edgeinfo>   122    83</edgeinfo>
+<edgeinfo>    85    84</edgeinfo>
+<edgeinfo>   121    84</edgeinfo>
+<edgeinfo>    84   132</edgeinfo>
+<edgeinfo>    86    85</edgeinfo>
+<edgeinfo>   132    85</edgeinfo>
+<edgeinfo>    85   141</edgeinfo>
+<edgeinfo>    87    86</edgeinfo>
+<edgeinfo>   141    86</edgeinfo>
+<edgeinfo>    86   145</edgeinfo>
+<edgeinfo>    87   122</edgeinfo>
+<edgeinfo>   145    87</edgeinfo>
+<edgeinfo>    90    88</edgeinfo>
+<edgeinfo>    88    91</edgeinfo>
+<edgeinfo>    88   124</edgeinfo>
+<edgeinfo>   125    88</edgeinfo>
+<edgeinfo>    89    90</edgeinfo>
+<edgeinfo>    92    89</edgeinfo>
+<edgeinfo>   147    89</edgeinfo>
+<edgeinfo>    89   148</edgeinfo>
+<edgeinfo>   124    90</edgeinfo>
+<edgeinfo>    90   147</edgeinfo>
+<edgeinfo>    91    92</edgeinfo>
+<edgeinfo>    91   125</edgeinfo>
+<edgeinfo>   160    91</edgeinfo>
+<edgeinfo>   148    92</edgeinfo>
+<edgeinfo>    92   160</edgeinfo>
+<edgeinfo>    94    93</edgeinfo>
+<edgeinfo>    93    95</edgeinfo>
+<edgeinfo>    93   116</edgeinfo>
+<edgeinfo>   117    93</edgeinfo>
+<edgeinfo>    96    94</edgeinfo>
+<edgeinfo>   116    94</edgeinfo>
+<edgeinfo>    94   126</edgeinfo>
+<edgeinfo>    95    97</edgeinfo>
+<edgeinfo>    95   117</edgeinfo>
+<edgeinfo>   158    95</edgeinfo>
+<edgeinfo>    97    96</edgeinfo>
+<edgeinfo>   126    96</edgeinfo>
+<edgeinfo>    96   161</edgeinfo>
+<edgeinfo>    97   158</edgeinfo>
+<edgeinfo>   161    97</edgeinfo>
+<edgeinfo>    99    98</edgeinfo>
+<edgeinfo>    98   101</edgeinfo>
+<edgeinfo>    98   149</edgeinfo>
+<edgeinfo>   150    98</edgeinfo>
+<edgeinfo>   100    99</edgeinfo>
+<edgeinfo>   149    99</edgeinfo>
+<edgeinfo>    99   156</edgeinfo>
+<edgeinfo>   102   100</edgeinfo>
+<edgeinfo>   156   100</edgeinfo>
+<edgeinfo>   100   159</edgeinfo>
+<edgeinfo>   101   102</edgeinfo>
+<edgeinfo>   101   150</edgeinfo>
+<edgeinfo>   162   101</edgeinfo>
+<edgeinfo>   159   102</edgeinfo>
+<edgeinfo>   102   162</edgeinfo>
+<edgeinfo>   105   103</edgeinfo>
+<edgeinfo>   103   108</edgeinfo>
+<edgeinfo>   104   106</edgeinfo>
+<edgeinfo>   116   104</edgeinfo>
+<edgeinfo>   108   105</edgeinfo>
+<edgeinfo>   106   116</edgeinfo>
+<edgeinfo>   109   107</edgeinfo>
+<edgeinfo>   107   111</edgeinfo>
+<edgeinfo>   111   109</edgeinfo>
+<edgeinfo>   112   110</edgeinfo>
+<edgeinfo>   110   114</edgeinfo>
+<edgeinfo>   114   112</edgeinfo>
+<edgeinfo>   115   113</edgeinfo>
+<edgeinfo>   113   117</edgeinfo>
+<edgeinfo>   117   115</edgeinfo>
+<edgeinfo>   118   119</edgeinfo>
+<edgeinfo>   121   118</edgeinfo>
+<edgeinfo>   119   121</edgeinfo>
+<edgeinfo>   120   122</edgeinfo>
+<edgeinfo>   124   120</edgeinfo>
+<edgeinfo>   122   124</edgeinfo>
+<edgeinfo>   123   125</edgeinfo>
+<edgeinfo>   126   123</edgeinfo>
+<edgeinfo>   125   126</edgeinfo>
+<edgeinfo>   129   127</edgeinfo>
+<edgeinfo>   127   131</edgeinfo>
+<edgeinfo>   128   130</edgeinfo>
+<edgeinfo>   132   128</edgeinfo>
+<edgeinfo>   131   129</edgeinfo>
+<edgeinfo>   130   132</edgeinfo>
+<edgeinfo>   135   133</edgeinfo>
+<edgeinfo>   133   138</edgeinfo>
+<edgeinfo>   134   136</edgeinfo>
+<edgeinfo>   141   134</edgeinfo>
+<edgeinfo>   138   135</edgeinfo>
+<edgeinfo>   136   141</edgeinfo>
+<edgeinfo>   139   137</edgeinfo>
+<edgeinfo>   137   140</edgeinfo>
+<edgeinfo>   140   139</edgeinfo>
+<edgeinfo>   142   143</edgeinfo>
+<edgeinfo>   149   142</edgeinfo>
+<edgeinfo>   143   149</edgeinfo>
+<edgeinfo>   145   144</edgeinfo>
+<edgeinfo>   144   147</edgeinfo>
+<edgeinfo>   147   145</edgeinfo>
+<edgeinfo>   148   146</edgeinfo>
+<edgeinfo>   146   150</edgeinfo>
+<edgeinfo>   150   148</edgeinfo>
+<edgeinfo>   151   152</edgeinfo>
+<edgeinfo>   154   151</edgeinfo>
+<edgeinfo>   152   154</edgeinfo>
+<edgeinfo>   153   155</edgeinfo>
+<edgeinfo>   156   153</edgeinfo>
+<edgeinfo>   155   156</edgeinfo>
+<edgeinfo>   157   158</edgeinfo>
+<edgeinfo>   159   157</edgeinfo>
+<edgeinfo>   158   159</edgeinfo>
+<edgeinfo>   161   160</edgeinfo>
+<edgeinfo>   160   162</edgeinfo>
+<edgeinfo>   162   161</edgeinfo>
+
+
+    </edgeinfos>
+	
+	<elems>
+		<elem>	7    74    73</elem>
+<elem>     4    58    61</elem>
+<elem>     6    68    70</elem>
+<elem>     6    70    71</elem>
+<elem>     7    73    77</elem>
+<elem>     4    62    58</elem>
+<elem>     3    57    54</elem>
+<elem>     3    54    53</elem>
+<elem>     1    43    47</elem>
+<elem>     2    51    52</elem>
+<elem>     9    87    83</elem>
+<elem>     5    65    63</elem>
+<elem>     5    63    64</elem>
+<elem>     5    64    67</elem>
+<elem>     8    81    82</elem>
+<elem>     1    47    46</elem>
+<elem>     5    67    66</elem>
+<elem>     9    86    87</elem>
+<elem>     6    71    72</elem>
+<elem>    11    96    97</elem>
+<elem>    23    56   109</elem>
+<elem>    22    55   127</elem>
+<elem>    26    60   137</elem>
+<elem>    33    76   152</elem>
+<elem>    15    45   110</elem>
+<elem>    28    85   132</elem>
+<elem>    24    84   121</elem>
+<elem>    18    49   105</elem>
+<elem>    13    48   106</elem>
+<elem>    20    88   125</elem>
+<elem>    39    90   124</elem>
+<elem>    30    86   141</elem>
+<elem>    25    59   133</elem>
+<elem>    29    69   143</elem>
+<elem>    37    95   158</elem>
+<elem>    17    93   117</elem>
+<elem>    32    98   150</elem>
+<elem>    30    65   144</elem>
+<elem>    34    79   155</elem>
+<elem>    40    91   160</elem>
+<elem>    15   107    45</elem>
+<elem>    27   131    75</elem>
+<elem>    33   140    76</elem>
+<elem>    34   154    79</elem>
+<elem>    36   114    80</elem>
+<elem>    22   128    55</elem>
+<elem>    18   118    49</elem>
+<elem>    14   103    44</elem>
+<elem>    17   116    93</elem>
+<elem>    21   126    94</elem>
+<elem>    19   120    50</elem>
+<elem>    25   134    59</elem>
+<elem>    29   138    69</elem>
+<elem>    32   149    98</elem>
+<elem>    38   159   100</elem>
+<elem>    16   115    78</elem>
+<elem>    31   148    89</elem>
+<elem>    39   147    90</elem>
+<elem>    35   156    99</elem>
+<elem>    42   162   102</elem>
+<elem>    14   107   109</elem>
+<elem>    23   131   127</elem>
+<elem>    27   140   137</elem>
+<elem>    36   154   152</elem>
+<elem>    16   114   110</elem>
+<elem>    24   128   132</elem>
+<elem>    19   118   121</elem>
+<elem>    13   103   105</elem>
+<elem>    21   116   106</elem>
+<elem>    40   126   125</elem>
+<elem>    20   120   124</elem>
+<elem>    28   134   141</elem>
+<elem>    26   138   133</elem>
+<elem>    35   149   143</elem>
+<elem>    42   159   158</elem>
+<elem>    37   115   117</elem>
+<elem>    41   148   150</elem>
+<elem>    31   147   144</elem>
+<elem>    38   156   155</elem>
+<elem>    41   162   160</elem>
+<elem>    74    23   111</elem>
+<elem>    58    22   129</elem>
+<elem>    68    26   139</elem>
+<elem>    70    33   151</elem>
+<elem>    73    15   112</elem>
+<elem>    62    28   130</elem>
+<elem>    57    24   119</elem>
+<elem>    54    18   108</elem>
+<elem>    43    13   104</elem>
+<elem>    51    20   123</elem>
+<elem>    87    39   122</elem>
+<elem>    65    30   136</elem>
+<elem>    63    25   135</elem>
+<elem>    64    29   142</elem>
+<elem>    81    37   157</elem>
+<elem>    47    17   113</elem>
+<elem>    67    32   146</elem>
+<elem>    86    30   145</elem>
+<elem>    71    34   153</elem>
+<elem>    96    40   161</elem>
+<elem>    56     3    53</elem>
+<elem>    55     3    56</elem>
+<elem>    60     4    61</elem>
+<elem>    76     7    77</elem>
+<elem>    45     1    46</elem>
+<elem>    85     9    84</elem>
+<elem>    84     9    83</elem>
+<elem>    49     2    48</elem>
+<elem>    48     2    52</elem>
+<elem>    88    10    91</elem>
+<elem>    90    10    88</elem>
+<elem>    86     9    85</elem>
+<elem>    59     4    60</elem>
+<elem>    69     6    72</elem>
+<elem>    95    11    97</elem>
+<elem>    93    11    95</elem>
+<elem>    98    12   101</elem>
+<elem>    65     5    66</elem>
+<elem>    79     8    82</elem>
+<elem>    91    10    92</elem>
+<elem>   107    14    44</elem>
+<elem>   131    23    74</elem>
+<elem>   140    27    75</elem>
+<elem>   154    36    80</elem>
+<elem>   114    16    78</elem>
+<elem>   128    24    57</elem>
+<elem>   118    19    50</elem>
+<elem>   103    13    43</elem>
+<elem>   116    21    94</elem>
+<elem>   126    40    96</elem>
+<elem>   120    20    51</elem>
+<elem>   134    28    62</elem>
+<elem>   138    26    68</elem>
+<elem>   149    35    99</elem>
+<elem>   159    42   102</elem>
+<elem>   115    37    81</elem>
+<elem>   148    41    92</elem>
+<elem>   147    31    89</elem>
+<elem>   156    38   100</elem>
+<elem>   162    41   101</elem>
+<elem>   107    15   111</elem>
+<elem>   131    27   129</elem>
+<elem>   140    33   139</elem>
+<elem>   154    34   151</elem>
+<elem>   114    36   112</elem>
+<elem>   128    22   130</elem>
+<elem>   118    18   119</elem>
+<elem>   103    14   108</elem>
+<elem>   116    17   104</elem>
+<elem>   126    21   123</elem>
+<elem>   120    19   122</elem>
+<elem>   134    25   136</elem>
+<elem>   138    29   135</elem>
+<elem>   149    32   142</elem>
+<elem>   159    38   157</elem>
+<elem>   115    16   113</elem>
+<elem>   148    31   146</elem>
+<elem>   147    39   145</elem>
+<elem>   156    35   153</elem>
+<elem>   162    42   161</elem>
+<elem>    73   111    15</elem>
+<elem>    61   129    27</elem>
+<elem>    70   139    33</elem>
+<elem>    71   151    34</elem>
+<elem>    77   112    36</elem>
+<elem>    58   130    22</elem>
+<elem>    54   119    18</elem>
+<elem>    53   108    14</elem>
+<elem>    47   104    17</elem>
+<elem>    52   123    21</elem>
+<elem>    83   122    19</elem>
+<elem>    63   136    25</elem>
+<elem>    64   135    29</elem>
+<elem>    67   142    32</elem>
+<elem>    82   157    38</elem>
+<elem>    46   113    16</elem>
+<elem>    66   146    31</elem>
+<elem>    87   145    39</elem>
+<elem>    72   153    35</elem>
+<elem>    97   161    42</elem>
+<elem>   109    53    14</elem>
+<elem>   127    56    23</elem>
+<elem>   137    61    27</elem>
+<elem>   152    77    36</elem>
+<elem>   110    46    16</elem>
+<elem>   132    84    24</elem>
+<elem>   121    83    19</elem>
+<elem>   105    48    13</elem>
+<elem>   106    52    21</elem>
+<elem>   125    91    40</elem>
+<elem>   124    88    20</elem>
+<elem>   141    85    28</elem>
+<elem>   133    60    26</elem>
+<elem>   143    72    35</elem>
+<elem>   158    97    42</elem>
+<elem>   117    95    37</elem>
+<elem>   150   101    41</elem>
+<elem>   144    66    31</elem>
+<elem>   155    82    38</elem>
+<elem>   160    92    41</elem>
+<elem>    45    44     1</elem>
+<elem>    75    74     7</elem>
+<elem>    76    75     7</elem>
+<elem>    79    80     8</elem>
+<elem>    80    78     8</elem>
+<elem>    55    57     3</elem>
+<elem>    49    50     2</elem>
+<elem>    44    43     1</elem>
+<elem>    93    94    11</elem>
+<elem>    94    96    11</elem>
+<elem>    50    51     2</elem>
+<elem>    59    62     4</elem>
+<elem>    69    68     6</elem>
+<elem>    98    99    12</elem>
+<elem>   100   102    12</elem>
+<elem>    78    81     8</elem>
+<elem>    89    92    10</elem>
+<elem>    90    89    10</elem>
+<elem>    99   100    12</elem>
+<elem>   102   101    12</elem>
+<elem>   109   111    23</elem>
+<elem>   127   129    22</elem>
+<elem>   137   139    26</elem>
+<elem>   152   151    33</elem>
+<elem>   110   112    15</elem>
+<elem>   132   130    28</elem>
+<elem>   121   119    24</elem>
+<elem>   105   108    18</elem>
+<elem>   106   104    13</elem>
+<elem>   125   123    20</elem>
+<elem>   124   122    39</elem>
+<elem>   141   136    30</elem>
+<elem>   133   135    25</elem>
+<elem>   143   142    29</elem>
+<elem>   158   157    37</elem>
+<elem>   117   113    17</elem>
+<elem>   150   146    32</elem>
+<elem>   144   145    30</elem>
+<elem>   155   153    34</elem>
+<elem>   160   161    40</elem>
+<elem>   111    73    74</elem>
+<elem>   129    61    58</elem>
+<elem>   139    70    68</elem>
+<elem>   151    71    70</elem>
+<elem>   112    77    73</elem>
+<elem>   130    58    62</elem>
+<elem>   119    54    57</elem>
+<elem>   108    53    54</elem>
+<elem>   104    47    43</elem>
+<elem>   123    52    51</elem>
+<elem>   122    83    87</elem>
+<elem>   136    63    65</elem>
+<elem>   135    64    63</elem>
+<elem>   142    67    64</elem>
+<elem>   157    82    81</elem>
+<elem>   113    46    47</elem>
+<elem>   146    66    67</elem>
+<elem>   145    87    86</elem>
+<elem>   153    72    71</elem>
+<elem>   161    97    96</elem>
+<elem>    53   109    56</elem>
+<elem>    56   127    55</elem>
+<elem>    61   137    60</elem>
+<elem>    77   152    76</elem>
+<elem>    46   110    45</elem>
+<elem>    84   132    85</elem>
+<elem>    83   121    84</elem>
+<elem>    48   105    49</elem>
+<elem>    52   106    48</elem>
+<elem>    91   125    88</elem>
+<elem>    88   124    90</elem>
+<elem>    85   141    86</elem>
+<elem>    60   133    59</elem>
+<elem>    72   143    69</elem>
+<elem>    97   158    95</elem>
+<elem>    95   117    93</elem>
+<elem>   101   150    98</elem>
+<elem>    66   144    65</elem>
+<elem>    82   155    79</elem>
+<elem>    92   160    91</elem>
+<elem>    44    45   107</elem>
+<elem>    74    75   131</elem>
+<elem>    75    76   140</elem>
+<elem>    80    79   154</elem>
+<elem>    78    80   114</elem>
+<elem>    57    55   128</elem>
+<elem>    50    49   118</elem>
+<elem>    43    44   103</elem>
+<elem>    94    93   116</elem>
+<elem>    96    94   126</elem>
+<elem>    51    50   120</elem>
+<elem>    62    59   134</elem>
+<elem>    68    69   138</elem>
+<elem>    99    98   149</elem>
+<elem>   102   100   159</elem>
+<elem>    81    78   115</elem>
+<elem>    92    89   148</elem>
+<elem>    89    90   147</elem>
+<elem>   100    99   156</elem>
+<elem>   101   102   162</elem>
+<elem>   111   109   107</elem>
+<elem>   129   127   131</elem>
+<elem>   139   137   140</elem>
+<elem>   151   152   154</elem>
+<elem>   112   110   114</elem>
+<elem>   130   132   128</elem>
+<elem>   119   121   118</elem>
+<elem>   108   105   103</elem>
+<elem>   104   106   116</elem>
+<elem>   123   125   126</elem>
+<elem>   122   124   120</elem>
+<elem>   136   141   134</elem>
+<elem>   135   133   138</elem>
+<elem>   142   143   149</elem>
+<elem>   157   158   159</elem>
+<elem>   113   117   115</elem>
+<elem>   146   150   148</elem>
+<elem>   145   144   147</elem>
+<elem>   153   155   156</elem>
+<elem>   161   160   162</elem>
+	</elems>
+	
+	<elem2edges>
+		<elem2edge>	331    31    32</elem2edge>
+<elem2edge>   286    19    16</elem2edge>
+<elem2edge>   317    28    26</elem2edge>
+<elem2edge>   323    29    28</elem2edge>
+<elem2edge>   332    35    31</elem2edge>
+<elem2edge>   287    16    20</elem2edge>
+<elem2edge>   275    12    15</elem2edge>
+<elem2edge>   271    11    12</elem2edge>
+<elem2edge>   242     5     1</elem2edge>
+<elem2edge>   266    10     9</elem2edge>
+<elem2edge>   362    41    45</elem2edge>
+<elem2edge>   302    21    23</elem2edge>
+<elem2edge>   301    22    21</elem2edge>
+<elem2edge>   305    25    22</elem2edge>
+<elem2edge>   356    40    39</elem2edge>
+<elem2edge>   251     4     5</elem2edge>
+<elem2edge>   311    24    25</elem2edge>
+<elem2edge>   371    45    44</elem2edge>
+<elem2edge>   326    30    29</elem2edge>
+<elem2edge>   401    55    54</elem2edge>
+<elem2edge>   282   123   121</elem2edge>
+<elem2edge>   280   117   115</elem2edge>
+<elem2edge>   296   142   139</elem2edge>
+<elem2edge>   343   186   182</elem2edge>
+<elem2edge>   250    76    73</elem2edge>
+<elem2edge>   369   154   152</elem2edge>
+<elem2edge>   366   130   128</elem2edge>
+<elem2edge>   261    93    91</elem2edge>
+<elem2edge>   259    66    62</elem2edge>
+<elem2edge>   379   108   104</elem2edge>
+<elem2edge>   384   220   218</elem2edge>
+<elem2edge>   372   166   164</elem2edge>
+<elem2edge>   292   135   133</elem2edge>
+<elem2edge>   322   162   158</elem2edge>
+<elem2edge>   400   210   206</elem2edge>
+<elem2edge>   394    90    86</elem2edge>
+<elem2edge>   409   180   176</elem2edge>
+<elem2edge>   310   167   163</elem2edge>
+<elem2edge>   353   192   188</elem2edge>
+<elem2edge>   388   227   223</elem2edge>
+<elem2edge>   249    73    75</elem2edge>
+<elem2edge>   339   146   148</elem2edge>
+<elem2edge>   342   182   184</elem2edge>
+<elem2edge>   352   188   191</elem2edge>
+<elem2edge>   354   200   202</elem2edge>
+<elem2edge>   281   115   118</elem2edge>
+<elem2edge>   262    91    95</elem2edge>
+<elem2edge>   246    67    69</elem2edge>
+<elem2edge>   393    86    89</elem2edge>
+<elem2edge>   397   110   114</elem2edge>
+<elem2edge>   265    97   100</elem2edge>
+<elem2edge>   293   133   136</elem2edge>
+<elem2edge>   321   158   160</elem2edge>
+<elem2edge>   408   176   179</elem2edge>
+<elem2edge>   415   212   216</elem2edge>
+<elem2edge>   349    80    84</elem2edge>
+<elem2edge>   383   170   174</elem2edge>
+<elem2edge>   385   218   222</elem2edge>
+<elem2edge>   412   194   198</elem2edge>
+<elem2edge>   420   236   240</elem2edge>
+<elem2edge>   427    72    70</elem2edge>
+<elem2edge>   446   125   126</elem2edge>
+<elem2edge>   458   149   150</elem2edge>
+<elem2edge>   471   203   204</elem2edge>
+<elem2edge>   431    81    83</elem2edge>
+<elem2edge>   448   132   131</elem2edge>
+<elem2edge>   437   101    99</elem2edge>
+<elem2edge>   421    65    63</elem2edge>
+<elem2edge>   426   111   112</elem2edge>
+<elem2edge>   444   225   226</elem2edge>
+<elem2edge>   440   107   105</elem2edge>
+<elem2edge>   454   156   155</elem2edge>
+<elem2edge>   452   141   143</elem2edge>
+<elem2edge>   462   195   196</elem2edge>
+<elem2edge>   477   237   238</elem2edge>
+<elem2edge>   435   208   207</elem2edge>
+<elem2edge>   468   232   231</elem2edge>
+<elem2edge>   464   171   173</elem2edge>
+<elem2edge>   474   213   214</elem2edge>
+<elem2edge>   479   233   234</elem2edge>
+<elem2edge>   124   336   122</elem2edge>
+<elem2edge>   119   288   116</elem2edge>
+<elem2edge>   144   319   140</elem2edge>
+<elem2edge>   185   325   181</elem2edge>
+<elem2edge>    78   334    74</elem2edge>
+<elem2edge>   153   299   151</elem2edge>
+<elem2edge>   129   284   127</elem2edge>
+<elem2edge>    94   276    92</elem2edge>
+<elem2edge>    64   244    61</elem2edge>
+<elem2edge>   106   268   103</elem2edge>
+<elem2edge>   219   374   217</elem2edge>
+<elem2edge>   165   309   163</elem2edge>
+<elem2edge>   137   303   134</elem2edge>
+<elem2edge>   161   307   157</elem2edge>
+<elem2edge>   209   358   205</elem2edge>
+<elem2edge>    88   255    85</elem2edge>
+<elem2edge>   178   315   175</elem2edge>
+<elem2edge>   168   373   164</elem2edge>
+<elem2edge>   190   328   187</elem2edge>
+<elem2edge>   228   403   224</elem2edge>
+<elem2edge>    11   272    14</elem2edge>
+<elem2edge>    14   278    13</elem2edge>
+<elem2edge>    19   294    18</elem2edge>
+<elem2edge>    35   341    34</elem2edge>
+<elem2edge>     4   248     3</elem2edge>
+<elem2edge>    42   365    43</elem2edge>
+<elem2edge>    41   361    42</elem2edge>
+<elem2edge>     6   256     7</elem2edge>
+<elem2edge>    10   257     6</elem2edge>
+<elem2edge>    49   377    46</elem2edge>
+<elem2edge>    46   376    48</elem2edge>
+<elem2edge>    43   368    44</elem2edge>
+<elem2edge>    18   290    17</elem2edge>
+<elem2edge>    30   320    27</elem2edge>
+<elem2edge>    55   398    53</elem2edge>
+<elem2edge>    53   392    51</elem2edge>
+<elem2edge>    59   407    56</elem2edge>
+<elem2edge>    24   308    23</elem2edge>
+<elem2edge>    40   351    37</elem2edge>
+<elem2edge>    50   386    49</elem2edge>
+<elem2edge>    67   247    70</elem2edge>
+<elem2edge>   122   337   126</elem2edge>
+<elem2edge>   146   340   150</elem2edge>
+<elem2edge>   200   355   204</elem2edge>
+<elem2edge>    80   348    83</elem2edge>
+<elem2edge>   127   285   131</elem2edge>
+<elem2edge>    97   264    99</elem2edge>
+<elem2edge>    61   243    63</elem2edge>
+<elem2edge>   110   396   112</elem2edge>
+<elem2edge>   224   402   226</elem2edge>
+<elem2edge>   103   267   105</elem2edge>
+<elem2edge>   151   300   155</elem2edge>
+<elem2edge>   140   318   143</elem2edge>
+<elem2edge>   194   411   196</elem2edge>
+<elem2edge>   236   419   238</elem2edge>
+<elem2edge>   205   357   207</elem2edge>
+<elem2edge>   229   389   231</elem2edge>
+<elem2edge>   170   382   173</elem2edge>
+<elem2edge>   212   414   214</elem2edge>
+<elem2edge>   230   418   234</elem2edge>
+<elem2edge>    77   428    75</elem2edge>
+<elem2edge>   147   449   148</elem2edge>
+<elem2edge>   183   459   184</elem2edge>
+<elem2edge>   189   470   191</elem2edge>
+<elem2edge>   201   432   202</elem2edge>
+<elem2edge>   120   447   118</elem2edge>
+<elem2edge>    96   436    95</elem2edge>
+<elem2edge>    71   422    69</elem2edge>
+<elem2edge>    87   424    89</elem2edge>
+<elem2edge>   113   443   114</elem2edge>
+<elem2edge>   102   439   100</elem2edge>
+<elem2edge>   138   453   136</elem2edge>
+<elem2edge>   159   455   160</elem2edge>
+<elem2edge>   177   461   179</elem2edge>
+<elem2edge>   215   476   216</elem2edge>
+<elem2edge>    82   433    84</elem2edge>
+<elem2edge>   172   466   174</elem2edge>
+<elem2edge>   221   465   222</elem2edge>
+<elem2edge>   197   473   198</elem2edge>
+<elem2edge>   239   480   240</elem2edge>
+<elem2edge>    77    74   333</elem2edge>
+<elem2edge>   147   145   297</elem2edge>
+<elem2edge>   183   181   324</elem2edge>
+<elem2edge>   189   187   327</elem2edge>
+<elem2edge>   201   199   344</elem2edge>
+<elem2edge>   120   116   289</elem2edge>
+<elem2edge>    96    92   277</elem2edge>
+<elem2edge>    71    68   273</elem2edge>
+<elem2edge>    87    85   254</elem2edge>
+<elem2edge>   113   109   270</elem2edge>
+<elem2edge>   102    98   364</elem2edge>
+<elem2edge>   138   134   304</elem2edge>
+<elem2edge>   159   157   306</elem2edge>
+<elem2edge>   177   175   314</elem2edge>
+<elem2edge>   215   211   360</elem2edge>
+<elem2edge>    82    79   253</elem2edge>
+<elem2edge>   172   169   313</elem2edge>
+<elem2edge>   221   217   375</elem2edge>
+<elem2edge>   197   193   330</elem2edge>
+<elem2edge>   239   235   405</elem2edge>
+<elem2edge>    68    72   274</elem2edge>
+<elem2edge>   121   125   283</elem2edge>
+<elem2edge>   145   149   298</elem2edge>
+<elem2edge>   199   203   345</elem2edge>
+<elem2edge>    79    81   252</elem2edge>
+<elem2edge>   128   132   367</elem2edge>
+<elem2edge>    98   101   363</elem2edge>
+<elem2edge>    62    65   258</elem2edge>
+<elem2edge>   109   111   269</elem2edge>
+<elem2edge>   223   225   387</elem2edge>
+<elem2edge>   104   107   378</elem2edge>
+<elem2edge>   152   156   370</elem2edge>
+<elem2edge>   139   141   295</elem2edge>
+<elem2edge>   193   195   329</elem2edge>
+<elem2edge>   235   237   404</elem2edge>
+<elem2edge>   206   208   399</elem2edge>
+<elem2edge>   230   232   417</elem2edge>
+<elem2edge>   169   171   312</elem2edge>
+<elem2edge>   211   213   359</elem2edge>
+<elem2edge>   229   233   390</elem2edge>
+<elem2edge>     2     3   245</elem2edge>
+<elem2edge>    32    33   335</elem2edge>
+<elem2edge>    33    34   338</elem2edge>
+<elem2edge>    38    37   350</elem2edge>
+<elem2edge>    36    38   346</elem2edge>
+<elem2edge>    15    13   279</elem2edge>
+<elem2edge>     8     7   260</elem2edge>
+<elem2edge>     1     2   241</elem2edge>
+<elem2edge>    52    51   391</elem2edge>
+<elem2edge>    54    52   395</elem2edge>
+<elem2edge>     9     8   263</elem2edge>
+<elem2edge>    20    17   291</elem2edge>
+<elem2edge>    26    27   316</elem2edge>
+<elem2edge>    57    56   406</elem2edge>
+<elem2edge>    60    58   413</elem2edge>
+<elem2edge>    39    36   347</elem2edge>
+<elem2edge>    50    47   381</elem2edge>
+<elem2edge>    47    48   380</elem2edge>
+<elem2edge>    58    57   410</elem2edge>
+<elem2edge>    59    60   416</elem2edge>
+<elem2edge>   124   123   429</elem2edge>
+<elem2edge>   119   117   445</elem2edge>
+<elem2edge>   144   142   457</elem2edge>
+<elem2edge>   185   186   469</elem2edge>
+<elem2edge>    78    76   430</elem2edge>
+<elem2edge>   153   154   450</elem2edge>
+<elem2edge>   129   130   438</elem2edge>
+<elem2edge>    94    93   425</elem2edge>
+<elem2edge>    64    66   423</elem2edge>
+<elem2edge>   106   108   442</elem2edge>
+<elem2edge>   219   220   441</elem2edge>
+<elem2edge>   165   166   456</elem2edge>
+<elem2edge>   137   135   451</elem2edge>
+<elem2edge>   161   162   460</elem2edge>
+<elem2edge>   209   210   475</elem2edge>
+<elem2edge>    88    90   434</elem2edge>
+<elem2edge>   178   180   467</elem2edge>
+<elem2edge>   168   167   463</elem2edge>
+<elem2edge>   190   192   472</elem2edge>
+<elem2edge>   228   227   478</elem2edge>
+<elem2edge>   331   336   333</elem2edge>
+<elem2edge>   286   288   297</elem2edge>
+<elem2edge>   317   319   324</elem2edge>
+<elem2edge>   323   325   327</elem2edge>
+<elem2edge>   332   334   344</elem2edge>
+<elem2edge>   287   299   289</elem2edge>
+<elem2edge>   275   284   277</elem2edge>
+<elem2edge>   271   276   273</elem2edge>
+<elem2edge>   242   244   254</elem2edge>
+<elem2edge>   266   268   270</elem2edge>
+<elem2edge>   362   374   364</elem2edge>
+<elem2edge>   302   309   304</elem2edge>
+<elem2edge>   301   303   306</elem2edge>
+<elem2edge>   305   307   314</elem2edge>
+<elem2edge>   356   358   360</elem2edge>
+<elem2edge>   251   255   253</elem2edge>
+<elem2edge>   311   315   313</elem2edge>
+<elem2edge>   371   373   375</elem2edge>
+<elem2edge>   326   328   330</elem2edge>
+<elem2edge>   401   403   405</elem2edge>
+<elem2edge>   282   272   274</elem2edge>
+<elem2edge>   280   278   283</elem2edge>
+<elem2edge>   296   294   298</elem2edge>
+<elem2edge>   343   341   345</elem2edge>
+<elem2edge>   250   248   252</elem2edge>
+<elem2edge>   369   365   367</elem2edge>
+<elem2edge>   366   361   363</elem2edge>
+<elem2edge>   261   256   258</elem2edge>
+<elem2edge>   259   257   269</elem2edge>
+<elem2edge>   379   377   387</elem2edge>
+<elem2edge>   384   376   378</elem2edge>
+<elem2edge>   372   368   370</elem2edge>
+<elem2edge>   292   290   295</elem2edge>
+<elem2edge>   322   320   329</elem2edge>
+<elem2edge>   400   398   404</elem2edge>
+<elem2edge>   394   392   399</elem2edge>
+<elem2edge>   409   407   417</elem2edge>
+<elem2edge>   310   308   312</elem2edge>
+<elem2edge>   353   351   359</elem2edge>
+<elem2edge>   388   386   390</elem2edge>
+<elem2edge>   249   247   245</elem2edge>
+<elem2edge>   339   337   335</elem2edge>
+<elem2edge>   342   340   338</elem2edge>
+<elem2edge>   352   355   350</elem2edge>
+<elem2edge>   354   348   346</elem2edge>
+<elem2edge>   281   285   279</elem2edge>
+<elem2edge>   262   264   260</elem2edge>
+<elem2edge>   246   243   241</elem2edge>
+<elem2edge>   393   396   391</elem2edge>
+<elem2edge>   397   402   395</elem2edge>
+<elem2edge>   265   267   263</elem2edge>
+<elem2edge>   293   300   291</elem2edge>
+<elem2edge>   321   318   316</elem2edge>
+<elem2edge>   408   411   406</elem2edge>
+<elem2edge>   415   419   413</elem2edge>
+<elem2edge>   349   357   347</elem2edge>
+<elem2edge>   383   389   381</elem2edge>
+<elem2edge>   385   382   380</elem2edge>
+<elem2edge>   412   414   410</elem2edge>
+<elem2edge>   420   418   416</elem2edge>
+<elem2edge>   427   428   429</elem2edge>
+<elem2edge>   446   449   445</elem2edge>
+<elem2edge>   458   459   457</elem2edge>
+<elem2edge>   471   470   469</elem2edge>
+<elem2edge>   431   432   430</elem2edge>
+<elem2edge>   448   447   450</elem2edge>
+<elem2edge>   437   436   438</elem2edge>
+<elem2edge>   421   422   425</elem2edge>
+<elem2edge>   426   424   423</elem2edge>
+<elem2edge>   444   443   442</elem2edge>
+<elem2edge>   440   439   441</elem2edge>
+<elem2edge>   454   453   456</elem2edge>
+<elem2edge>   452   455   451</elem2edge>
+<elem2edge>   462   461   460</elem2edge>
+<elem2edge>   477   476   475</elem2edge>
+<elem2edge>   435   433   434</elem2edge>
+<elem2edge>   468   466   467</elem2edge>
+<elem2edge>   464   465   463</elem2edge>
+<elem2edge>   474   473   472</elem2edge>
+<elem2edge>   479   480   478</elem2edge>
+
+	</elem2edges>
+	
+	<edge2elems>
+		<edge2elem>	9   208</edge2elem>
+<edge2elem>   208   201</edge2elem>
+<edge2elem>   105   201</edge2elem>
+<edge2elem>    16   105</edge2elem>
+<edge2elem>    16     9</edge2elem>
+<edge2elem>   109   108</edge2elem>
+<edge2elem>   108   207</edge2elem>
+<edge2elem>   211   207</edge2elem>
+<edge2elem>    10   211</edge2elem>
+<edge2elem>    10   109</edge2elem>
+<edge2elem>     8   101</edge2elem>
+<edge2elem>     8     7</edge2elem>
+<edge2elem>   102   206</edge2elem>
+<edge2elem>   101   102</edge2elem>
+<edge2elem>     7   206</edge2elem>
+<edge2elem>     2     6</edge2elem>
+<edge2elem>   113   212</edge2elem>
+<edge2elem>   103   113</edge2elem>
+<edge2elem>     2   103</edge2elem>
+<edge2elem>     6   212</edge2elem>
+<edge2elem>    13    12</edge2elem>
+<edge2elem>    14    13</edge2elem>
+<edge2elem>   118    12</edge2elem>
+<edge2elem>    17   118</edge2elem>
+<edge2elem>    17    14</edge2elem>
+<edge2elem>     3   213</edge2elem>
+<edge2elem>   114   213</edge2elem>
+<edge2elem>     4     3</edge2elem>
+<edge2elem>    19     4</edge2elem>
+<edge2elem>    19   114</edge2elem>
+<edge2elem>     5     1</edge2elem>
+<edge2elem>     1   202</edge2elem>
+<edge2elem>   202   203</edge2elem>
+<edge2elem>   104   203</edge2elem>
+<edge2elem>     5   104</edge2elem>
+<edge2elem>   216   205</edge2elem>
+<edge2elem>   119   204</edge2elem>
+<edge2elem>   205   204</edge2elem>
+<edge2elem>    15   216</edge2elem>
+<edge2elem>    15   119</edge2elem>
+<edge2elem>    11   107</edge2elem>
+<edge2elem>   107   106</edge2elem>
+<edge2elem>   106   112</edge2elem>
+<edge2elem>   112    18</edge2elem>
+<edge2elem>    11    18</edge2elem>
+<edge2elem>   110   111</edge2elem>
+<edge2elem>   217   218</edge2elem>
+<edge2elem>   111   218</edge2elem>
+<edge2elem>   120   110</edge2elem>
+<edge2elem>   217   120</edge2elem>
+<edge2elem>   116   209</edge2elem>
+<edge2elem>   210   209</edge2elem>
+<edge2elem>   115   116</edge2elem>
+<edge2elem>    20   210</edge2elem>
+<edge2elem>    20   115</edge2elem>
+<edge2elem>   117   214</edge2elem>
+<edge2elem>   219   214</edge2elem>
+<edge2elem>   215   219</edge2elem>
+<edge2elem>   220   117</edge2elem>
+<edge2elem>   220   215</edge2elem>
+<edge2elem>    89   128</edge2elem>
+<edge2elem>    29   188</edge2elem>
+<edge2elem>   128    68</edge2elem>
+<edge2elem>   229    89</edge2elem>
+<edge2elem>   188    68</edge2elem>
+<edge2elem>   229    29</edge2elem>
+<edge2elem>    48   121</edge2elem>
+<edge2elem>   168   181</edge2elem>
+<edge2elem>   148    48</edge2elem>
+<edge2elem>   121    61</edge2elem>
+<edge2elem>   168   148</edge2elem>
+<edge2elem>   181    61</edge2elem>
+<edge2elem>    25    41</edge2elem>
+<edge2elem>    85   161</edge2elem>
+<edge2elem>   141    41</edge2elem>
+<edge2elem>   225    25</edge2elem>
+<edge2elem>   161   141</edge2elem>
+<edge2elem>   225    85</edge2elem>
+<edge2elem>   176   185</edge2elem>
+<edge2elem>    56   125</edge2elem>
+<edge2elem>   185    65</edge2elem>
+<edge2elem>   176   156</edge2elem>
+<edge2elem>   125    65</edge2elem>
+<edge2elem>   156    56</edge2elem>
+<edge2elem>    96   169</edge2elem>
+<edge2elem>    36    49</edge2elem>
+<edge2elem>   169   149</edge2elem>
+<edge2elem>   236    96</edge2elem>
+<edge2elem>   149    49</edge2elem>
+<edge2elem>   236    36</edge2elem>
+<edge2elem>    28    47</edge2elem>
+<edge2elem>    88   167</edge2elem>
+<edge2elem>   228    28</edge2elem>
+<edge2elem>   228    88</edge2elem>
+<edge2elem>   147    47</edge2elem>
+<edge2elem>   167   147</edge2elem>
+<edge2elem>    51   127</edge2elem>
+<edge2elem>   171   187</edge2elem>
+<edge2elem>   127    67</edge2elem>
+<edge2elem>   151    51</edge2elem>
+<edge2elem>   187    67</edge2elem>
+<edge2elem>   171   151</edge2elem>
+<edge2elem>    90   131</edge2elem>
+<edge2elem>    30   191</edge2elem>
+<edge2elem>   131    71</edge2elem>
+<edge2elem>   230    90</edge2elem>
+<edge2elem>   191    71</edge2elem>
+<edge2elem>   230    30</edge2elem>
+<edge2elem>   170   189</edge2elem>
+<edge2elem>    50   129</edge2elem>
+<edge2elem>   189    69</edge2elem>
+<edge2elem>   129    69</edge2elem>
+<edge2elem>   170   150</edge2elem>
+<edge2elem>   150    50</edge2elem>
+<edge2elem>    22    46</edge2elem>
+<edge2elem>    82   166</edge2elem>
+<edge2elem>   222    22</edge2elem>
+<edge2elem>   146    46</edge2elem>
+<edge2elem>   222    82</edge2elem>
+<edge2elem>   166   146</edge2elem>
+<edge2elem>    21   182</edge2elem>
+<edge2elem>    81   122</edge2elem>
+<edge2elem>   221    21</edge2elem>
+<edge2elem>   221    81</edge2elem>
+<edge2elem>   182    62</edge2elem>
+<edge2elem>   122    62</edge2elem>
+<edge2elem>    87   126</edge2elem>
+<edge2elem>    27   186</edge2elem>
+<edge2elem>   227    87</edge2elem>
+<edge2elem>   227    27</edge2elem>
+<edge2elem>   126    66</edge2elem>
+<edge2elem>   186    66</edge2elem>
+<edge2elem>    33    52</edge2elem>
+<edge2elem>    93   172</edge2elem>
+<edge2elem>   233    33</edge2elem>
+<edge2elem>   152    52</edge2elem>
+<edge2elem>   233    93</edge2elem>
+<edge2elem>   172   152</edge2elem>
+<edge2elem>    23   193</edge2elem>
+<edge2elem>    83   133</edge2elem>
+<edge2elem>   193    73</edge2elem>
+<edge2elem>   223    23</edge2elem>
+<edge2elem>   133    73</edge2elem>
+<edge2elem>   223    83</edge2elem>
+<edge2elem>   162   183</edge2elem>
+<edge2elem>    42   123</edge2elem>
+<edge2elem>   162   142</edge2elem>
+<edge2elem>   142    42</edge2elem>
+<edge2elem>   183    63</edge2elem>
+<edge2elem>   123    63</edge2elem>
+<edge2elem>    86   132</edge2elem>
+<edge2elem>    26   192</edge2elem>
+<edge2elem>   226    86</edge2elem>
+<edge2elem>   226    26</edge2elem>
+<edge2elem>   132    72</edge2elem>
+<edge2elem>   192    72</edge2elem>
+<edge2elem>    94   173</edge2elem>
+<edge2elem>    34    53</edge2elem>
+<edge2elem>   173   153</edge2elem>
+<edge2elem>   153    53</edge2elem>
+<edge2elem>   234    94</edge2elem>
+<edge2elem>   234    34</edge2elem>
+<edge2elem>    92    38</edge2elem>
+<edge2elem>    98    32</edge2elem>
+<edge2elem>   232    92</edge2elem>
+<edge2elem>   232    32</edge2elem>
+<edge2elem>   238    38</edge2elem>
+<edge2elem>   238    98</edge2elem>
+<edge2elem>   177   198</edge2elem>
+<edge2elem>    57   138</edge2elem>
+<edge2elem>   198    78</edge2elem>
+<edge2elem>   177   157</edge2elem>
+<edge2elem>   138    78</edge2elem>
+<edge2elem>   157    57</edge2elem>
+<edge2elem>    97   174</edge2elem>
+<edge2elem>    37    54</edge2elem>
+<edge2elem>   174   154</edge2elem>
+<edge2elem>   237    97</edge2elem>
+<edge2elem>   154    54</edge2elem>
+<edge2elem>   237    37</edge2elem>
+<edge2elem>    84   163</edge2elem>
+<edge2elem>    24    43</edge2elem>
+<edge2elem>   163   143</edge2elem>
+<edge2elem>   143    43</edge2elem>
+<edge2elem>   224    84</edge2elem>
+<edge2elem>   224    24</edge2elem>
+<edge2elem>    99   164</edge2elem>
+<edge2elem>    39    44</edge2elem>
+<edge2elem>   164   144</edge2elem>
+<edge2elem>   239    99</edge2elem>
+<edge2elem>   144    44</edge2elem>
+<edge2elem>   239    39</edge2elem>
+<edge2elem>   179   194</edge2elem>
+<edge2elem>    59   134</edge2elem>
+<edge2elem>   194    74</edge2elem>
+<edge2elem>   134    74</edge2elem>
+<edge2elem>   179   159</edge2elem>
+<edge2elem>   159    59</edge2elem>
+<edge2elem>   165   184</edge2elem>
+<edge2elem>    45   124</edge2elem>
+<edge2elem>   165   145</edge2elem>
+<edge2elem>   145    45</edge2elem>
+<edge2elem>   184    64</edge2elem>
+<edge2elem>   124    64</edge2elem>
+<edge2elem>    95   136</edge2elem>
+<edge2elem>    35   196</edge2elem>
+<edge2elem>   136    76</edge2elem>
+<edge2elem>   196    76</edge2elem>
+<edge2elem>   235    95</edge2elem>
+<edge2elem>   235    35</edge2elem>
+<edge2elem>   175   199</edge2elem>
+<edge2elem>    55   139</edge2elem>
+<edge2elem>   199    79</edge2elem>
+<edge2elem>   139    79</edge2elem>
+<edge2elem>   175   155</edge2elem>
+<edge2elem>   155    55</edge2elem>
+<edge2elem>    91   178</edge2elem>
+<edge2elem>    31    58</edge2elem>
+<edge2elem>   231    91</edge2elem>
+<edge2elem>   231    31</edge2elem>
+<edge2elem>   178   158</edge2elem>
+<edge2elem>   158    58</edge2elem>
+<edge2elem>    40   190</edge2elem>
+<edge2elem>   100   130</edge2elem>
+<edge2elem>   190    70</edge2elem>
+<edge2elem>   130    70</edge2elem>
+<edge2elem>   240    40</edge2elem>
+<edge2elem>   240   100</edge2elem>
+<edge2elem>   200   137</edge2elem>
+<edge2elem>   197   140</edge2elem>
+<edge2elem>   137    77</edge2elem>
+<edge2elem>   197    77</edge2elem>
+<edge2elem>   200    80</edge2elem>
+<edge2elem>   140    80</edge2elem>
+<edge2elem>   180   195</edge2elem>
+<edge2elem>    60   135</edge2elem>
+<edge2elem>   195    75</edge2elem>
+<edge2elem>   135    75</edge2elem>
+<edge2elem>   180   160</edge2elem>
+<edge2elem>   160    60</edge2elem>
+<edge2elem>   288   208</edge2elem>
+<edge2elem>   249     9</edge2elem>
+<edge2elem>   288   128</edge2elem>
+<edge2elem>   249    89</edge2elem>
+<edge2elem>   281   201</edge2elem>
+<edge2elem>   288    48</edge2elem>
+<edge2elem>   281   121</edge2elem>
+<edge2elem>   265   105</edge2elem>
+<edge2elem>   281    41</edge2elem>
+<edge2elem>   265    25</edge2elem>
+<edge2elem>   256    16</edge2elem>
+<edge2elem>   265   185</edge2elem>
+<edge2elem>   256   176</edge2elem>
+<edge2elem>   249   169</edge2elem>
+<edge2elem>   256    96</edge2elem>
+<edge2elem>   268   108</edge2elem>
+<edge2elem>   269   109</edge2elem>
+<edge2elem>   268   188</edge2elem>
+<edge2elem>   269    29</edge2elem>
+<edge2elem>   287   207</edge2elem>
+<edge2elem>   268    28</edge2elem>
+<edge2elem>   287    47</edge2elem>
+<edge2elem>   291   211</edge2elem>
+<edge2elem>   287   127</edge2elem>
+<edge2elem>   291    51</edge2elem>
+<edge2elem>   250    10</edge2elem>
+<edge2elem>   291   131</edge2elem>
+<edge2elem>   250    90</edge2elem>
+<edge2elem>   269   189</edge2elem>
+<edge2elem>   250   170</edge2elem>
+<edge2elem>   248     8</edge2elem>
+<edge2elem>   261   101</edge2elem>
+<edge2elem>   248   168</edge2elem>
+<edge2elem>   261   181</edge2elem>
+<edge2elem>   247     7</edge2elem>
+<edge2elem>   248    88</edge2elem>
+<edge2elem>   247   167</edge2elem>
+<edge2elem>   262   102</edge2elem>
+<edge2elem>   286   206</edge2elem>
+<edge2elem>   262    22</edge2elem>
+<edge2elem>   286    46</edge2elem>
+<edge2elem>   261    21</edge2elem>
+<edge2elem>   262   182</edge2elem>
+<edge2elem>   247    87</edge2elem>
+<edge2elem>   286   126</edge2elem>
+<edge2elem>   242     2</edge2elem>
+<edge2elem>   246     6</edge2elem>
+<edge2elem>   242    82</edge2elem>
+<edge2elem>   246   166</edge2elem>
+<edge2elem>   273   113</edge2elem>
+<edge2elem>   292   212</edge2elem>
+<edge2elem>   273    33</edge2elem>
+<edge2elem>   292    52</edge2elem>
+<edge2elem>   263   103</edge2elem>
+<edge2elem>   273   193</edge2elem>
+<edge2elem>   263    23</edge2elem>
+<edge2elem>   242   162</edge2elem>
+<edge2elem>   263   183</edge2elem>
+<edge2elem>   246    86</edge2elem>
+<edge2elem>   292   132</edge2elem>
+<edge2elem>   253    13</edge2elem>
+<edge2elem>   252    12</edge2elem>
+<edge2elem>   253    93</edge2elem>
+<edge2elem>   252   172</edge2elem>
+<edge2elem>   254    14</edge2elem>
+<edge2elem>   253   173</edge2elem>
+<edge2elem>   254    94</edge2elem>
+<edge2elem>   278   118</edge2elem>
+<edge2elem>   252    92</edge2elem>
+<edge2elem>   278    38</edge2elem>
+<edge2elem>   257    17</edge2elem>
+<edge2elem>   278   198</edge2elem>
+<edge2elem>   257   177</edge2elem>
+<edge2elem>   254   174</edge2elem>
+<edge2elem>   257    97</edge2elem>
+<edge2elem>   293   213</edge2elem>
+<edge2elem>   243     3</edge2elem>
+<edge2elem>   293   133</edge2elem>
+<edge2elem>   243    83</edge2elem>
+<edge2elem>   274   114</edge2elem>
+<edge2elem>   293    53</edge2elem>
+<edge2elem>   274    34</edge2elem>
+<edge2elem>   244     4</edge2elem>
+<edge2elem>   243   163</edge2elem>
+<edge2elem>   244    84</edge2elem>
+<edge2elem>   259    19</edge2elem>
+<edge2elem>   244   164</edge2elem>
+<edge2elem>   259    99</edge2elem>
+<edge2elem>   274   194</edge2elem>
+<edge2elem>   259   179</edge2elem>
+<edge2elem>   241     1</edge2elem>
+<edge2elem>   245     5</edge2elem>
+<edge2elem>   241   161</edge2elem>
+<edge2elem>   245    85</edge2elem>
+<edge2elem>   282   202</edge2elem>
+<edge2elem>   241    81</edge2elem>
+<edge2elem>   282   122</edge2elem>
+<edge2elem>   283   203</edge2elem>
+<edge2elem>   282    42</edge2elem>
+<edge2elem>   283   123</edge2elem>
+<edge2elem>   264   104</edge2elem>
+<edge2elem>   283    43</edge2elem>
+<edge2elem>   264    24</edge2elem>
+<edge2elem>   245   165</edge2elem>
+<edge2elem>   264   184</edge2elem>
+<edge2elem>   285   205</edge2elem>
+<edge2elem>   296   216</edge2elem>
+<edge2elem>   285   125</edge2elem>
+<edge2elem>   296    56</edge2elem>
+<edge2elem>   284   204</edge2elem>
+<edge2elem>   279   119</edge2elem>
+<edge2elem>   284    44</edge2elem>
+<edge2elem>   279    39</edge2elem>
+<edge2elem>   285    45</edge2elem>
+<edge2elem>   284   124</edge2elem>
+<edge2elem>   255    15</edge2elem>
+<edge2elem>   296   136</edge2elem>
+<edge2elem>   255    95</edge2elem>
+<edge2elem>   279   199</edge2elem>
+<edge2elem>   255   175</edge2elem>
+<edge2elem>   267   107</edge2elem>
+<edge2elem>   251    11</edge2elem>
+<edge2elem>   267   187</edge2elem>
+<edge2elem>   251   171</edge2elem>
+<edge2elem>   266   106</edge2elem>
+<edge2elem>   267    27</edge2elem>
+<edge2elem>   266   186</edge2elem>
+<edge2elem>   272   112</edge2elem>
+<edge2elem>   266    26</edge2elem>
+<edge2elem>   272   192</edge2elem>
+<edge2elem>   258    18</edge2elem>
+<edge2elem>   272    32</edge2elem>
+<edge2elem>   258    98</edge2elem>
+<edge2elem>   251    91</edge2elem>
+<edge2elem>   258   178</edge2elem>
+<edge2elem>   271   111</edge2elem>
+<edge2elem>   270   110</edge2elem>
+<edge2elem>   271   191</edge2elem>
+<edge2elem>   270    30</edge2elem>
+<edge2elem>   298   218</edge2elem>
+<edge2elem>   297   217</edge2elem>
+<edge2elem>   298   138</edge2elem>
+<edge2elem>   297    57</edge2elem>
+<edge2elem>   271    31</edge2elem>
+<edge2elem>   298    58</edge2elem>
+<edge2elem>   280   120</edge2elem>
+<edge2elem>   270   190</edge2elem>
+<edge2elem>   280    40</edge2elem>
+<edge2elem>   297   137</edge2elem>
+<edge2elem>   280   200</edge2elem>
+<edge2elem>   289   209</edge2elem>
+<edge2elem>   276   116</edge2elem>
+<edge2elem>   289    49</edge2elem>
+<edge2elem>   276    36</edge2elem>
+<edge2elem>   290   210</edge2elem>
+<edge2elem>   289   129</edge2elem>
+<edge2elem>   290    50</edge2elem>
+<edge2elem>   275   115</edge2elem>
+<edge2elem>   276   196</edge2elem>
+<edge2elem>   275    35</edge2elem>
+<edge2elem>   260    20</edge2elem>
+<edge2elem>   290   130</edge2elem>
+<edge2elem>   260   100</edge2elem>
+<edge2elem>   275   195</edge2elem>
+<edge2elem>   260   180</edge2elem>
+<edge2elem>   294   214</edge2elem>
+<edge2elem>   277   117</edge2elem>
+<edge2elem>   294    54</edge2elem>
+<edge2elem>   277    37</edge2elem>
+<edge2elem>   299   219</edge2elem>
+<edge2elem>   294   134</edge2elem>
+<edge2elem>   299    59</edge2elem>
+<edge2elem>   295   215</edge2elem>
+<edge2elem>   299   139</edge2elem>
+<edge2elem>   295    55</edge2elem>
+<edge2elem>   300   220</edge2elem>
+<edge2elem>   277   197</edge2elem>
+<edge2elem>   300   140</edge2elem>
+<edge2elem>   295   135</edge2elem>
+<edge2elem>   300    60</edge2elem>
+<edge2elem>   308    68</edge2elem>
+<edge2elem>   308   148</edge2elem>
+<edge2elem>   309   229</edge2elem>
+<edge2elem>   309   149</edge2elem>
+<edge2elem>   308   228</edge2elem>
+<edge2elem>   309    69</edge2elem>
+<edge2elem>   301    61</edge2elem>
+<edge2elem>   301   141</edge2elem>
+<edge2elem>   301   221</edge2elem>
+<edge2elem>   305   225</edge2elem>
+<edge2elem>   305    65</edge2elem>
+<edge2elem>   305   145</edge2elem>
+<edge2elem>   316   156</edge2elem>
+<edge2elem>   316   236</edge2elem>
+<edge2elem>   316    76</edge2elem>
+<edge2elem>   307   147</edge2elem>
+<edge2elem>   307    67</edge2elem>
+<edge2elem>   307   227</edge2elem>
+<edge2elem>   311   151</edge2elem>
+<edge2elem>   311    71</edge2elem>
+<edge2elem>   311   231</edge2elem>
+<edge2elem>   310   230</edge2elem>
+<edge2elem>   310   150</edge2elem>
+<edge2elem>   310    70</edge2elem>
+<edge2elem>   302   222</edge2elem>
+<edge2elem>   302    62</edge2elem>
+<edge2elem>   306   146</edge2elem>
+<edge2elem>   306    66</edge2elem>
+<edge2elem>   302   142</edge2elem>
+<edge2elem>   306   226</edge2elem>
+<edge2elem>   313   233</edge2elem>
+<edge2elem>   313    73</edge2elem>
+<edge2elem>   312   152</edge2elem>
+<edge2elem>   312    72</edge2elem>
+<edge2elem>   313   153</edge2elem>
+<edge2elem>   312   232</edge2elem>
+<edge2elem>   303   223</edge2elem>
+<edge2elem>   303    63</edge2elem>
+<edge2elem>   303   143</edge2elem>
+<edge2elem>   314   234</edge2elem>
+<edge2elem>   314   154</edge2elem>
+<edge2elem>   314    74</edge2elem>
+<edge2elem>   318   238</edge2elem>
+<edge2elem>   318    78</edge2elem>
+<edge2elem>   318   158</edge2elem>
+<edge2elem>   317   157</edge2elem>
+<edge2elem>   317   237</edge2elem>
+<edge2elem>   317    77</edge2elem>
+<edge2elem>   304   224</edge2elem>
+<edge2elem>   304   144</edge2elem>
+<edge2elem>   304    64</edge2elem>
+<edge2elem>   319   239</edge2elem>
+<edge2elem>   319   159</edge2elem>
+<edge2elem>   319    79</edge2elem>
+<edge2elem>   315   235</edge2elem>
+<edge2elem>   315   155</edge2elem>
+<edge2elem>   315    75</edge2elem>
+<edge2elem>   320   240</edge2elem>
+<edge2elem>   320    80</edge2elem>
+<edge2elem>   320   160</edge2elem>
+
+
+	</edge2elems>
+	
+	
+    <fixed>
+    </fixed>
+</data>

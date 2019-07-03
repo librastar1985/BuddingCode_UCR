@@ -79,7 +79,7 @@ struct LJSpringFunctor_LJ {
         double forceY=0.0;
         double forceZ=0.0;
         double energy = 0.0;
-        if (R < Rmin && R != 0.0) {
+        if (R < Rcutoff && R != 0.0) {
             
             double magnitude = 2*epsilon_rep1*
                                     (1-exp(-epsilon_rep2*(R-Rmin)))*
@@ -100,9 +100,9 @@ struct LJSpringFunctor_LJ {
            //                 4.0 * pow(Rmin, 2.0) * (LJLocZ - zLoc)/pow(R, 4.0) );
 
             //WARNING: since this function modifies nodeForceX etc, you cannot rewrite entries. 
-            LJforceXAddr[id] += forceX;
-            LJforceYAddr[id] += forceY;
-            LJforceZAddr[id] += forceZ;
+            //LJforceXAddr[id] += forceX;
+            //LJforceYAddr[id] += forceY;
+            //LJforceZAddr[id] += forceZ;
             //energy = epsilon + epsilon * (pow( Rmin/R, 12.0 ) - 2.0 * pow( Rmin / R, 6.0));//force positivity
             energy = epsilon_rep1 * (1-exp(-epsilon_rep2*(R - Rmin))) * (1-exp(-epsilon_rep2*(R - Rmin)));
         }

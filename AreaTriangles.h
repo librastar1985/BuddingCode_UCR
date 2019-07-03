@@ -53,99 +53,111 @@ struct AreaSpringFunctor {
 		int counter = thrust::get<0>(u4);
 		int place = 3 * counter;//represents location in write to vector.
 
-        double what_spring_constant;
-        if (triangles_in_upperhem[counter] == 1){
-            what_spring_constant = spring_constant_weak;
-        }
-        else{
-            what_spring_constant = spring_constant;
-        }
-
         int id_i = thrust::get<1>(u4);
         int id_j = thrust::get<2>(u4);
         int id_k = thrust::get<3>(u4);
-
-		
-		CVec3 ri = thrust::make_tuple<double>(locXAddr[id_i], locYAddr[id_i], locZAddr[id_i]);
-		CVec3 rj = thrust::make_tuple<double>(locXAddr[id_j], locYAddr[id_j], locZAddr[id_j]);
-		CVec3 rk = thrust::make_tuple<double>(locXAddr[id_k], locYAddr[id_k], locZAddr[id_k]);
-
-		CVec3 rkj = CVec3_subtract(rk, rj);
-		CVec3 rij = CVec3_subtract(ri, rj);
-
-        double area_current = sqrt( CVec3_dot( CVec3_cross(rkj, rij), CVec3_cross(rkj, rij) ) )/2;
-
-        //computes derivative wrt to area
-        CVec3 A = CVec3_cross(rkj, rij);//rkj must come first
-        double A1 = thrust::get<0>(A);
-        double A2 = thrust::get<1>(A);
-        double A3 = thrust::get<2>(A);
         
-        CVec3 A1Rj = thrust::make_tuple<double>(
-            0.0, -thrust::get<2>(rij) + thrust::get<2>(rkj), -thrust::get<1>(rkj) + thrust::get<1>(rij));
-            //[0, -Rij(3)+Rkj(3), -Rkj(2)+Rij(2)];
-        CVec3 A2Rj = thrust::make_tuple<double>(    
-            thrust::get<2>(rij) - thrust::get<2>(rkj), 0.0, thrust::get<0>(rkj) - thrust::get<0>(rij));
-            //[Rij(3)-Rkj(3), 0, Rkj(1)-Rij(1)];
-        CVec3 A3Rj = thrust::make_tuple<double>(
-            -thrust::get<1>(rij) + thrust::get<1>(rkj), -thrust::get<0>(rkj) + thrust::get<0>(rij), 0.0);
-            //[-Rij(2)+Rkj(2), -Rkj(1)+Rij(1), 0];
-
-        CVec3 A1Rk = thrust::make_tuple<double>(
-            0.0, thrust::get<2>(rij), -thrust::get<1>(rij));
-            //[0, Rij(3), -Rij(2)];
-        //Derivative of A1 with respect to [Rkx, Rky, Rkz].
-        CVec3 A2Rk = thrust::make_tuple<double>(
-            -thrust::get<2>(rij), 0.0, thrust::get<0>(rij));
-            //[-Rij(3), 0, Rij(1)];
-        CVec3 A3Rk = thrust::make_tuple<double>(
-            thrust::get<1>(rij), -thrust::get<0>(rij), 0.0);
-            //[Rij(2), -Rij(1), 0];
-        CVec3 A1Ri = thrust::make_tuple<double>(
-            0.0, -thrust::get<2>(rkj), thrust::get<1>(rkj));
-            //[0, -Rkj(3), Rkj(2)];
-        CVec3 A2Ri = thrust::make_tuple<double>(
-            thrust::get<2>(rkj), 0.0, -thrust::get<0>(rkj));
-            //[Rkj(3), 0, -Rkj(1)];
-        CVec3 A3Ri = thrust::make_tuple<double>(
-            -thrust::get<1>(rkj), thrust::get<0>(rkj), 0.0);
-            //[-Rkj(2), Rkj(1), 0];
-    
-        double magnitude = -((what_spring_constant) * (area_current - area_0)/area_0) / (2 * area_current) ;
-        CVec3 rj_force = CVec3_scalermult(magnitude, CVec3_plus( 
-            CVec3_scalermult(A1, A1Rj), CVec3_scalermult(A2, A2Rj), CVec3_scalermult(A3, A3Rj)));
-            // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(1) + A2*A2Rj(1) + A3*A3Rj(1))/(2*AREA(i));
-            // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(2) + A2*A2Rj(2) + A3*A3Rj(2))/(2*AREA(i));
-            // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(3) + A2*A2Rj(3) + A3*A3Rj(3))/(2*AREA(i));
+        if (id_i != INT_MAX && id_j != INT_MAX && id_k != INT_MAX){
             
-        CVec3 rk_force = CVec3_scalermult(magnitude, CVec3_plus( 
-            CVec3_scalermult(A1, A1Rk), CVec3_scalermult(A2, A2Rk), CVec3_scalermult(A3, A3Rk)));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(1) + A2*A2Rk(1) + A3*A3Rk(1))/(2*AREA(i));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(2) + A2*A2Rk(2) + A3*A3Rk(2))/(2*AREA(i));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(3) + A2*A2Rk(3) + A3*A3Rk(3))/(2*AREA(i));
+            double what_spring_constant;
+            if (triangles_in_upperhem[counter] == 1){
+                what_spring_constant = spring_constant_weak;
+            }
+            else if (triangles_in_upperhem[counter] == 0){
+                what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+            }
+            else{
+                what_spring_constant = spring_constant;
+            }
 
-        CVec3 ri_force = CVec3_scalermult(magnitude, CVec3_plus( 
-            CVec3_scalermult(A1, A1Ri), CVec3_scalermult(A2, A2Ri), CVec3_scalermult(A3, A3Ri)));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(1) + A2*A2Ri(1) + A3*A3Ri(1))/(2*AREA(i));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(2) + A2*A2Ri(2) + A3*A3Ri(2))/(2*AREA(i));
-            //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(3) + A2*A2Ri(3) + A3*A3Ri(3))/(2*AREA(i));
-        idKey[place] = id_i;
-		forceXAddr[place] = thrust::get<0>( ri_force );
-		forceYAddr[place] = thrust::get<1>( ri_force );
-		forceZAddr[place] = thrust::get<2>( ri_force );
+        
 
-		idKey[place+1] = id_j;
-		forceXAddr[place+1] = thrust::get<0>( rj_force );
-		forceYAddr[place+1] = thrust::get<1>( rj_force );
-		forceZAddr[place+1] = thrust::get<2>( rj_force );
-		
-		idKey[place+2] = id_k;
-		forceXAddr[place+2] = thrust::get<0>( rk_force );
-		forceYAddr[place+2] = thrust::get<1>( rk_force );
-		forceZAddr[place+2] = thrust::get<2>( rk_force );
+            
+            CVec3 ri = thrust::make_tuple<double>(locXAddr[id_i], locYAddr[id_i], locZAddr[id_i]);
+            CVec3 rj = thrust::make_tuple<double>(locXAddr[id_j], locYAddr[id_j], locZAddr[id_j]);
+            CVec3 rk = thrust::make_tuple<double>(locXAddr[id_k], locYAddr[id_k], locZAddr[id_k]);
 
-        double energy =  what_spring_constant/(2.0) * (area_current - area_0) * (area_current - area_0) / area_0;
-        return energy;
+            CVec3 rkj = CVec3_subtract(rk, rj);
+            CVec3 rij = CVec3_subtract(ri, rj);
+
+            double area_current = sqrt( CVec3_dot( CVec3_cross(rkj, rij), CVec3_cross(rkj, rij) ) )/2;
+
+            //computes derivative wrt to area
+            CVec3 A = CVec3_cross(rkj, rij);//rkj must come first
+            double A1 = thrust::get<0>(A);
+            double A2 = thrust::get<1>(A);
+            double A3 = thrust::get<2>(A);
+            
+            CVec3 A1Rj = thrust::make_tuple<double>(
+                0.0, -thrust::get<2>(rij) + thrust::get<2>(rkj), -thrust::get<1>(rkj) + thrust::get<1>(rij));
+                //[0, -Rij(3)+Rkj(3), -Rkj(2)+Rij(2)];
+            CVec3 A2Rj = thrust::make_tuple<double>(    
+                thrust::get<2>(rij) - thrust::get<2>(rkj), 0.0, thrust::get<0>(rkj) - thrust::get<0>(rij));
+                //[Rij(3)-Rkj(3), 0, Rkj(1)-Rij(1)];
+            CVec3 A3Rj = thrust::make_tuple<double>(
+                -thrust::get<1>(rij) + thrust::get<1>(rkj), -thrust::get<0>(rkj) + thrust::get<0>(rij), 0.0);
+                //[-Rij(2)+Rkj(2), -Rkj(1)+Rij(1), 0];
+
+            CVec3 A1Rk = thrust::make_tuple<double>(
+                0.0, thrust::get<2>(rij), -thrust::get<1>(rij));
+                //[0, Rij(3), -Rij(2)];
+            //Derivative of A1 with respect to [Rkx, Rky, Rkz].
+            CVec3 A2Rk = thrust::make_tuple<double>(
+                -thrust::get<2>(rij), 0.0, thrust::get<0>(rij));
+                //[-Rij(3), 0, Rij(1)];
+            CVec3 A3Rk = thrust::make_tuple<double>(
+                thrust::get<1>(rij), -thrust::get<0>(rij), 0.0);
+                //[Rij(2), -Rij(1), 0];
+            CVec3 A1Ri = thrust::make_tuple<double>(
+                0.0, -thrust::get<2>(rkj), thrust::get<1>(rkj));
+                //[0, -Rkj(3), Rkj(2)];
+            CVec3 A2Ri = thrust::make_tuple<double>(
+                thrust::get<2>(rkj), 0.0, -thrust::get<0>(rkj));
+                //[Rkj(3), 0, -Rkj(1)];
+            CVec3 A3Ri = thrust::make_tuple<double>(
+                -thrust::get<1>(rkj), thrust::get<0>(rkj), 0.0);
+                //[-Rkj(2), Rkj(1), 0];
+        
+            double magnitude = -((what_spring_constant) * (area_current - area_0)/area_0) / (2.0 * area_current) ;
+            CVec3 rj_force = CVec3_scalermult(magnitude, CVec3_plus( 
+                CVec3_scalermult(A1, A1Rj), CVec3_scalermult(A2, A2Rj), CVec3_scalermult(A3, A3Rj)));
+                // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(1) + A2*A2Rj(1) + A3*A3Rj(1))/(2*AREA(i));
+                // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(2) + A2*A2Rj(2) + A3*A3Rj(2))/(2*AREA(i));
+                // -(k/A0)*(AREA(i)-A0) * (A1*A1Rj(3) + A2*A2Rj(3) + A3*A3Rj(3))/(2*AREA(i));
+                
+            CVec3 rk_force = CVec3_scalermult(magnitude, CVec3_plus( 
+                CVec3_scalermult(A1, A1Rk), CVec3_scalermult(A2, A2Rk), CVec3_scalermult(A3, A3Rk)));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(1) + A2*A2Rk(1) + A3*A3Rk(1))/(2*AREA(i));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(2) + A2*A2Rk(2) + A3*A3Rk(2))/(2*AREA(i));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Rk(3) + A2*A2Rk(3) + A3*A3Rk(3))/(2*AREA(i));
+
+            CVec3 ri_force = CVec3_scalermult(magnitude, CVec3_plus( 
+                CVec3_scalermult(A1, A1Ri), CVec3_scalermult(A2, A2Ri), CVec3_scalermult(A3, A3Ri)));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(1) + A2*A2Ri(1) + A3*A3Ri(1))/(2*AREA(i));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(2) + A2*A2Ri(2) + A3*A3Ri(2))/(2*AREA(i));
+                //-(k/A0)*(AREA(i)-A0)*(A1*A1Ri(3) + A2*A2Ri(3) + A3*A3Ri(3))/(2*AREA(i));
+            idKey[place] = id_i;
+            forceXAddr[place] = thrust::get<0>( ri_force );
+            forceYAddr[place] = thrust::get<1>( ri_force );
+            forceZAddr[place] = thrust::get<2>( ri_force );
+
+            idKey[place+1] = id_j;
+            forceXAddr[place+1] = thrust::get<0>( rj_force );
+            forceYAddr[place+1] = thrust::get<1>( rj_force );
+            forceZAddr[place+1] = thrust::get<2>( rj_force );
+            
+            idKey[place+2] = id_k;
+            forceXAddr[place+2] = thrust::get<0>( rk_force );
+            forceYAddr[place+2] = thrust::get<1>( rk_force );
+            forceZAddr[place+2] = thrust::get<2>( rk_force );
+
+            double energy =  what_spring_constant/(2.0) * (area_current - area_0) * (area_current - area_0) / area_0;
+            return energy;
+        }
+        else{
+            double energy = 0.0;
+            return energy;
+        }
 
     };
 };

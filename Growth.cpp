@@ -7,8 +7,9 @@
 void Growth::growth(
     int ielem, 
     GeneralParams& generalParams,
-    CoordInfoVecs& coordInfoVecs) {
-        int current_num_of_triangles = generalParams.num_of_triangles;
+    CoordInfoVecs& coordInfoVecs,
+    AreaTriangleInfoVecs& areaTriangleInfoVecs) {
+        int current_num_of_triangles = coordInfoVecs.num_triangles;
         bool triggered = false;
         int triggered_counter = 0;
         for (int p = 0; p < current_num_of_triangles; p++){
@@ -79,7 +80,7 @@ void Growth::growth(
         //Delete the associated vertices information of the selected triangle.
         //Since we delete the chosen triangles, any triangle indexed lower than the deleted one will have its index reduced (or moved up) by 1.
         //Hence, we need to sweep through all data structures using the triangle index to change the index accordingly.
-        for (int i = 0; i < generalParams.num_of_edges; i++){
+        for (int i = 0; i < coordInfoVecs.num_edges; i++){
             if (coordInfoVecs.edges2Triangles_1[i] > ielem){
                 coordInfoVecs.edges2Triangles_1[i] = coordInfoVecs.edges2Triangles_1[i] - 1;
             }
@@ -88,7 +89,7 @@ void Growth::growth(
             }
         }
         //This completes the sweep. After this, the indices of triangle used in edges2Triangles data structure should be the correct one.
-        generalParams.num_of_triangles += -1;
+        coordInfoVecs.num_triangles += -1;
 
 
         int NODESIZE= generalParams.maxNodeCount;//coordInfoVecs.nodeLocX.size();
@@ -104,7 +105,7 @@ void Growth::growth(
         coordInfoVecs.triangles2Nodes_2.push_back(tn1);
         coordInfoVecs.triangles2Nodes_3.push_back(NODESIZE-1);
         //This is a new triangle associated with (tn3, tn1, newnode). Its index is "coordinfoVecs.triangles2Nodes_1.size()".
-        generalParams.num_of_triangles += 3;
+        coordInfoVecs.num_triangles += 3;
 
 
 
@@ -118,13 +119,13 @@ void Growth::growth(
         coordInfoVecs.edges2Nodes_1.push_back(NODESIZE-1);
         coordInfoVecs.edges2Nodes_2.push_back(tn3);
         //This is a new edge associated with (newnode, tn3). Its index is "edges2Nodes_1.size()".
-        generalParams.num_of_edges += 3;
+        coordInfoVecs.num_edges += 3;
 
 
 
         //Now we update the edges2Triangles data structure with new edges.
         int edgeindex, a, a1, a2, a3, temp1, temp2;
-        int TRIANGLESIZE = generalParams.num_of_triangles;//coordInfoVecs.triangles2Nodes_1.size();
+        int TRIANGLESIZE = coordInfoVecs.num_triangles;//coordInfoVecs.triangles2Nodes_1.size();
         if (coordInfoVecs.edges2Triangles_1[te1] == ielem){
             coordInfoVecs.edges2Triangles_1[te1] = TRIANGLESIZE-3;
         }
@@ -164,7 +165,7 @@ void Growth::growth(
             }
             //Now we check to see if the order of "push_back" done is correct, i.e. are edges2Triangles data in correct orientation.
             //This is crucial in the bendingspring computation.
-            edgeindex = (generalParams.num_of_edges - (3-j));
+            edgeindex = (coordInfoVecs.num_edges - (3-j));
             a = coordInfoVecs.edges2Triangles_1[edgeindex];
             
             if ((coordInfoVecs.triangles2Nodes_1[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_2[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
@@ -202,7 +203,7 @@ void Growth::growth(
 
         //Now we will take care of the last unedited data structure "triangles2Edges".
         //int aa, bb;
-        int EDGESIZE = generalParams.num_of_edges;//coordInfoVecs.edges2Nodes_1.size();
+        int EDGESIZE = coordInfoVecs.num_edges;//coordInfoVecs.edges2Nodes_1.size();
         for (int j = 0; j < 3; j++){
             if (j == 0){
                 coordInfoVecs.triangles2Edges_1.push_back(EDGESIZE-3);
@@ -226,57 +227,11 @@ void Growth::growth(
         coordInfoVecs.triangles2Edges_3.erase(coordInfoVecs.triangles2Edges_3.begin() + ielem);
 //Erase the edge infomation related to the deleted triangle.
 
-
+        }
 //This should completes the dreadful data structure update associated with cell (membrane) growth. Have fun modifying it if you need more function!
 };
 
 
 
 
-//copy configuration from device to host
-void Growth::transferDtoH(CoordInfoVecs& coordInfoVecs,
-    HostSetInfoVecs& hostSetInfoVecs){
-    thrust::copy(coordInfoVecs.nodeLocX.begin(),coordInfoVecs.nodeLocX.end(),hostSetInfoVecs.nodeLocX.begin());
-    thrust::copy(coordInfoVecs.nodeLocY.begin(),coordInfoVecs.nodeLocY.end(),hostSetInfoVecs.nodeLocY.begin());
-    thrust::copy(coordInfoVecs.nodeLocZ.begin(),coordInfoVecs.nodeLocZ.end(),hostSetInfoVecs.nodeLocZ.begin());
 
-    
-    thrust::copy(coordInfoVecs.triangles2Nodes_1.begin(),coordInfoVecs.triangles2Nodes_1.end(),hostSetInfoVecs.triangles2Nodes_1.begin());
-    thrust::copy(coordInfoVecs.triangles2Nodes_2.begin(),coordInfoVecs.triangles2Nodes_2.end(),hostSetInfoVecs.triangles2Nodes_2.begin());
-    thrust::copy(coordInfoVecs.triangles2Nodes_3.begin(),coordInfoVecs.triangles2Nodes_3.end(),hostSetInfoVecs.triangles2Nodes_3.begin());
-    
-    thrust::copy(coordInfoVecs.edges2Nodes_1.begin(),coordInfoVecs.edges2Nodes_1.end(),hostSetInfoVecs.edges2Nodes_1.begin());
-    thrust::copy(coordInfoVecs.edges2Nodes_2.begin(),coordInfoVecs.edges2Nodes_2.end(),hostSetInfoVecs.edges2Nodes_2.begin());
-    
-    thrust::copy(coordInfoVecs.edges2Triangles_1.begin(),coordInfoVecs.edges2Triangles_1.end(),hostSetInfoVecs.edges2Triangles_1.begin());
-    thrust::copy(coordInfoVecs.edges2Triangles_2.begin(),coordInfoVecs.edges2Triangles_2.end(),hostSetInfoVecs.edges2Triangles_2.begin());
-    
-    thrust::copy(coordInfoVecs.triangles2Edges_1.begin(),coordInfoVecs.triangles2Edges_1.end(),hostSetInfoVecs.triangles2Edges_1.begin());
-    thrust::copy(coordInfoVecs.triangles2Edges_2.begin(),coordInfoVecs.triangles2Edges_2.end(),hostSetInfoVecs.triangles2Edges_2.begin());
-    thrust::copy(coordInfoVecs.triangles2Edges_3.begin(),coordInfoVecs.triangles2Edges_3.end(),hostSetInfoVecs.triangles2Edges_3.begin());
-
-};
-
-//copy configuration from host to device
-void Growth::transferHtoD(CoordInfoVecs& coordInfoVecs,
-    HostSetInfoVecs& hostSetInfoVecs){
-    thrust::copy(hostSetInfoVecs.nodeLocX.begin(),hostSetInfoVecs.nodeLocX.end(),coordInfoVecs.nodeLocX.begin());
-    thrust::copy(hostSetInfoVecs.nodeLocY.begin(),hostSetInfoVecs.nodeLocY.end(),coordInfoVecs.nodeLocY.begin());
-    thrust::copy(hostSetInfoVecs.nodeLocZ.begin(),hostSetInfoVecs.nodeLocZ.end(),coordInfoVecs.nodeLocZ.begin());
-
-    
-    thrust::copy(hostSetInfoVecs.triangles2Nodes_1.begin(),hostSetInfoVecs.triangles2Nodes_1.end(),coordInfoVecs.triangles2Nodes_1.begin());
-    thrust::copy(hostSetInfoVecs.triangles2Nodes_2.begin(),hostSetInfoVecs.triangles2Nodes_2.end(),coordInfoVecs.triangles2Nodes_2.begin());
-    thrust::copy(hostSetInfoVecs.triangles2Nodes_3.begin(),hostSetInfoVecs.triangles2Nodes_3.end(),coordInfoVecs.triangles2Nodes_3.begin());
-    
-    thrust::copy(hostSetInfoVecs.edges2Nodes_1.begin(),hostSetInfoVecs.edges2Nodes_1.end(),coordInfoVecs.edges2Nodes_1.begin());
-    thrust::copy(hostSetInfoVecs.edges2Nodes_2.begin(),hostSetInfoVecs.edges2Nodes_2.end(),coordInfoVecs.edges2Nodes_2.begin());
-    
-    thrust::copy(hostSetInfoVecs.edges2Triangles_1.begin(),hostSetInfoVecs.edges2Triangles_1.end(),coordInfoVecs.edges2Triangles_1.begin());
-    thrust::copy(hostSetInfoVecs.edges2Triangles_2.begin(),hostSetInfoVecs.edges2Triangles_2.end(),coordInfoVecs.edges2Triangles_2.begin());
-    
-    thrust::copy(hostSetInfoVecs.triangles2Edges_1.begin(),hostSetInfoVecs.triangles2Edges_1.end(),coordInfoVecs.triangles2Edges_1.begin());
-    thrust::copy(hostSetInfoVecs.triangles2Edges_2.begin(),hostSetInfoVecs.triangles2Edges_2.end(),coordInfoVecs.triangles2Edges_2.begin());
-    thrust::copy(hostSetInfoVecs.triangles2Edges_3.begin(),hostSetInfoVecs.triangles2Edges_3.end(),coordInfoVecs.triangles2Edges_3.begin());
-
-};

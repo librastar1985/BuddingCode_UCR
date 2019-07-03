@@ -53,52 +53,63 @@ struct LinearSpringFunctor {
         int counter = thrust::get<0>(u3d);
 		int place = 2 * counter;//represents location in write to vector.
 
-        double what_spring_constant;
-		if (edges_in_upperhem[counter] == 1){
-			what_spring_constant = spring_constant_weak;
-		}
-		else{
-			what_spring_constant = spring_constant;
-		}
-
         int edgeL = thrust::get<1>(u3d);
         int edgeR = thrust::get<2>(u3d);
-        double length_zero = thrust::get<3>(u3d);
 
-        // compute forces.
-        double xLoc_LR = locXAddr[edgeL] - locXAddr[edgeR];
-        double yLoc_LR = locYAddr[edgeL] - locYAddr[edgeR];
-        double zLoc_LR = locZAddr[edgeL] - locZAddr[edgeR];
-   
-
-        double length_current = sqrt( (xLoc_LR) * (xLoc_LR) + 
-                                    (yLoc_LR) * (yLoc_LR)  + 
-                                    (zLoc_LR) * (zLoc_LR) );
-
-    double energy = 0.0;
-    if (length_current != length_zero){
-        double magnitude = -what_spring_constant * (length_current - length_zero);
-        
-        
-            idKey[place] = edgeL;
+        if (edgeL != INT_MAX && edgeR != INT_MAX){
+            double what_spring_constant;
+            if (edges_in_upperhem[counter] == 1){
+                what_spring_constant = spring_constant_weak;
+            }
+            else if (edges_in_upperhem[counter] == 0){
+                what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+            }
+            else{
+                what_spring_constant = spring_constant;
+            }
 
             
-        //issue here writing to vectors with force????
-            forceXAddr[place] = magnitude * (xLoc_LR/length_current);
-            forceYAddr[place] = magnitude * (yLoc_LR/length_current);
-            forceZAddr[place] = magnitude * (zLoc_LR/length_current);
+            double length_zero = thrust::get<3>(u3d);
 
-            idKey[place + 1] = edgeR;
-            forceXAddr[place + 1] = -magnitude * (xLoc_LR/length_current);
-            forceYAddr[place + 1] = -magnitude * (yLoc_LR/length_current);
-            forceZAddr[place + 1] = -magnitude * (zLoc_LR/length_current);
-        
-        energy = (what_spring_constant/2.0) * (length_current - length_zero) * (length_current - length_zero);
+            // compute forces.
+            double xLoc_LR = locXAddr[edgeL] - locXAddr[edgeR];
+            double yLoc_LR = locYAddr[edgeL] - locYAddr[edgeR];
+            double zLoc_LR = locZAddr[edgeL] - locZAddr[edgeR];
+    
+
+            double length_current = sqrt( (xLoc_LR) * (xLoc_LR) + 
+                                        (yLoc_LR) * (yLoc_LR)  + 
+                                        (zLoc_LR) * (zLoc_LR) );
+
+        double energy = 0.0;
+        if (length_current != length_zero){
+            double magnitude = -what_spring_constant * (length_current - length_zero);
+            
+            
+                idKey[place] = edgeL;
+
+                
+            //issue here writing to vectors with force????
+                forceXAddr[place] = magnitude * (xLoc_LR/length_current);
+                forceYAddr[place] = magnitude * (yLoc_LR/length_current);
+                forceZAddr[place] = magnitude * (zLoc_LR/length_current);
+
+                idKey[place + 1] = edgeR;
+                forceXAddr[place + 1] = -magnitude * (xLoc_LR/length_current);
+                forceYAddr[place + 1] = -magnitude * (yLoc_LR/length_current);
+                forceZAddr[place + 1] = -magnitude * (zLoc_LR/length_current);
+            
+            energy = (what_spring_constant/2.0) * (length_current - length_zero) * (length_current - length_zero);
+        }
+            return energy;
+        }
+
+        else{
+            double energy = 0.0;
+            return energy;
+        }
     }
-        return energy;
-
-
-    }
+    
 };
 
 #endif

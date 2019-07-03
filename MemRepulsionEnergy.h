@@ -189,7 +189,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
                 if (R < abs_Rmin){
-                    energy1 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                    energy1 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                 }
                 else{
                     energy1 = 0.0;
@@ -222,7 +222,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
                 if (R < abs_Rmin){
-                    energy2 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                    energy2 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                 }
                 else{
                     energy2 = 0.0;
@@ -254,7 +254,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
                 if (R < abs_Rmin){
-                    energy3 += epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                    energy3 += epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy3 = 0.0;
@@ -286,7 +286,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy4 += epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy4 += epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy4 = 0.0;
@@ -318,7 +318,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy5 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy5 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy5 = 0.0;
@@ -350,7 +350,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy6 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy6 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy6 = 0.0;
@@ -382,7 +382,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy7 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy7 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy7 = 0.0;
@@ -414,7 +414,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy8 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy8 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy8 = 0.0;
@@ -446,7 +446,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-               energy9 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+               energy9 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy9 = 0.0;
@@ -478,7 +478,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy10 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy10 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy10 = 0.0;
@@ -510,7 +510,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy11 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy11 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy11 = 0.0;
@@ -542,7 +542,7 @@ struct MemRepulsionEnergyFunctor : public thrust::unary_function< UCVec3, double
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
             if (R < abs_Rmin){
-                energy12 = epsilon_rep1*(1-exp(-epsilon_rep2*(R-Rmin)))*(1-exp(-epsilon_rep2*(R-Rmin)));
+                energy12 = epsilon_rep1*(1-exp(-epsilon_rep2*(R - abs_Rmin)))*(1-exp(-epsilon_rep2*(R - abs_Rmin)));
                     }
                     else{
                         energy12 = 0.0;

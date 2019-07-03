@@ -35,7 +35,7 @@ void ComputeCosTriangleSprings(
                 coordInfoVecs.edges2Triangles_1.begin(),
                 coordInfoVecs.edges2Triangles_2.begin(),
                 coordInfoVecs.edges2Nodes_1.begin(),
-                coordInfoVecs.edges2Nodes_2.begin())) + generalParams.num_of_edges,//coordInfoVecs.num_edges,
+                coordInfoVecs.edges2Nodes_2.begin())) + coordInfoVecs.num_edges,
         CosBendingFunctor(
             bendingTriangleInfoVecs.spring_constant,
             bendingTriangleInfoVecs.spring_constant_weak,
@@ -63,7 +63,7 @@ void ComputeCosTriangleSprings(
 	}*/
     //now we have un reduced forces. Sort by id and reduce. 
     //key, then value. Each vector returns sorted		
-    thrust::sort_by_key(bendingTriangleInfoVecs.tempNodeIdUnreduced.begin(), bendingTriangleInfoVecs.tempNodeIdUnreduced.end(),
+    thrust::sort_by_key(bendingTriangleInfoVecs.tempNodeIdUnreduced.begin(), bendingTriangleInfoVecs.tempNodeIdUnreduced.begin() + (bendingTriangleInfoVecs.factor*coordInfoVecs.num_edges),
         thrust::make_zip_iterator(
             thrust::make_tuple(
                 bendingTriangleInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -73,7 +73,7 @@ void ComputeCosTriangleSprings(
     int endKey = thrust::get<0>(
         thrust::reduce_by_key(
             bendingTriangleInfoVecs.tempNodeIdUnreduced.begin(), 
-            bendingTriangleInfoVecs.tempNodeIdUnreduced.end(),
+            bendingTriangleInfoVecs.tempNodeIdUnreduced.begin() + (bendingTriangleInfoVecs.factor*coordInfoVecs.num_edges),
         thrust::make_zip_iterator(
             thrust::make_tuple(
                 bendingTriangleInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -87,7 +87,7 @@ void ComputeCosTriangleSprings(
                 bendingTriangleInfoVecs.tempNodeForceYReduced.begin(),
                 bendingTriangleInfoVecs.tempNodeForceZReduced.begin())),
 		thrust::equal_to<int>(), CVec3Add())) - bendingTriangleInfoVecs.tempNodeIdReduced.begin();//binary_pred, binary_op 
-		
+		//std::cout<<"endKey_bend = "<<endKey<<std::endl;
     /*	for (int i = 0; i < bendingTriangleInfoVecs.tempNodeIdReduced.size(); i++) {
 
 			std::cout<<"id: "<< bendingTriangleInfoVecs.tempNodeIdReduced[i]<<std::endl;
@@ -114,4 +114,6 @@ void ComputeCosTriangleSprings(
             thrust::raw_pointer_cast(coordInfoVecs.nodeForceY.data()),
             thrust::raw_pointer_cast(coordInfoVecs.nodeForceZ.data())));
 
+        //    std::cout<<"Force from bend on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
+        //std::cout<<"BEND"<<std::endl;
 };

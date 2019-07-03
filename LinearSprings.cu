@@ -18,7 +18,7 @@ void ComputeLinearSprings(
     
     
         thrust::counting_iterator<int> edgeIdBegin(0);
-        thrust::counting_iterator<int> edgeIdEnd(coordInfoVecs.num_edges);
+       // thrust::counting_iterator<int> edgeIdEnd(coordInfoVecs.num_edges);
 
     //std::cout<<"pre linear spring: " <<coordInfoVecs.nodeForceX.size()<<std::endl;
    /* int id =ljInfoVecs.node_id_close[0];
@@ -56,7 +56,7 @@ void ComputeLinearSprings(
       //std::cout<<"linear energy from spring.cu: "<< linearSpringInfoVecs.linear_spring_energy<<std::endl;
     //now we have un reduced forces. Sort by id and reduce. 
     //key, then value. Each vector returns sorted		
-    thrust::sort_by_key(linearSpringInfoVecs.tempNodeIdUnreduced.begin(), linearSpringInfoVecs.tempNodeIdUnreduced.end(),
+    thrust::sort_by_key(linearSpringInfoVecs.tempNodeIdUnreduced.begin(), linearSpringInfoVecs.tempNodeIdUnreduced.begin() + (linearSpringInfoVecs.factor*(coordInfoVecs.num_edges)),
         thrust::make_zip_iterator(
             thrust::make_tuple(
                 linearSpringInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -70,7 +70,7 @@ void ComputeLinearSprings(
     int endKey = thrust::get<0>(
         thrust::reduce_by_key(
             linearSpringInfoVecs.tempNodeIdUnreduced.begin(), 
-            linearSpringInfoVecs.tempNodeIdUnreduced.end() + (2*(coordInfoVecs.num_edges-1)),
+            linearSpringInfoVecs.tempNodeIdUnreduced.begin() + (linearSpringInfoVecs.factor*(coordInfoVecs.num_edges)),
         thrust::make_zip_iterator(
             thrust::make_tuple(
                 linearSpringInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -111,6 +111,7 @@ void ComputeLinearSprings(
     std::cout<<"post linear spring: " <<coordInfoVecs.nodeForceX.size()<<std::endl;
     std::cout<<"partPos: " << coordInfoVecs.nodeLocX[id]<< " "<< coordInfoVecs.nodeLocY[id] << " "<< coordInfoVecs.nodeLocZ[id] << std::endl;
 	std::cout<<"partForce: " << coordInfoVecs.nodeForceX[id]<< " "<< coordInfoVecs.nodeForceY[id] << " "<< coordInfoVecs.nodeForceZ[id] << std::endl;
-	*/
-
+    */
+    //std::cout<<"Force from linear on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
+            //std::cout<<"LINEAR"<<std::endl;
 };

@@ -47,7 +47,7 @@ void ComputeAreaTriangleSprings(
         
         //now we have un reduced forces. Sort by id and reduce. 
         //key, then value. Each vector returns sorted		
-		thrust::sort_by_key(areaTriangleInfoVecs.tempNodeIdUnreduced.begin(), areaTriangleInfoVecs.tempNodeIdUnreduced.end(),
+		thrust::sort_by_key(areaTriangleInfoVecs.tempNodeIdUnreduced.begin(), areaTriangleInfoVecs.tempNodeIdUnreduced.begin() + (areaTriangleInfoVecs.factor*coordInfoVecs.num_triangles),
 			thrust::make_zip_iterator(
 				thrust::make_tuple(
 					areaTriangleInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -57,7 +57,7 @@ void ComputeAreaTriangleSprings(
         int endKey = thrust::get<0>(
             thrust::reduce_by_key(
                 areaTriangleInfoVecs.tempNodeIdUnreduced.begin(), 
-                areaTriangleInfoVecs.tempNodeIdUnreduced.begin() + generalParams.maxNodeCount,
+                areaTriangleInfoVecs.tempNodeIdUnreduced.begin() + (areaTriangleInfoVecs.factor*coordInfoVecs.num_triangles),
             thrust::make_zip_iterator(
                 thrust::make_tuple(
                     areaTriangleInfoVecs.tempNodeForceXUnreduced.begin(),
@@ -70,7 +70,7 @@ void ComputeAreaTriangleSprings(
                     areaTriangleInfoVecs.tempNodeForceYReduced.begin(),
                     areaTriangleInfoVecs.tempNodeForceZReduced.begin())),
             thrust::equal_to<int>(), CVec3Add())) - areaTriangleInfoVecs.tempNodeIdReduced.begin();//binary_pred, binary_op 
-        
+       // std::cout<<"endKey_area = "<<endKey<<std::endl;
 
         //apply reduced force to all nodes. 
         thrust::for_each(
@@ -91,4 +91,5 @@ void ComputeAreaTriangleSprings(
                 thrust::raw_pointer_cast(coordInfoVecs.nodeForceY.data()),
                 thrust::raw_pointer_cast(coordInfoVecs.nodeForceZ.data())));
             
+      //          std::cout<<"Force from area on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
 };

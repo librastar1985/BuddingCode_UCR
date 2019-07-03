@@ -24,6 +24,7 @@ CPP_SRCS += \
 ../LJSprings_LJ.cu \
 ../VolumeComp.cu \
 ../VolumeSprings.cu \
+../LineTensionSprings.cu \
 ../NodeAdvance.cu \
 ../AreaTrianglesEnergy.cu \
 ../BendingTrianglesEnergy.cu \
@@ -46,6 +47,7 @@ OBJS += \
 ./LJSprings_LJ.o \
 ./VolumeComp.o \
 ./VolumeSprings.o \
+./LineTensionSprings.o \
 ./NodeAdvance.o \
 ./AreaTrianglesEnergy.o \
 ./BendingTrianglesEnergy.o \
@@ -67,6 +69,7 @@ CPP_DEPS += \
 ./LJSPrings_LJ.d \
 ./VolumeComp.d \
 ./VolumeSprings.d \
+./LineTensionSprings.d \
 ./NodeAdvance.d \
 ./AreaTrianglesEnergy.d \
 ./BendingTrianglesEnergy.d \

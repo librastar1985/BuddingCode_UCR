@@ -19,7 +19,7 @@ class Edgeswap {
         BendingTriangleInfoVecs& bendingTriangleInfoVecs,
         AreaTriangleInfoVecs& areaTriangleInfoVecs);
 
-    void edge_swap_host_vecs (int iedge, 
+    int edge_swap_host_vecs (int iedge, 
         GeneralParams& generalParams,
         HostSetInfoVecs& hostSetInfoVecs,
         LinearSpringInfoVecs& linearSpringInfoVecs,

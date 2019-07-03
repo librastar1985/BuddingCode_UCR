@@ -17,6 +17,7 @@ class Storage {
 	
 	
 	int iteration = 0;
+	int iteration2 = 0;
 
 public: 
 	Storage(std::weak_ptr<System>);

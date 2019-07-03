@@ -200,6 +200,8 @@ struct LJInfoVecs{
 	double Rcutoff_LJ;
 
 	double epsilon_M=1.0;
+	double epsilon_M_att1;
+	double epsilon_M_att2;
 	double epsilon_M_rep1;
 	double epsilon_M_rep2;
 	double epsilon_LJ;
@@ -300,6 +302,7 @@ struct GeneralParams{
 	int iteration = 0;
 	int maxNodeCount;
 	int maxNodeCountLJ;
+	double length_scale;
 	//parameters for advancing timestep and determining equilibrium
 
 	double dt;
@@ -308,6 +311,7 @@ struct GeneralParams{
 	thrust::device_vector<int> nodes_in_upperhem;
 	thrust::device_vector<int> edges_in_upperhem;
 	thrust::device_vector<int> triangles_in_upperhem;
+	thrust::device_vector<int> boundaries_in_upperhem;
 	double centerX = 0.0;
 	double centerY = 0.0;
 	double centerZ = 0.0;
@@ -317,9 +321,15 @@ struct GeneralParams{
 	double eq_total_volume;
 	double volume_spring_constant;
 	double volume_energy;
+	double eq_total_boundary_length;
+	double line_tension_energy;
+	double line_tension_constant;
+	double safeguardthreshold;
+	
 
-	int num_of_triangles;
-	int num_of_edges;
+	//int num_of_triangles;
+	//int num_of_edges;
+	int true_num_edges;
 
 };
 

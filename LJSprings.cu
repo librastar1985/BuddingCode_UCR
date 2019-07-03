@@ -18,6 +18,8 @@ CVec4 temp = thrust::transform_reduce(
                     LJSpringFunctor(
                         ljInfoVecs.Rcutoff_M, 
                         ljInfoVecs.Rmin_M,
+                        ljInfoVecs.epsilon_M_att1,
+                        ljInfoVecs.epsilon_M_att2,
                         ljInfoVecs.epsilon_M_rep1,
                         ljInfoVecs.epsilon_M_rep2,
                         thrust::raw_pointer_cast(generalParams.nodes_in_upperhem.data()),

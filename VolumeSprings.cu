@@ -49,7 +49,7 @@ void ComputeVolumeSprings(
                 generalParams.true_current_total_volume,
                 generalParams.eq_total_volume,
                 generalParams.volume_spring_constant,
-                generalParams.num_of_triangles,
+                coordInfoVecs.num_triangles,
                 generalParams.Rmin,
 
                 thrust::raw_pointer_cast(coordInfoVecs.triangles2Nodes_1.data()),
@@ -67,7 +67,8 @@ void ComputeVolumeSprings(
             
             
     //for (int i = 0; i < generalParams.maxNodeCount; i++){
-     //   std::cout<<"Force from volume = "<<coordInfoVecs.nodeForceX[1]<<" "<<coordInfoVecs.nodeForceY[1]<<" "<<coordInfoVecs.nodeForceZ[1]<<std::endl;
+     //   std::cout<<"Force from volume on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
     //}
+    //std::cout<<"VOLUME"<<std::endl;
 };
 

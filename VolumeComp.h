@@ -35,6 +35,8 @@ struct VolumeCompFunctor {
         int r1 = thrust::get<1>(u4);
         int r2 = thrust::get<2>(u4);
         int r3 = thrust::get<3>(u4);
+
+        if (r1 != INT_MAX && r2 != INT_MAX && r3 != INT_MAX){
         int r1x = locXAddr[r1];
         int r1y = locYAddr[r1];
         int r1z = locZAddr[r1];
@@ -68,6 +70,11 @@ struct VolumeCompFunctor {
         double volume = r1_dot_N*sqrt(NN*NN);
 
         return volume;
+        }
+        else{
+            double volume = 0.0;
+            return volume;
+        }
 
 
     }

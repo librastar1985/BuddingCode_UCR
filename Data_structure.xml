@@ -3,7 +3,7 @@
 <settings>
 <resistance>3.769911184308</resistance>
 
-<Tau>0.5</Tau>
+<Tau>0.1</Tau>
 <KBT>1.0</KBT>
 <Linear_Const>75.0</Linear_Const>
 <Area_Const>75.0</Area_Const>

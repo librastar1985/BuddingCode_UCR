@@ -37,7 +37,7 @@ public:
 	double defaultLJ_Z = -0.1;
 
 	double defaultEdgeEq = 1.0;
-	double defaultAreaEq = 0.433;
+	double defaultAreaEq = 0.0;
 	double defaultAngleEq = 0.0;
 
 	HostSetInfoVecs hostSetInfoVecs;

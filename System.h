@@ -224,7 +224,7 @@ struct LJInfoVecs{
 struct AreaTriangleInfoVecs {
 
 	int factor = 3;//used for reduction
-	double initial_area = 0.433;
+	double initial_area = 0.0048013;
 	double spring_constant;
 	double spring_constant_weak;
 

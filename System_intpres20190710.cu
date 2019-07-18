@@ -10,7 +10,6 @@
 #include "LinearSpringsEnergy.h"
 #include "LJSprings.h"
 #include "LJSprings_LJ.h"
-//#include "LJEnergy.h"
 #include "NodeAdvance.h"
 #include "BucketScheme.h"
 #include "Storage.h" 
@@ -39,31 +38,22 @@ void System::Solve_Forces(){
 	thrust::fill(coordInfoVecs.nodeForceZ.begin(), coordInfoVecs.nodeForceZ.end(), 0.0);
 	
 	//setBucketScheme();
-	//std::cout<<"Error here! before linear"<<std::endl;
 	ComputeLinearSprings( 
 		generalParams, 
 		coordInfoVecs,
 		linearSpringInfoVecs, 
 		ljInfoVecs);
-	//	std::cout<<"LINEAR"<<std::endl;
 	
-	//if (coordInfoVecs.nodeLocX.size() > 162){
-	//	std::cout<<"force ="<<coordInfoVecs.nodeForceX[generalParams.maxNodeCount-1]<<" "<<coordInfoVecs.nodeForceY[generalParams.maxNodeCount-1]<<" "<<coordInfoVecs.nodeForceZ[generalParams.maxNodeCount-1]<<std::endl;
-	//}
-	//std::cout<<"Error here! before area"<<std::endl;
 	ComputeAreaTriangleSprings(
 		generalParams,
 		coordInfoVecs,
 		areaTriangleInfoVecs);
-	//	std::cout<<"AREA"<<std::endl;
-	
-	//std::cout<<"Error here! before bending"<<std::endl;
+
 	ComputeCosTriangleSprings(
 		generalParams,
 		coordInfoVecs,  
 		bendingTriangleInfoVecs); 
 	
-	//std::cout<<"Error here! before memrepul"<<std::endl;
 	ComputeMemRepulsionSprings(
 		coordInfoVecs,
 		linearSpringInfoVecs, 
@@ -71,13 +61,13 @@ void System::Solve_Forces(){
 		generalParams,
 		auxVecs);
 
-	/*ComputeVolume(
+	ComputeVolume(
 		generalParams,
 		coordInfoVecs,
 		linearSpringInfoVecs,
 		ljInfoVecs);
 
-	ComputeVolumeSprings(
+	/*ComputeVolumeSprings(
 		coordInfoVecs,
 		linearSpringInfoVecs, 
 		capsidInfoVecs,
@@ -93,29 +83,85 @@ void System::Solve_Forces(){
 
 
 void System::solveSystem() {
-	int TESTING = 1;
-	double tip_depth = 0.3985;
+	
 	generalParams.safeguardthreshold = 12;
-	//double pull_strength = 1.0;
-	//std::cout<<"pull_strength from spring linking membrane and nucleus = "<<pull_strength<<std::endl;
-	int translate_frequency = 10;
-	double beta1 = 2.5;
-	double beta2 = 0.0;
-	std::cout<<"manual push speed = "<<beta1<<std::endl;
+	//safeguardthreshold is the maximum number of neighboring nodes a node can have.
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+	////////////////////////// PARAMETER SETTINGS ////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+
+	double Max_Runtime = 0.001;
+	double Max_RunStep = Max_Runtime/generalParams.dt;
+	std::cout<<"Max runtime = "<<Max_Runtime<<std::endl;
+	std::cout<<"Max runstep = "<<Max_RunStep<<std::endl;
+	bool runSim = true;
+	int num_edge_loop;
+	double initial_kT;
+	initial_kT = generalParams.kT;//This is for the acceptance of change after looping through every edge within proximity.
+	double SAMPLE_SIZE = 0.05;
+	std::cout<<"Sample ratio: "<<SAMPLE_SIZE<<std::endl;
+	//This determines the number of edges to test for bondflip remeshing
+
+	auto edgeswap_ptr = std::make_shared<Edgeswap>(coordInfoVecs, generalParams);
+	int RECORD_TIME = 100;//round(Max_RunStep/2);
+	std::cout<<"Record frequency = "<<RECORD_TIME<<std::endl;
+	int GROWTH_TIME = 25;
+	std::cout<<"Growth frequency = "<<GROWTH_TIME<<std::endl;
+	int NKBT = 40000; //The max number of edge-swap attempt per kBT value
+	std::cout<<"Number of edge-swap per kBT value (or total number of edge-swap if kBT is fixed)= "<<NKBT<<std::endl;
+	double min_kT = 0.21;
+	std::cout<<"min kT for simulation termination = "<<min_kT<<std::endl;
+	int WHEN = 0;
+	double old_total_energy = 0.0;
+	double new_total_energy = 0.0;
+	double energy_gradient = 0.0;
+	int Num_of_step_run = 0;
+	auto build_ptr = weak_bld_ptr.lock();//upgrade weak builder to access host variables.
+	//std::cout<<"initial LJ-x : "<< ljInfoVecs.LJ_PosX <<std::endl;
+	//std::cout<<"initial LJ-y : "<< ljInfoVecs.LJ_PosY <<std::endl;
+	//std::cout<<"initial LJ-z : "<< ljInfoVecs.LJ_PosZ <<std::endl;
+		
+
+    
+	double min_energy;
+	generalParams.true_num_edges = 0;
+	for (int i = 0; i < coordInfoVecs.num_edges; i++){
+		if (coordInfoVecs.edges2Nodes_1[i] != INT_MAX && coordInfoVecs.edges2Nodes_2[i] != INT_MAX){
+			generalParams.true_num_edges += 1;
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////
+	/////////////////////// MEMBRANE RELATED ////////////////////////
+	/////////////////////////////////////////////////////////////////
+	
+	double VOLUME_FACTOR = 1.0;
+	//VOLUME_FACTOR determines the target volume which equals to VOLUME_FACTOR*initial_volume.
+	//double tip_depth = 0.5;
+	//tip_depth is currently unused.
+	
+	double weakened = 6.0;
+	//weakened determines the minimum height of the z-coordinate of the membrane node to be considered in the area of weakened mechanical properties.
+	//double tip_base = 6.0;
+	//tip_base currently unused.
+
+	int translate_frequency = 5;
+	//translate_frequency determines the frequency for the mesh to re-center and perform dynamical remeshing
+
 	double EXPAN_THRESHOLD = 2.0;
+	double EXPAN_THRESHOLD_weak = 1.5;
 	std::cout<<"EXPANSION THRESHOLD = "<<EXPAN_THRESHOLD<<std::endl;
+	int RULES_OF_EXPAN = 3;	//EXPAN_THRESHOLD is the yielding ratio where a pair of triangles will perform expansion.
+	std::cout<<"EXPANSION RULE = "<<RULES_OF_EXPAN<<std::endl;
+	//EXPAN_THRESHOLD_weak is the secondary yielding ratio.
+	//RULES_OF_EXPAN controls how the EXPAN_THRESHOLD is applied:
+	// 1:= Both trianglular areas must exceed the threshold value.
+	// 2:= If one trianglular area exceeds the treshold value while the other exceeds the secondary threshold value.
+	// 3:= If the combined area of the two triangles exceed 2*EXPAN_THRESHOLD.
 
-	double displacementX, displacementY, displacementZ;
-	double newcenterX, newcenterY, newcenterZ;
-
-	//coordInfoVecs.num_triangles = coordInfoVecs.triangles2Nodes_1.size();
-	//generalParams.maxNodeCount = coordInfoVecs.nodeLocX.size();
-	//generalParams.num_of_edges = coordInfoVecs.edges2Nodes_1.size();
-	//generalParams.eq_total_volume = 200.0;
-	std::vector<int> VectorShuffleForGrowthLoop;
-	////IDENTIFY CENTER OF THE SPHERE////////////////////////////////////////
-	////this is necessary to choose where to generate new lj points//////////
-	////which will be located within a distance away from the center/////////
 	for (int i = 0; i < generalParams.maxNodeCount; i++){
 		generalParams.centerX += coordInfoVecs.nodeLocX[i];
 		generalParams.centerY += coordInfoVecs.nodeLocY[i];
@@ -124,15 +170,108 @@ void System::solveSystem() {
 	generalParams.centerX = generalParams.centerX/generalParams.maxNodeCount;
 	generalParams.centerY = generalParams.centerY/generalParams.maxNodeCount;
 	generalParams.centerZ = generalParams.centerZ/generalParams.maxNodeCount;
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
+	double displacementX, displacementY, displacementZ;
+	double newcenterX, newcenterY, newcenterZ;
+	//centerX, centerY, centerZ is determined as the referenced origin for recentering of the mesh.
 
-	std::vector<double> V1 = {-0.3251, 0.0  ,  0.1966  ,  0.5547 ,  -0.4689 ,   0.2422 ,  -0.2229,
+	std::vector<int> VectorShuffleForGrowthLoop;
+	//std::vector<int> VectorShuffleForFilamentLoop;
+
+	double max_height = coordInfoVecs.nodeLocZ[35];
+	double min_height = coordInfoVecs.nodeLocZ[38];
+	//Max and min height of the membrane nodes, these have to be changed if the mesh used is changed.
+
+	linearSpringInfoVecs.spring_constant_rep1 = 0.01;
+	linearSpringInfoVecs.spring_constant_rep2 = 9.0;
+	std::cout<<"Membrane volume exclusion Morse D = "<<linearSpringInfoVecs.spring_constant_rep1<<std::endl;
+	std::cout<<"Membrane volume exclusion Morse a = "<<linearSpringInfoVecs.spring_constant_rep2<<std::endl;
+	//The coefficient used for non-neighboring membrane node volume exclusion.
+	//rep1 is the "D" and rep2 is the "alpha" in the standard form of Morse potential.
+
+	generalParams.volume_spring_constant = 0.0;
+	std::cout<<"spring constant for volume conservation = "<<generalParams.volume_spring_constant<<std::endl;
+	generalParams.line_tension_constant = 100.0;
+	std::cout<<"spring constant for the septin ring = "<<generalParams.line_tension_constant<<std::endl;
+	generalParams.length_scale = 0.8333;
+	std::cout<<"equilibrium length of each segment of the septin ring = "<<generalParams.length_scale<<std::endl;
+
+	double scale_linear = 75.0/15.0;
+	double scale_bend = 75.0/7.5;
+	double scale_area = 75.0/7.5;
+	std::cout<<"scaling of different region linear = "<<scale_linear<<std::endl;
+	std::cout<<"scaling of different region bend = "<<scale_bend<<std::endl;
+	std::cout<<"scaling of different region area = "<<scale_area<<std::endl;
+	linearSpringInfoVecs.spring_constant_weak = linearSpringInfoVecs.spring_constant/scale_linear;
+	bendingTriangleInfoVecs.spring_constant_weak = bendingTriangleInfoVecs.spring_constant/scale_bend;
+	areaTriangleInfoVecs.spring_constant_weak = areaTriangleInfoVecs.spring_constant/scale_area;
+	//Scaling of the weakend mechanical properties.
+
+	bendingTriangleInfoVecs.initial_angle =  0.0906;//0.17549;//0.15;//0.0906;
+	bendingTriangleInfoVecs.initial_angle_raft =  0.0906;//0.17549;//0.15;
+	bendingTriangleInfoVecs.initial_angle_coat = 0.0906;//0.17549;//0.15;//0.167448079;
+	std::cout<<"equilibrium bending angle of the membrane = "<<bendingTriangleInfoVecs.initial_angle<<std::endl;
+	//raft and coat are current unused due to the assumption of uniform preferred curvature.
+	
+	bendingTriangleInfoVecs.spring_constant_raft = 0.0;//bendingTriangleInfoVecs.spring_constant;
+	bendingTriangleInfoVecs.spring_constant_coat = 0.0;//bendingTriangleInfoVecs.spring_constant;
+	bendingTriangleInfoVecs.spring_constant = bendingTriangleInfoVecs.spring_constant*(2/sqrt(3));
+	bendingTriangleInfoVecs.spring_constant_raft = bendingTriangleInfoVecs.spring_constant_raft*(2/sqrt(3));
+	bendingTriangleInfoVecs.spring_constant_coat = bendingTriangleInfoVecs.spring_constant_coat*(2/sqrt(3));
+	std::cout<<"Effective bending coefficient is calculated by multiplying 2/sqrt(3)"<<std::endl;
+	std::cout<<"effective bending coefficient of the membrane = "<<bendingTriangleInfoVecs.spring_constant<<std::endl;
+	std::cout<<"effective bending coefficient of the membrane raft = "<<bendingTriangleInfoVecs.spring_constant_raft<<std::endl;
+	std::cout<<"effective bending coefficient of the membrane coat = "<<bendingTriangleInfoVecs.spring_constant_coat<<std::endl;
+
+	generalParams.Rmin = 1.0;
+	//Equilibrium length of an edge of the triangle.
+	generalParams.abs_Rmin = 0.75;//0.586955;
+	//Equilibrium distance between membrane node for volume exclusion.
+	ljInfoVecs.Rmin_M = 1.25;
+	//Equilibrium distance between the nucleus particle and membrane.
+	ljInfoVecs.Rcutoff_M = 1.25;
+	//Maximal interaction range between the nucleus and membrane.
+	ljInfoVecs.Rmin_LJ = 1.5;//3.0//1.0;
+	//Equilibrium distance between nuclei.
+	ljInfoVecs.Rcutoff_LJ = 1.5;//3.0;//1.0;
+	//Maximal interaction range between the nuclei.
+	ljInfoVecs.epsilon_M_att1 = 0.0;//6.0;//16.0;
+	ljInfoVecs.epsilon_M_att2 = 0.0;//1.0;//1.0;
+	std::cout<<"Morse_NM_D_att = "<<ljInfoVecs.epsilon_M_att1<<std::endl;
+	std::cout<<"Morse_NM_a_att = "<<ljInfoVecs.epsilon_M_att2<<std::endl;
+	//Coefficient for the attractive interaction between nuclei and membrane.
+	ljInfoVecs.epsilon_M_rep1 = 12.5;//16.0;
+	ljInfoVecs.epsilon_M_rep2 = 0.5;//1.0;
+	std::cout<<"Morse_NM_D_rep = "<<ljInfoVecs.epsilon_M_rep1<<std::endl;
+	std::cout<<"Morse_NM_a_rep = "<<ljInfoVecs.epsilon_M_rep2<<std::endl;
+	//Coefficient for the repulsive interaction between nuclei and membrane.
+	
+	ljInfoVecs.epsilon_LJ_rep1 = 12.5;//0.5;// 0.06;//7.5;
+	ljInfoVecs.epsilon_LJ_rep2 = 1.0;//1.0;//1.0;//1.0;
+	std::cout<<"Morse_NN_D = "<<ljInfoVecs.epsilon_LJ_rep1<<std::endl;
+	std::cout<<"Morse_NN_a = "<<ljInfoVecs.epsilon_LJ_rep2<<std::endl;
+	//Coefficient of the interaction between nuclei.
+
+	/////////////////////////////////////////////////////////////////
+	////////////////// END OF MEMBRANE RELATED //////////////////////
+	/////////////////////////////////////////////////////////////////
+
+
+	/////////////////////////////////////////////////////////////////
+	//////////////////////// NULCEUS RELATED ////////////////////////
+	/////////////////////////////////////////////////////////////////
+	double beta1 = 0.0;
+	double beta2 = 0.0;
+	std::cout<<"manual push speed for the nucleus tip = "<<beta1<<std::endl;
+	std::cout<<"manual push speed for the remainder of the nucleus = "<<beta2<<std::endl;
+	//beta1 is the vertical speed (0, 0, beta1) applied to the nucleus tip.
+	//beta2 is the vertical speed (0, 0, beta2) applied to the remainder of the nucleus.
+
+	std::vector<double> V1 = {-0.0, 0.0  ,  0.1966  ,  0.5547 ,  -0.4689 ,   0.2422 ,  -0.2229,
 							   -0.4312 ,  -0.0185 ,   0.2887 ,   0.3187 ,   0.7140 ,  
 								0.2231 ,  -0.1921 ,	  -0.5541 ,   -0.1542 ,   -0.1689 ,    0.4391 ,
 							   -0.6661 ,  -0.6381 ,   0.6256 ,   0.0466 ,  -0.0610 ,   0.5134};
 
-	std::vector<double> V2 = {0.0810, 0.0 ,  -0.4595 ,  -0.4129 ,   0.0954 ,   0.1764 ,   0.4186 ,
+	std::vector<double> V2 = {0.0, 0.0 ,  -0.4595 ,  -0.4129 ,   0.0954 ,   0.1764 ,   0.4186 ,
 							  -0.5602 ,  -0.6082 ,  -0.5318 ,   0.3561 ,   0.0753 ,
 							  -0.0917 ,  -0.2596 , 0.2871 ,  -0.3918 ,   0.5195 ,   0.5579 ,
 							  -0.2805 ,   0.0133  , -0.0073 ,   0.7426 ,   0.0614 ,  -0.1506};
@@ -140,20 +279,64 @@ void System::solveSystem() {
 	std::vector<double> V3 = { 0.6390, 0.0 ,  -0.5511 ,   0.0267 ,  -0.5240  , -0.4004 ,   0.2850 ,
 							   0.2032 ,  -0.1771 ,   0.4048 ,   0.3461 ,  -0.2034 ,
 							   0.5041 ,  -0.4535 ,	-0.1241 ,   0.5722 ,  -0.3748 ,  -0.1335 ,
-							   -0.0851 ,   0.3213 ,   0.2389 ,   0.0044 ,  -0.7424 ,  -0.5241};
-	
-	//std::vector<int> filament_base = {0,1,2,3,4,5,6,7,8,9,10,11};//{35, 21, 38, etc if we need more points}
-	//double filament_strength = 1.0;
-	//double filament_Rmin = 6.0;
+							   -0.0851 ,   0.3213 ,   0.2389 ,   0.0044 ,  -0.7424 ,  -0.7450};
+	//V1, V2, and V3 are the (x,y,z)-coordinate of the nucleus particles.
 
 	for (int i = 0; i < V1.size(); i++){
 		ljInfoVecs.LJ_PosX_all.push_back(V1[i]); 
 		ljInfoVecs.LJ_PosY_all.push_back(V2[i]);
 		ljInfoVecs.LJ_PosZ_all.push_back(V3[i]);
 	}  
-	//ljInfoVecs.LJ_PosX_all.push_back();
-	//ljInfoVecs.LJ_PosY_all.push_back();
-	//ljInfoVecs.LJ_PosZ_all.push_back();
+	
+	double NUCLEUS_UPPERHEM_BASE = 0.5;
+	double NUCLEUS_LOWERHEM_BASE = -0.6;
+	//These values defines the z-coordinate requirement for nucleus particles to be considered tip-region or base-region. This is used to 
+	// determine where to apply spring or constant force.
+
+	//////////////////////////////////////////////////////////////////
+	///////////////// END OF NUCLEUS RELATED /////////////////////////
+	//////////////////////////////////////////////////////////////////
+
+	//std::vector<int> filament_base(generalParams.maxNodeCountLJ, -1); //= {0,1,2,3,4,5,6,7,8,9,10,11};//{35, 21, 38, etc if we need more points}
+	/*double filament_strength = 0.0;//1.0;
+	double filament_strength_pull = 1.0*filament_strength;
+	double filament_Rmin = ((max_height - min_height)/4.0);
+	std::cout<<"filament_strength = "<<filament_strength<<std::endl;
+	std::cout<<"filament_strength for vertical pull = "<<filament_strength_pull<<std::endl;
+	std::cout<<"filament_Rmin = "<<filament_Rmin<<std::endl;*/
+	//First, determine the initial membrane nodes having filament bridges
+	//with the nuclei particles
+	/*for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
+		if (i == 0){
+			filament_base[i] = 35;
+			continue;
+		}
+		for (int j = 0; j < generalParams.maxNodeCount; j++){
+			double xsquared = (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j])*
+								(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j]);
+			double ysquared = (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j])*
+								(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j]);
+			double zsquared = (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j])*
+								(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j]);
+			double R = sqrt(xsquared + ysquared + zsquared);
+			if (R < filament_Rmin*1.1 && j != 35){
+				filament_base[i] = j;
+				break;
+			}
+		}
+	}*/
+	
+	//std::vector<double> filament_Rmin;
+	//for (int i = 0; i < V3.size();i++){
+	//	filament_Rmin.push_back(sqrt((V3[i] - coordInfoVecs.nodeLocZ[38])*(V3[i] - coordInfoVecs.nodeLocZ[38])));
+	//}
+	//double filament_Rmin = sqrt((V3.back() - coordInfoVecs.nodeLocZ[38])*(V3.back() - coordInfoVecs.nodeLocZ[38]));
+	//This part calculates the filament connecting the minimum point (in terms of z-coordinate) to the base of the nuclei cluster.
+
+
+	//////////////////////////////////////////////////////////////////
+	/////////// IDENTIFYING REGIONS WITH DIFFERENT MECH PROP /////////
+	//////////////////////////////////////////////////////////////////
 
 	ljInfoVecs.forceX_all.reserve(ljInfoVecs.LJ_PosX_all.size());
 	ljInfoVecs.forceY_all.reserve(ljInfoVecs.LJ_PosX_all.size());
@@ -161,9 +344,13 @@ void System::solveSystem() {
 
 	generalParams.maxNodeCountLJ = ljInfoVecs.LJ_PosX_all.size();
 	std::vector<int> nucleus_in_upperhem(generalParams.maxNodeCountLJ, -1);
+	std::vector<int> nucleus_in_lowerhem(generalParams.maxNodeCountLJ, -1);
 	for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
-		if (ljInfoVecs.LJ_PosZ_all[i] > 0.25){
+		if (ljInfoVecs.LJ_PosZ_all[i] > NUCLEUS_UPPERHEM_BASE){
 			nucleus_in_upperhem[i] = 1;
+		}
+		if (ljInfoVecs.LJ_PosZ_all[i] < NUCLEUS_LOWERHEM_BASE){
+			nucleus_in_lowerhem[i] = 1;
 		}
 	}
 	
@@ -202,13 +389,9 @@ void System::solveSystem() {
 	//std::vector<int> row2 = {35 ,   76 ,   79 ,  111 ,  113 ,  151 ,  153 ,  360 ,  361 ,  362 ,  363 ,  364 ,  365 ,  505 ,  506 ,  515 ,  516 ,  593 ,  632};
 	//std::vector<int> nodes_to_center;
 	generalParams.nodes_in_upperhem.resize(generalParams.maxNodeCount,-1);
-	//for (int i = 0; i < row2.size(); i++){
-	//	generalParams.nodes_in_upperhem[row2[i]] = 1;
-		
-	//	std::cout<<"nodes "<<i<<" "<<generalParams.nodes_in_upperhem[i]<<std::endl;		
-	//}
+
 	for (int i = 0; i < generalParams.maxNodeCount; i++){
-		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + 6.0)){
+		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + weakened)){
 			generalParams.nodes_in_upperhem[i] = 1;
 		}
 		else{
@@ -218,23 +401,18 @@ void System::solveSystem() {
 	}
 
 	//std::vector<int> nodes_to_center;
-	std::vector<int> nodes_in_tip;
-	nodes_in_tip.resize(generalParams.maxNodeCount);
-	for (int i = 0; i < generalParams.maxNodeCount; i++){
-		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + 5.75)){
-			nodes_in_tip[i] = 1;
-		}
-		else{
-			nodes_in_tip[i] = -1;
-		}
+	//std::vector<int> nodes_in_tip;
+	//nodes_in_tip.resize(generalParams.maxNodeCount);
+	//for (int i = 0; i < generalParams.maxNodeCount; i++){
+	//	if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + tip_base)){
+	//		nodes_in_tip[i] = 1;
+	//	}
+	//	else{
+	//		nodes_in_tip[i] = -1;
+	//	}
 	//	std::cout<<"nodes "<<i<<" "<<generalParams.nodes_in_upperhem[i]<<std::endl;		
-	}
+	//}
 
-	////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////
 	generalParams.triangles_in_upperhem.resize(coordInfoVecs.num_triangles);
 	for (int i = 0; i < coordInfoVecs.num_triangles; i++){
 		int aaa = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_1[i]];
@@ -248,7 +426,7 @@ void System::solveSystem() {
 			//triangles_in_upperhem.push_back(i);
 		}
 		else if ((aaa+bbb+ccc)==1){
-			generalParams.triangles_in_upperhem[i] = 1;
+			generalParams.triangles_in_upperhem[i] = 0;
 			//triangles_in_upperhem.push_back(i);
 		}
 		else{
@@ -267,7 +445,7 @@ void System::solveSystem() {
 			edges_in_upperhem.push_back(i);
 		}
 		else if (aaa == 1 || bbb == 1){
-			generalParams.edges_in_upperhem[i] = 1;
+			generalParams.edges_in_upperhem[i] = 1;//0;
 		}
 		else{
 			generalParams.edges_in_upperhem[i] = -1;
@@ -283,161 +461,43 @@ void System::solveSystem() {
 		double T2 = coordInfoVecs.edges2Triangles_2[i];
 		if (generalParams.triangles_in_upperhem[T1] == 1 && generalParams.triangles_in_upperhem[T2] == 0){
 			generalParams.boundaries_in_upperhem[i] = 1;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			coordInfoVecs.isNodeFixed[bdry_node1] = true;
-			coordInfoVecs.isNodeFixed[bdry_node2] = true;
+			//double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			//double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
+			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
 		}
 		else if (generalParams.triangles_in_upperhem[T1] == 0 && generalParams.triangles_in_upperhem[T2] == 1){
 			generalParams.boundaries_in_upperhem[i] = 1;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			coordInfoVecs.isNodeFixed[bdry_node1] = true;
-			coordInfoVecs.isNodeFixed[bdry_node2] = true;
+			//double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			//double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
+			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
 		}
 		else {
 			generalParams.boundaries_in_upperhem[i] = -1;
 		}
 	}
 	generalParams.eq_total_boundary_length = generalParams.boundaries_in_upperhem.size()*generalParams.Rmin;
+	
+	
 
 	int true_num_edges_in_upperhem = 0;
 	for (int i = 0; i < edges_in_upperhem.size(); i++){
 		if (edges_in_upperhem[i] != INT_MAX && edges_in_upperhem[i] >= 0){
 		true_num_edges_in_upperhem += 1;
-		//break;
 		}
 	}
 	
-	
-	double max_height = coordInfoVecs.nodeLocZ[35];
-	double min_height = coordInfoVecs.nodeLocZ[38];
 
 	//std::vector<int> edge_to_ljparticle;
 	//generalParams.edge_to_ljparticle.reserve(coordInfoVecs.num_edges);
 	for (int i = 0; i < coordInfoVecs.num_edges; i++){
 		generalParams.edge_to_ljparticle.push_back(-1);
 	};
-	
-	//int node1, node2;
-	//double R1, R2;
-	//int last_index;
-	//double Influence_Range = ljInfoVecs.Rmin - 0.5;
-	//std::cout<<"Influence_Range = "<<Influence_Range<<std::endl;
-	int num_edge_loop;
-	//double LJ_PosX_backup, LJ_PosY_backup, LJ_PosZ_backup;
-	
-	double Max_Runtime = 0.0020;
-	double Max_RunStep = Max_Runtime/generalParams.dt;
-	std::cout<<"Max runtime = "<<Max_Runtime<<std::endl;
-	std::cout<<"Max runstep = "<<Max_RunStep<<std::endl;
-	//linearSpringInfoVecs.spring_constant_att1 = 50.0;
-	//linearSpringInfoVecs.spring_constant_att2 = 0.75;
-	linearSpringInfoVecs.spring_constant_rep1 = 0.01;
-	linearSpringInfoVecs.spring_constant_rep2 = 9.0;
-	//std::cout<<"spring_constnat_att1 = "<<linearSpringInfoVecs.spring_constant_att1<<std::endl;
-	//std::cout<<"spring_constnat_att2 = "<<linearSpringInfoVecs.spring_constant_att2<<std::endl;
-	//std::cout<<"spring_constnat_rep1 = "<<linearSpringInfoVecs.spring_constant_rep1<<std::endl;
-	//std::cout<<"spring_constnat_rep2 = "<<linearSpringInfoVecs.spring_constant_rep2<<std::endl;
+	/////////////////////////////////////////////////////////////////////
+	////////////// END OF IDENTIFYING REG. WITH DIFF. MECH PROP /////////
+	/////////////////////////////////////////////////////////////////////
 
-	generalParams.volume_spring_constant = 0.0;//1.65;//0.75;
-	std::cout<<"volume spring constant = "<<generalParams.volume_spring_constant<<std::endl;
-	generalParams.line_tension_constant = 1500.0;
-	std::cout<<"line tension constant = "<<generalParams.line_tension_constant<<std::endl;
-
-	double scale_linear = 25.0;
-	double scale_bend = 50.0;//20.0;
-	double scale_area = 50.0;
-	std::cout<<"scaling of different region linear = "<<scale_linear<<std::endl;
-	std::cout<<"scaling of different region bend = "<<scale_bend<<std::endl;
-	std::cout<<"scaling of different region area = "<<scale_area<<std::endl;
-	linearSpringInfoVecs.spring_constant_weak = linearSpringInfoVecs.spring_constant/scale_linear;
-	bendingTriangleInfoVecs.spring_constant_weak = bendingTriangleInfoVecs.spring_constant/scale_bend;
-	areaTriangleInfoVecs.spring_constant_weak = areaTriangleInfoVecs.spring_constant/scale_area;
-	
-	//areaTriangleInfoVecs.initial_area = 0.6;
-
-	bendingTriangleInfoVecs.initial_angle = 0.0906;//0.17549;//0.15;//0.0906;
-	bendingTriangleInfoVecs.initial_angle_raft = 0.0906;//0.17549;//0.15;
-	bendingTriangleInfoVecs.initial_angle_coat = 0.0906;//0.17549;//0.15;//0.167448079;
-	
-	bendingTriangleInfoVecs.spring_constant_raft = 0.0;//bendingTriangleInfoVecs.spring_constant;
-	bendingTriangleInfoVecs.spring_constant_coat = 0.0;//bendingTriangleInfoVecs.spring_constant;
-	bendingTriangleInfoVecs.spring_constant = bendingTriangleInfoVecs.spring_constant*(2/sqrt(3));
-	bendingTriangleInfoVecs.spring_constant_raft = bendingTriangleInfoVecs.spring_constant_raft*(2/sqrt(3));
-	bendingTriangleInfoVecs.spring_constant_coat = bendingTriangleInfoVecs.spring_constant_coat*(2/sqrt(3));
-	std::cout<<"effective bending = "<<bendingTriangleInfoVecs.spring_constant<<std::endl;
-	std::cout<<"effective bending raft = "<<bendingTriangleInfoVecs.spring_constant_raft<<std::endl;
-	std::cout<<"effective bending coat = "<<bendingTriangleInfoVecs.spring_constant_coat<<std::endl;
-	
-	//std::cout<<"coat angle = "<<bendingTriangleInfoVecs.initial_angle_coat<<std::endl;
-	generalParams.Rmin = 1.0;
-	generalParams.abs_Rmin = 0.75;//0.586955;
-	ljInfoVecs.Rmin_M = 1.25;
-	ljInfoVecs.Rcutoff_M = 1.25;
-	ljInfoVecs.Rmin_LJ = 1.5;//3.0//1.0;
-	ljInfoVecs.Rcutoff_LJ = 1.5;//3.0;//1.0;
-	//ljInfoVecs.epsilon_M = 1.0;
-	ljInfoVecs.epsilon_M_att1 = 0.0;//6.0;//16.0;
-	ljInfoVecs.epsilon_M_att2 = 0.0;//1.0;//1.0;
-	std::cout<<"Morse_NM_D_att = "<<ljInfoVecs.epsilon_M_att1<<std::endl;
-	std::cout<<"Morse_NM_a_att = "<<ljInfoVecs.epsilon_M_att2<<std::endl;
-	ljInfoVecs.epsilon_M_rep1 = 12.5;//16.0;
-	ljInfoVecs.epsilon_M_rep2 = 0.5;//1.0;
-	std::cout<<"Morse_NM_D_rep = "<<ljInfoVecs.epsilon_M_rep1<<std::endl;
-	std::cout<<"Morse_NM_a_rep = "<<ljInfoVecs.epsilon_M_rep2<<std::endl;
-	//ljInfoVecs.epsilon_LJ = 0.25;
-	ljInfoVecs.epsilon_LJ_rep1 = 10.0;//0.5;// 0.06;//7.5;
-	ljInfoVecs.epsilon_LJ_rep2 = 0.5;//1.0;//1.0;//1.0;
-	std::cout<<"Morse_NN_D = "<<ljInfoVecs.epsilon_LJ_rep1<<std::endl;
-	std::cout<<"Morse_NN_a = "<<ljInfoVecs.epsilon_LJ_rep2<<std::endl;
-	//std::cout<<"Absolute minimum edge size = "<<generalParams.abs_Rmin<<std::endl;
-	//std::cout<<"Morse D = "<<linearSpringInfoVecs.spring_constant_rep1<<std::endl;
-	//std::cout<<"Morse a = "<<linearSpringInfoVecs.spring_constant_rep2<<std::endl;
-	std::cout<<"spontaneous angle = "<<bendingTriangleInfoVecs.initial_angle<<std::endl;
-
-	double initial_kT;
-	initial_kT = generalParams.kT;//This is for the acceptance of change after looping through every edge within proximity.
-	//	double SAMPLE_SIZE = 0.02;
-	//std::cout<<"Sample size: "<<SAMPLE_SIZE<<std::endl;
-	auto edgeswap_ptr = std::make_shared<Edgeswap>(coordInfoVecs, generalParams);
-	//auto growth_ptr = std::make_shared<Growth>(generalParams, coordInfoVecs, areaTriangleInfoVecs);
-
-
-	bool runSim = true;
-
-	int GROWTH_TIME = 35;
-	//int GROWTH_TIME_MEMBRANE = 2;
-	int RECORD_TIME = 100;//round(Max_RunStep/2);
-	std::cout<<"Record frequency = "<<RECORD_TIME<<std::endl;
-	std::cout<<"Growth frequency = "<<GROWTH_TIME<<std::endl;
-	int NKBT = 40000; //The max number of edge-swap attempt per kBT value
-	std::cout<<"Number of edge-swap per kBT value = "<<NKBT<<std::endl;
-	double min_kT = 0.21;
-	std::cout<<"min kT for sim. termination = "<<min_kT<<std::endl;
-	int WHEN = 0;
-	double old_total_energy = 0.0;
-	double new_total_energy = 0.0;
-	double energy_gradient = 0.0;
-	int Num_of_step_run = 0;
-	auto build_ptr = weak_bld_ptr.lock();//upgrade weak builder to access host variables.
-	std::cout<<"initial LJ-x : "<< ljInfoVecs.LJ_PosX <<std::endl;
-	std::cout<<"initial LJ-y : "<< ljInfoVecs.LJ_PosY <<std::endl;
-	std::cout<<"initial LJ-z : "<< ljInfoVecs.LJ_PosZ <<std::endl;
-		
-
-    
-	double min_energy;
-	generalParams.true_num_edges = 0;
-	for (int i = 0; i < coordInfoVecs.num_edges; i++){
-		if (coordInfoVecs.edges2Nodes_1[i] != INT_MAX && coordInfoVecs.edges2Nodes_2[i] != INT_MAX){
-			generalParams.true_num_edges += 1;
-		}
-	}
-	//storage->print_VTK_File();
-	////storage->storeVariables();
-
-	////////////////////////////////////////
 	
 	ComputeVolume(
 		generalParams,
@@ -445,12 +505,18 @@ void System::solveSystem() {
 		linearSpringInfoVecs,
 		ljInfoVecs
 	);
-
-	generalParams.eq_total_volume = generalParams.true_current_total_volume*4.0;//This is for setting different equilibrium volume to mimic growth or shirnkage.
+	double initial_volume;
+	initial_volume = generalParams.true_current_total_volume;
+	generalParams.eq_total_volume = generalParams.true_current_total_volume*VOLUME_FACTOR;//This is for setting different equilibrium volume to mimic growth or shirnkage.
 	std::cout<<"true_current_total_volume = "<<generalParams.true_current_total_volume<<std::endl;
 	std::cout<<"eq_total_volume = "<<generalParams.eq_total_volume<<std::endl;
 
-	////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////// START OF ACTUAL SIMULATION /////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////
 	
 	while (runSim == true){
 		//WHEN += 1;
@@ -523,35 +589,46 @@ void System::solveSystem() {
 								//coordInfoVecs.nodeForceZ[35] += forceZ;
 							}
 						}*/
-						/*for (int i = 0; i < filament_base.size(); i++){
+						//for (int i = 0; i < filament_base.size(); i++){
+						/*if (filament_base[i] != -1){
 							double R = sqrt( 
 								(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]) * (ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]) + 
 								(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]) * (ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]) + 
 								(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]) * (ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]) );
-							double magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin)*(1.0/R);
+								double magnitude;
+								if (i == 0){
+									magnitude = -2.0*(filament_strength_pull/2.0)*(R - filament_Rmin)*(1.0/R);
+								}
+								else{
+									magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin)*(1.0/R);
+								}
 							double forceX = -magnitude*(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]);  
 							double forceY = -magnitude*(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]);  
 							double forceZ = -magnitude*(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]);  
 							ljInfoVecs.forceX_all[i] +=  -forceX;
 							ljInfoVecs.forceY_all[i] +=  -forceY;
-							ljInfoVecs.forceZ_all[i] +=  -forceZ;	
-						}	*/			
+							ljInfoVecs.forceZ_all[i] +=  -forceZ;
+							coordInfoVecs.nodeForceX[filament_base[i]] += forceX;
+							coordInfoVecs.nodeForceY[filament_base[i]] += forceY;
+							coordInfoVecs.nodeForceZ[filament_base[i]] += forceZ;	
+						//}	
+							}*/		
 						
 					}
 
-					/*double beta;
+					double beta;
 					bool target_height_reached = false;
 					if (ljInfoVecs.LJ_PosZ_all[0] >= (min_height + 0.875*(max_height - min_height))){
 						target_height_reached = true;
-					}*/
+					}
 
-					//std::random_device rand_dev;
-					//std::mt19937 generator_noise(rand_dev());
-					//std::normal_distribution<double> distribution_noise(0.0, 0.01);
+					std::random_device rand_dev;
+					std::mt19937 generator_noise(rand_dev());
+					std::normal_distribution<double> distribution_noise(0.0, 0.01);
 
 					for (int i = 0; i < ljInfoVecs.LJ_PosX_all.size(); i++){
-						
-						/*if(nucleus_in_upperhem[i] == 1){
+						beta = 0.0;
+						/* if(nucleus_in_upperhem[i] == 1){
 							beta = beta1;
 						}
 						else{
@@ -560,24 +637,34 @@ void System::solveSystem() {
 
 						if (target_height_reached == true){
 							beta = 0.0;
-						}
+						}*/
+
 						//std::random_device rand_dev;
 						//std::mt19937 generator_noise(rand_dev());
 						//std::normal_distribution<double> distribution_noise(0.0, 0.01);
-						double noise1 = distribution_noise(generator_noise);
-						double noise2 = distribution_noise(generator_noise);
-						double noise3 = distribution_noise(generator_noise);*/
+						double noise1 = 0.0;//distribution_noise(generator_noise);
+						double noise2 = 0.0;//distribution_noise(generator_noise);
+						double noise3 = 0.0;//distribution_noise(generator_noise);
 
-						ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i]);// + noise1);
-						ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i]);// + noise2);
-						ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i]);// + beta + noise3);
+						ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i] + noise1);
+						ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i] + noise2);
+						ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i] + beta + noise3);
 					
 					}
+				
+				/*for (int i = 0; i < generalParams.maxNodeCount; i++){
+					if (coordInfoVecs.isNodeFixed[i] == true){
+						coordInfoVecs.nodeForceX[i] = 0.0;
+						coordInfoVecs.nodeForceY[i] = 0.0;
+						coordInfoVecs.nodeForceZ[i] = 0.0;
+					}
+				}*/
 
 				AdvancePositions(
 					coordInfoVecs,
 					generalParams,
 					domainParams);
+
 				if (translate_counter % translate_frequency == 1){
 
 					newcenterX = 0.0;
@@ -605,6 +692,29 @@ void System::solveSystem() {
 						ljInfoVecs.LJ_PosY_all[i] += -displacementY;
 						ljInfoVecs.LJ_PosZ_all[i] += -displacementZ;
 					}
+
+					//Here we re-establish the new filament base according to the current location of nuclei nodes
+					/* int maxElementIndex = std::max_element(coordInfoVecs.nodeLocZ.begin(),coordInfoVecs.nodeLocZ.end()) - coordInfoVecs.nodeLocZ.begin();
+					for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
+						if (i == 0){
+							filament_base[i] = maxElementIndex;
+							continue;
+						}
+						for (int j = 0; j < generalParams.maxNodeCount; j++){
+							double xsquared = (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j])*
+												(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j]);
+							double ysquared = (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j])*
+												(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j]);
+							double zsquared = (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j])*
+												(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j]);
+							double R = sqrt(xsquared + ysquared + zsquared);
+							if (R < (max_height - min_height)/2.0 && j != maxElementIndex){
+								filament_base[i] = j;
+								break;
+							}
+							else{filament_base[i] = -1;}
+						}
+					} */
 				}
 							
 					new_total_energy = linearSpringInfoVecs.linear_spring_energy + 
@@ -623,7 +733,7 @@ void System::solveSystem() {
 			}
 			
 		   
-		/*	max_height = -10000.0;
+			max_height = -10000.0;
 			min_height = 10000.0;
 			for (int k = 0; k < generalParams.maxNodeCount; k++){
 				if (coordInfoVecs. nodeLocZ[k] >= max_height){
@@ -632,7 +742,7 @@ void System::solveSystem() {
 				if (coordInfoVecs.nodeLocZ[k] <= min_height){
 					min_height = coordInfoVecs.nodeLocZ[k];
 				}
-			}*/
+			}
 
 		std::cout<<"current time (1st iter before edgeswap): "<< current_time << std::endl;
 		std::cout<<"current total energy (1st iter before edgeswap) = "<<new_total_energy<<std::endl;
@@ -656,13 +766,21 @@ void System::solveSystem() {
 		//double postswap_energy;
 		//double Ediff = 0.0;
 		//initial_kT = generalParams.kT;
-		num_edge_loop = 4;//round(edges_in_upperhem.size()*SAMPLE_SIZE);	
+		num_edge_loop = round(true_num_edges_in_upperhem*SAMPLE_SIZE);
+		if (num_edge_loop == 0){
+			num_edge_loop = 1;
+		}	
 		std::cout<<"num_edge_loop = "<<num_edge_loop<<std::endl;
 	
  		while (initial_kT > 0){
  					////////////////////NOW RELAX THE ATTEMPTED EDGESWAP//////////////////////
 					 current_time = 0.0;
 					 translate_counter = 0;
+					 double VOLUME_RATIO = generalParams.true_current_total_volume/generalParams.eq_total_volume;
+					if (VOLUME_RATIO > 0.75 && VOLUME_FACTOR <= 2.0){
+						VOLUME_FACTOR += 0.0;
+						generalParams.eq_total_volume = initial_volume*VOLUME_FACTOR;
+					};
  					while (current_time < Max_Runtime){
 						 translate_counter += 1;
 						 //std::cout<<"ERROR BEFORE RELAXATION"<<std::endl;
@@ -721,37 +839,48 @@ void System::solveSystem() {
 									//coordInfoVecs.nodeForceZ[35] += forceZ;
 								}
 							}*/
-							/*for (int k = 0; k < filament_base.size(); k++){
+							//for (int k = 0; k < filament_base.size(); k++){
+							/*if (filament_base[i] != -1){
 								double R = sqrt( 
-									(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[k]]) * (ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[k]]) + 
-									(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[k]]) * (ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[k]]) + 
-									(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[k]]) * (ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[k]]) );
-								if (R > (filament_Rmin + 0.25)){
-									continue;
+									(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]) * (ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]) + 
+									(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]) * (ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]) + 
+									(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]) * (ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]) );
+								//if (R > (filament_Rmin + 0.25)){
+								//	continue;
+								//}
+								double magnitude;
+								if (i == 0){
+									magnitude = -2.0*(filament_strength_pull/2.0)*(R - filament_Rmin)*(1.0/R);
 								}
-								double magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin)*(1.0/R);
-								double forceX = -magnitude*(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[k]]);  
-								double forceY = -magnitude*(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[k]]);  
-								double forceZ = -magnitude*(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[k]]);  
+								else{
+									magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin)*(1.0/R);
+								}
+								double forceX = -magnitude*(ljInfoVecs.LJ_PosX - coordInfoVecs.nodeLocX[filament_base[i]]);  
+								double forceY = -magnitude*(ljInfoVecs.LJ_PosY - coordInfoVecs.nodeLocY[filament_base[i]]);  
+								double forceZ = -magnitude*(ljInfoVecs.LJ_PosZ - coordInfoVecs.nodeLocZ[filament_base[i]]);  
 								ljInfoVecs.forceX_all[i] +=  -forceX;
 								ljInfoVecs.forceY_all[i] +=  -forceY;
-								ljInfoVecs.forceZ_all[i] +=  -forceZ;	
-							}	*/
+								ljInfoVecs.forceZ_all[i] +=  -forceZ;
+								coordInfoVecs.nodeForceX[filament_base[i]] += forceX;
+								coordInfoVecs.nodeForceY[filament_base[i]] += forceY;
+								coordInfoVecs.nodeForceZ[filament_base[i]] += forceZ;	
+							//}	
+								}*/
 							 
  						}
 					
  						//now forces are computed, move nodes.
-						/*double beta;
-						bool target_height_reached = false;
+						 double beta;
+						 bool target_height_reached = false;
 						if (ljInfoVecs.LJ_PosZ_all[0] >= (min_height + 0.75*(max_height - min_height))){
 							target_height_reached = true;
 						}
 
 						std::random_device rand_dev;
 						std::mt19937 generator_noise(rand_dev());
-						std::normal_distribution<double> distribution_noise(0.0, 0.01);*/
+						std::normal_distribution<double> distribution_noise(0.0, 0.01);
 						 for (int i = 0; i < ljInfoVecs.LJ_PosX_all.size(); i++){
-						
+							beta = 0.0;
 							/*if(nucleus_in_upperhem[i] == 1){
 							   beta = beta1;
 						   }
@@ -762,18 +891,41 @@ void System::solveSystem() {
 						   if (target_height_reached == true){
 							   beta = 0.0;
 						   }
+
+						   if (nucleus_in_lowerhem[i] == 1){ //(i == (generalParams.maxNodeCountLJ-1)){
+							double R = sqrt( 
+								(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]) * (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]) + 
+								(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]) * (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]) + 
+								(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]) * (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]) );
+							double magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin[i])*(1.0/R);
+							double forceX = -magnitude*(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]);  
+							double forceY = -magnitude*(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]);  
+							double forceZ = -magnitude*(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]);  
+							ljInfoVecs.forceX_all[i] +=  -forceX;
+							ljInfoVecs.forceY_all[i] +=  -forceY;
+							ljInfoVecs.forceZ_all[i] +=  -forceZ;	
+							
+						}*/
 						   //std::random_device rand_dev;
 						   //std::mt19937 generator_noise(rand_dev());
 						   //std::normal_distribution<double> distribution_noise(0.0, 0.01);
-						   double noise1 = distribution_noise(generator_noise);
-						   double noise2 = distribution_noise(generator_noise);
-						   double noise3 = distribution_noise(generator_noise);*/
+						   double noise1 = 0.0;//distribution_noise(generator_noise);
+						   double noise2 = 0.0;//distribution_noise(generator_noise);
+						   double noise3 = 0.0;//distribution_noise(generator_noise);
    
-						   ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i]);// + noise1);
-						   ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i]);// + noise2);
-						   ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i]);// + beta + noise3);
+						   ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i] + noise1);
+						   ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i] + noise2);
+						   ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i] + beta + noise3);
 					   
 					   }
+
+					   /*for (int i = 0; i < generalParams.maxNodeCount; i++){
+						if (coordInfoVecs.isNodeFixed[i] == true){
+							coordInfoVecs.nodeForceX[i] = 0.0;
+							coordInfoVecs.nodeForceY[i] = 0.0;
+							coordInfoVecs.nodeForceZ[i] = 0.0;
+						}
+					}*/
 						 
  						AdvancePositions(
  							coordInfoVecs,
@@ -806,6 +958,28 @@ void System::solveSystem() {
 								ljInfoVecs.LJ_PosY_all[i] += -displacementY;
 								ljInfoVecs.LJ_PosZ_all[i] += -displacementZ;
 							}
+
+							/* int maxElementIndex = std::max_element(coordInfoVecs.nodeLocZ.begin(),coordInfoVecs.nodeLocZ.end()) - coordInfoVecs.nodeLocZ.begin();
+							for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
+								if (i == 0){
+									filament_base[i] = maxElementIndex;
+									continue;
+								}
+								for (int j = 0; j < generalParams.maxNodeCount; j++){
+									double xsquared = (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j])*
+														(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j]);
+									double ysquared = (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j])*
+														(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j]);
+									double zsquared = (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j])*
+														(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j]);
+									double R = sqrt(xsquared + ysquared + zsquared);
+									if (R < (max_height - min_height)/2.0 && j != maxElementIndex){
+										filament_base[i] = j;
+										break;
+									}
+									else{filament_base[i] = -1;}
+								}
+							} */
 						
 							ComputeVolume(
 								generalParams,
@@ -866,7 +1040,7 @@ void System::solveSystem() {
 					 }
 					 
 					 
-					/*max_height = -10000.0;
+					max_height = -10000.0;
 					min_height = 10000.0;
 					for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= max_height){
@@ -875,7 +1049,7 @@ void System::solveSystem() {
 						if (coordInfoVecs.nodeLocZ[k] <= min_height){
 							min_height = coordInfoVecs.nodeLocZ[k];
 						}
-					}*/
+					}
 											
 			
  								
@@ -886,36 +1060,43 @@ void System::solveSystem() {
 								generalParams.true_num_edges += 1;
 							}
 						 }
- 						storage->print_VTK_File();
+						 storage->print_VTK_File();
+						 //storage->storeVariables();
 						 std::cout<<"current total energy = "<< new_total_energy<<std::endl;
 						 std::cout<<"true current total volume = "<<generalParams.true_current_total_volume<<std::endl;
  					}
- 					if (edgeswap_iteration % NKBT == 0){
- 						//storage->storeVariables();
+ 					if (edgeswap_iteration == NKBT ){
+ 						storage->storeVariables();
 					 }
 
-								ComputeVolume(
-									generalParams,
-									coordInfoVecs,
-									linearSpringInfoVecs,
-									ljInfoVecs
-								);
-					 if (edgeswap_iteration % GROWTH_TIME == 0 && generalParams.true_current_total_volume <= generalParams.eq_total_volume){
+					
+
+					 edgeswap_iteration += 1;
+					 
+					if (edgeswap_iteration % GROWTH_TIME == 0){
+
+						for (int i = 0; i < coordInfoVecs.nodeLocX.size(); i++){
+							generalParams.centerX += coordInfoVecs.nodeLocX[i];
+							generalParams.centerY += coordInfoVecs.nodeLocY[i];
+							generalParams.centerZ += coordInfoVecs.nodeLocZ[i];
+						}
+						generalParams.centerX = generalParams.centerX/coordInfoVecs.nodeLocX.size();
+						generalParams.centerY = generalParams.centerY/coordInfoVecs.nodeLocX.size();
+						generalParams.centerZ = generalParams.centerZ/coordInfoVecs.nodeLocX.size();
+
 						double x,y,z;
 						std::random_device rand_dev0;
 						std::mt19937 generator0(rand_dev0());
-						std::uniform_real_distribution<double> guess1(generalParams.centerX-2.0, generalParams.centerX+2.0);
-						std::uniform_real_distribution<double> guess2(generalParams.centerY-2.0, generalParams.centerY+2.0);
-						std::uniform_real_distribution<double> guess3(generalParams.centerZ-2.0, generalParams.centerZ+2.0);						
+						std::uniform_real_distribution<double> guess(generalParams.centerX-1.0, generalParams.centerX+1.0);
 						x = 5.0;//guess(generator0);
 						y = 5.0;//guess(generator0);
 						z = 5.0;//guess(generator0);
 						bool goodchoice = false;
 						double GAP;
-						while (sqrt((x - generalParams.centerX)*(x - generalParams.centerX) + (y - generalParams.centerY)*(y -generalParams.centerY) + (z-generalParams.centerZ)*(z-generalParams.centerZ)) > (2.0) && goodchoice == false){
-							x = guess1(generator0);
-							y = guess2(generator0);
-							z = guess3(generator0);
+						while (sqrt(x*x + y*y + z*z) > (2.0) && goodchoice == false){
+							x = guess(generator0);
+							y = guess(generator0);
+							z = guess(generator0);
 							if (sqrt(x*x + y*y + z*z) > 2.0){
 								continue;
 							}
@@ -923,7 +1104,7 @@ void System::solveSystem() {
 								GAP = sqrt((x-ljInfoVecs.LJ_PosX_all[i])*(x-ljInfoVecs.LJ_PosX_all[i]) +
 											(y-ljInfoVecs.LJ_PosY_all[i])*(x-ljInfoVecs.LJ_PosY_all[i]) +
 											(z-ljInfoVecs.LJ_PosZ_all[i])*(x-ljInfoVecs.LJ_PosZ_all[i]));
-								if (GAP < 0.5){
+								if (GAP < 0.65){
 									goodchoice = false;
 									break;
 								}
@@ -938,14 +1119,6 @@ void System::solveSystem() {
 						ljInfoVecs.forceZ_all.resize(ljInfoVecs.LJ_PosX_all.size());
 						generalParams.maxNodeCountLJ = ljInfoVecs.LJ_PosX_all.size();
 					}
-					else if(generalParams.true_current_total_volume > generalParams.eq_total_volume){
-						runSim = false;
-						generalParams.kT = -1.0;
-						break;
-
-					}
-
-					 edgeswap_iteration += 1;
  					//std::cout<<"edgeswap_iteration = "<<edgeswap_iteration<<std::endl;
  					if (edgeswap_iteration == NKBT){
  						generalParams.kT = -1.0;//generalParams.kT - 0.072;
@@ -957,29 +1130,12 @@ void System::solveSystem() {
 					runSim = false;
 					break;
 					 }
-					 for (int i = 0; i < coordInfoVecs.nodeLocX.size(); i++){
-						generalParams.centerX += coordInfoVecs.nodeLocX[i];
-						generalParams.centerY += coordInfoVecs.nodeLocY[i];
-						generalParams.centerZ += coordInfoVecs.nodeLocZ[i];
-					}
-					generalParams.centerX = generalParams.centerX/coordInfoVecs.nodeLocX.size();
-					generalParams.centerY = generalParams.centerY/coordInfoVecs.nodeLocX.size();
-					generalParams.centerZ = generalParams.centerZ/coordInfoVecs.nodeLocX.size();
-				
 
 //std::cout<<"ERROR BEFORE GROWTH"<<std::endl;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////// GROWTH OF THE CELL (MEMBRANE) ////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GROWTH ALGORITHM IS CURRENTLY WRITTEN TO ALLOW NO MORE THEN 8 NEIGHBORING NODES PER NODE /////////////////////////////
-
-/*if (TESTING == 1){
-	EXPAN_THRESHOLD = 0.0;
-}
-else{
-	EXPAN_THRESHOLD = 10000.0;
-}*/
-//if (GROWTH_TIME_MEMBRANE % edgeswap_iteration == 0){
 
 VectorShuffleForGrowthLoop.clear();
 for (int i = 0; i < coordInfoVecs.num_edges; i++){
@@ -993,20 +1149,16 @@ bool triggered = false;
 //int triggered_counter = 0;
 for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 	//std::cout<<"p = "<<p<<std::endl;
-		int k = p;//VectorShuffleForGrowthLoop[p];
+		int k = VectorShuffleForGrowthLoop[p];
 		if (coordInfoVecs. edges2Nodes_1[k] == INT_MAX || coordInfoVecs. edges2Nodes_2[k] == INT_MAX){
 			continue;
 		}
-		//int k = p;
-		//k -= triggered_counter;
+		if (generalParams.boundaries_in_upperhem[k] == 1){
+			continue;
+		}
 		int iedge = k;
-		//std::cout<<"node1 of iedge = "<<coordInfoVecs.edges2Nodes_1[iedge]<<std::endl;
-		//std::cout<<"node2 of iedge = "<<coordInfoVecs.edges2Nodes_2[iedge]<<std::endl;
 		int elem1 = coordInfoVecs.edges2Triangles_1[iedge];
 		int elem2 = coordInfoVecs.edges2Triangles_2[iedge];
-		//std::cout<<"elem1 of iedge = "<<elem1<<std::endl;
-		//std::cout<<"elem2 of iedge = "<<elem2<<std::endl;
-		////std::cout<<"GROWTH ERROR 1"<<std::endl;	
         int first_v = coordInfoVecs.triangles2Nodes_1[elem1];
         int second_v = coordInfoVecs.triangles2Nodes_2[elem1];
         int third_v = coordInfoVecs.triangles2Nodes_3[elem1];
@@ -1031,19 +1183,37 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
         double This_area_w = sqrt((w1y*v2z - w2y*v1z)*(w1y*w2z - w2y*w1z) + 
                                 ((-w1x*w2z) + (w2x*w1z))*((-w1x*w2z) + (w2x*w1z)) +
 								(w1x*w2y - w2x*w1y)*(w1x*w2y - w2x*w1y))/2.0;
+								
 		int node1 = coordInfoVecs.edges2Nodes_1[iedge];
 		int node2 = coordInfoVecs.edges2Nodes_2[iedge];
 		double edge_dist = sqrt((coordInfoVecs.nodeLocX[node1] - coordInfoVecs.nodeLocX[node2])*(coordInfoVecs.nodeLocX[node1] - coordInfoVecs.nodeLocX[node2]) + 
 					(coordInfoVecs.nodeLocY[node1] - coordInfoVecs.nodeLocY[node2])*(coordInfoVecs.nodeLocY[node1] - coordInfoVecs.nodeLocY[node2]) +
 				(coordInfoVecs.nodeLocZ[node1] - coordInfoVecs.nodeLocZ[node2])*(coordInfoVecs.nodeLocZ[node1] - coordInfoVecs.nodeLocZ[node2]));
-        if ((This_area_v/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD) || (This_area_w/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD)){
-            triggered = true;
-			//triggered_counter += 1;
+		if (RULES_OF_EXPAN == 1){
+			if ((This_area_v/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD) && (This_area_w/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD)){
+				triggered = true;
+			}
+			else{continue;}
 		}
-		else if (edge_dist >= 2.0*generalParams.Rmin){
-			triggered = true;
+		else if (RULES_OF_EXPAN == 2){
+			if ((This_area_v/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD) && (This_area_w/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD_weak)){
+				triggered = true;
+			}
+			else if ((This_area_v/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD_weak) && (This_area_w/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD)){
+				triggered = true;
+			}
+			else if (edge_dist >= 2.0*generalParams.Rmin){
+				triggered = true;
+			}
+			else{continue;}
 		}
-        else{continue;}
+		else if (RULES_OF_EXPAN == 3){
+			if ((This_area_v + This_area_w) >= 4.0*areaTriangleInfoVecs.initial_area){
+				triggered = true;
+			}
+			else{continue;}
+		}
+		
 		////std::cout<<"GROWTH ERROR 2"<<std::endl;	
 		int t1e1, t1e2, t1e3, t2e1, t2e2, t2e3;
 
@@ -1613,7 +1783,7 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 		generalParams.triangles_in_upperhem[elem1] = INT_MAX;
 		generalParams.triangles_in_upperhem[elem2] = INT_MAX;
 
-		nodes_in_tip.push_back(-1);
+		//nodes_in_tip.push_back(-1);
 		
 						
 						
@@ -1638,31 +1808,112 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 
 					//Recalculate the nodes_in_tip data.
 				if (triggered == true){	
-					true_num_edges_in_upperhem = 0;
-					for (int i = 0; i < edges_in_upperhem.size(); i++){
-						if (edges_in_upperhem[i] != INT_MAX && edges_in_upperhem[i] >= 0){
-						true_num_edges_in_upperhem += 1;
-						//break;
-						}
-					}
+					/*if (edgeswap_iteration >= 0){
+					//generalParams.nodes_in_upperhem.clear();
+					//generalParams.nodes_in_upperhem.resize(generalParams.maxNodeCount,-1);
 					double max_z = -2000.0;
 					for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= max_z){
 							max_z = coordInfoVecs. nodeLocZ[k];
 						}
 					}
-					for (int k = 0; k < generalParams.maxNodeCount; k++){
+
+					for (int i = 0; i < generalParams.maxNodeCount; i++){
+						if (coordInfoVecs.nodeLocZ[i] > (max_z - tip_depth)){
+							generalParams.nodes_in_upperhem[i] = 1;
+						}
+						else{
+							generalParams.nodes_in_upperhem[i] = -1;
+						}
+					//	std::cout<<"nodes "<<i<<" "<<generalParams.nodes_in_upperhem[i]<<std::endl;		
+					}*/
+				
+					//std::vector<int> nodes_to_center;
+				
+					////////////////////////////////////////////////////////////////////////////////////////////
+				
+				
+				
+					////////////////////////////////////////////////////////////////////////////////////////////
+					//generalParams.triangles_in_upperhem.resize(coordInfoVecs.num_triangles);
+					/*for (int i = 0; i < coordInfoVecs.num_triangles; i++){
+						if (coordInfoVecs.triangles2Nodes_1[i] == INT_MAX || coordInfoVecs.triangles2Nodes_2[i] == INT_MAX || coordInfoVecs.triangles2Nodes_3[i] == INT_MAX){
+							generalParams.triangles_in_upperhem[i] = INT_MAX;
+							continue;
+						}
+						int aaa = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_1[i]];
+						//std::cout<<aaa<<std::endl;
+						int bbb = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_2[i]];
+						//std::cout<<bbb<<std::endl;
+						int ccc = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_3[i]];
+						//std::cout<<ccc<<std::endl;
+						if ((aaa+bbb+ccc)==3){
+							generalParams.triangles_in_upperhem[i] = 1;
+							//triangles_in_upperhem.push_back(i);
+						}
+						else if ((aaa+bbb+ccc)==1){
+							generalParams.triangles_in_upperhem[i] = 0;
+							//triangles_in_upperhem.push_back(i);
+						}
+						else{
+							generalParams.triangles_in_upperhem[i] = -1;
+						}
+					//	std::cout<<"triangle "<<i<<" "<<generalParams.triangles_in_upperhem[i]<<std::endl;		
+					}
+					//std::cout<<"WHERE iS THE PROBLEM 1"<<std::endl;
+				
+					//std::vector<int> edges_in_upperhem;
+					edges_in_upperhem.clear();
+					//generalParams.edges_in_upperhem.resize(coordInfoVecs.num_edges);
+					for (int i = 0; i < coordInfoVecs.num_edges; i++){
+						
+						if (coordInfoVecs.edges2Nodes_1[i] == INT_MAX || coordInfoVecs.edges2Nodes_2[i] == INT_MAX){
+							generalParams.edges_in_upperhem[i] = INT_MAX;
+							continue;
+						}
+						
+						//std::cout<<"edges2Triangles_1 = "<<coordInfoVecs.edges2Triangles_1[i]<<std::endl;
+						//std::cout<<"edges2Triangles_2 = "<<coordInfoVecs.edges2Triangles_2[i]<<std::endl;
+						int aaa = generalParams.triangles_in_upperhem[coordInfoVecs.edges2Triangles_1[i]];//generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_1[i]];
+						int bbb = generalParams.triangles_in_upperhem[coordInfoVecs.edges2Triangles_2[i]];//generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_2[i]];
+						
+						if (aaa == 1 && bbb == 1){
+							generalParams.edges_in_upperhem[i] = 1;
+							edges_in_upperhem.push_back(i);
+						}
+						else if (aaa == 1 || bbb == 1){
+							generalParams.edges_in_upperhem[i] = 1;//0;
+						}
+						else{
+							generalParams.edges_in_upperhem[i] = -1;
+						}
+						
+					}
+				}*/
+					//std::cout<<"WHERE iS THE PROBLEM 2"<<std::endl;
+					
+					
+					/*for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= (max_z - tip_depth)){
 							nodes_in_tip[k] == 1;
 						}
 						else{
 							nodes_in_tip[k] == -1;
 						}
+					}*/
+					true_num_edges_in_upperhem = 0;
+					for (int i = 0; i < edges_in_upperhem.size(); i++){
+						if (edges_in_upperhem[i] != INT_MAX && edges_in_upperhem[i] >= 0){
+							true_num_edges_in_upperhem += 1;
+							//break;
+						}
 					}
+					//std::cout<<"WHERE iS THE PROBLEM 3"<<std::endl;
 				}
 			
-			TESTING = 0;
-		 //}
+			
+			
+			
 //std::cout<<"GROWTH DONE!"<<std::endl;
  ////storage->print_VTK_File();
 ////storage->storeVariables();
@@ -1670,6 +1921,85 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// END OF GROWTH SECTION //////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					//max_height = -10000.0;
+                      //                  min_height = 10000.0;
+                        //                for (int k = 0; k < generalParams.maxNodeCount; k++){
+                          //                      if (coordInfoVecs. nodeLocZ[k] >= max_height){
+                            //                            max_height = coordInfoVecs. nodeLocZ[k];
+                              //                  }
+                                //                if (coordInfoVecs.nodeLocZ[k] <= min_height){
+                                  //                      min_height = coordInfoVecs.nodeLocZ[k];
+                                    //            }
+                                      //  }
+					/*VectorShuffleForFilamentLoop.clear();
+					for (int i = 0; i < generalParams.maxNodeCount; i++){
+						VectorShuffleForFilamentLoop.push_back(i);
+					}
+					//std::random_device rand_dev;
+					std::mt19937 generator3(rand_dev());
+					std::shuffle(std::begin(VectorShuffleForFilamentLoop), std::end(VectorShuffleForFilamentLoop), generator3);
+					int maxElementIndex = std::max_element(coordInfoVecs.nodeLocZ.begin(),coordInfoVecs.nodeLocZ.end()) - coordInfoVecs.nodeLocZ.begin();
+					for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
+						if (i == 0){
+							filament_base[i] = maxElementIndex;
+							continue;
+						}
+						for (int j = 0; j < VectorShuffleForFilamentLoop.size(); j++){
+							double xsquared = (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j])*
+												(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[j]);
+							double ysquared = (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j])*
+												(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[j]);
+							double zsquared = (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j])*
+												(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[j]);
+							double R = sqrt(xsquared + ysquared + zsquared);
+							if (R < filament_Rmin*1.1  && j != maxElementIndex){
+								filament_base[i] = j;
+								break;
+							}
+							else{filament_base[i] = -1;}
+						}
+					}*/ 
+
+ComputeVolume(
+	generalParams,
+	coordInfoVecs,
+	linearSpringInfoVecs,
+	ljInfoVecs);
+//std::cout<<"ERROR 1"<<std::endl;
+edgeswap_ptr->transferDtoH(coordInfoVecs, build_ptr->hostSetInfoVecs);
+//std::cout<<"ERROR 1.5"<<std::endl;
+for (int edge_loop = 0; edge_loop < num_edge_loop; edge_loop++) {
+	//std::cout<<"edge_loop = "<<edge_loop<<std::endl;
+	
+	std::random_device rand_dev;
+	std::mt19937 generator(rand_dev());
+   
+   std::uniform_int_distribution<int> distribution(1,edges_in_upperhem.size());
+   
+   int dice_roll = distribution(generator);
+   
+   int edge = edges_in_upperhem[dice_roll - 1];
+   
+   while (generalParams.boundaries_in_upperhem[edge] == 1 || edge == INT_MAX){
+		dice_roll = distribution(generator);
+		
+		edge =  edges_in_upperhem[dice_roll - 1];
+	 }
+   //std::cout<<"edge = "<<edge<<std::endl;
+	int ALPHA = edgeswap_ptr->edge_swap_host_vecs(
+		edge,
+		generalParams,
+		build_ptr->hostSetInfoVecs,
+		linearSpringInfoVecs,
+		bendingTriangleInfoVecs,
+		areaTriangleInfoVecs);
+	
+}
+//NOTE: EDGESWAP ALGORITHM CURRENTLY IS WRITTEN TO ALLOW AT MOST 8 NEIGHBORING NODES PER NODE.
+//std::cout<<"ERROR 2"<<std::endl;
+edgeswap_ptr->transferHtoD(coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
+
+
 
  					
 					
@@ -1708,7 +2038,7 @@ void System::initializeSystem(HostSetInfoVecs& hostSetInfoVecs) {
 	std::cout<<"num elems: "<< coordInfoVecs.num_triangles << std::endl;
 	//allocate memory
 	int mem_prealloc = 4;
-	coordInfoVecs.isNodeFixed.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
+	coordInfoVecs.isNodeFixed.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size(),false);
 	coordInfoVecs.prevNodeLocX.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
 	coordInfoVecs.prevNodeLocY.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
 	coordInfoVecs.prevNodeLocZ.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());

@@ -101,7 +101,7 @@ struct MemRepulsionSpringFunctor : public thrust::unary_function<U2CVec3,CVec3> 
 
         int node_id = thrust::get<0>(u2d3);
         
-       // int bucketId = thrust::get<1>(u2d3);//bucket containing nodeId
+        int bucketId = thrust::get<1>(u2d3);//bucket containing nodeId
 	
 		//beginning and end of attempted attachment id's in id_value_expanded
         //these indices are membrane
@@ -138,78 +138,573 @@ struct MemRepulsionSpringFunctor : public thrust::unary_function<U2CVec3,CVec3> 
         int neighbor11 = nndata11[node_id];
         int neighbor12 = nndata12[node_id];
 
-        //for now iterate through all membrane id's
-       // unsigned begin = keyBegin[bucketId];
-       // unsigned end = keyEnd[bucketId];
-
-        for (unsigned memId_count = 0; memId_count < membraneMaxNode; memId_count++ ){
-            
-            unsigned memId = memId_count;//id_value_expanded[ memId_count ];
-            if (memId == neighbor1){
-                continue;
-            }
-            if (memId == neighbor2){
-                continue;
-            }
-            if (memId == neighbor3){
-                continue;
-            }
-            if (memId == neighbor4){
-                continue;
-            }
-            if (memId == neighbor5){
-                continue;
-            }
-            if (memId == neighbor6){
-                continue;
-            }
-            if (memId == neighbor7){
-                continue;
-            }
-            if (memId == neighbor8){
-                continue;
-            }
-            if (memId == neighbor9){
-                continue;
-            }
-            if (memId == neighbor10){
-                continue;
-            }
-            if (memId == neighbor11){
-                continue;
-            }
-            if (memId == neighbor12){
-                continue;
-            }
-
-            if ((memId < membraneMaxNode) && (memId != node_id)) {
-                //calculate distance
-                xLoc_LR = -( posX - membraneNodeXAddr[memId] ); //This is like Rk - Rj, where Rj is the point we are trying to update
-                yLoc_LR = -( posY - membraneNodeYAddr[memId] );
-                zLoc_LR = -( posZ - membraneNodeZAddr[memId] );
-
+       //NN tells us the neighboring nodes that we will search for its neighbor again
+        double current_forceX1, current_forceX2, current_forceX3, current_forceX4, 
+                current_forceX5, current_forceX6, current_forceX7, current_forceX8, 
+                current_forceX9, current_forceX10, current_forceX11, current_forceX12;
+        double current_forceY1, current_forceY2, current_forceY3, current_forceY4, 
+                current_forceY5, current_forceY6, current_forceY7, current_forceY8, 
+                current_forceY9, current_forceY10, current_forceY11, current_forceY12;
+        double current_forceZ1, current_forceZ2, current_forceZ3, current_forceZ4, 
+                current_forceZ5, current_forceZ6, current_forceZ7, current_forceZ8, 
+                current_forceZ9, current_forceZ10, current_forceZ11, current_forceZ12;
+        double magnitude;
+        int neighbor;
+    
+    for (int j = 0; j < 12; j ++){
+        if (j == 0 && (nndata1[node_id] >= 0)){neighbor = nndata1[node_id];}
+        //else{continue;}
+        else if (j == 1 && (nndata2[node_id] >= 0)){neighbor = nndata2[node_id];}
+        //else{continue;}
+        else if (j == 2 && (nndata3[node_id] >= 0)){neighbor = nndata3[node_id];}
+        //else{continue;}
+        else if (j == 3 && (nndata4[node_id] >= 0)){neighbor = nndata4[node_id];}
+        //else{continue;}
+        else if (j == 4 && (nndata5[node_id] >= 0)){neighbor = nndata5[node_id];}
+        //else{continue;}
+        else if (j == 5 && (nndata6[node_id] >= 0)){neighbor = nndata6[node_id];}
+        //else{continue;}
+        else if (j == 6 && (nndata7[node_id] >= 0)){neighbor = nndata7[node_id];}
+        //else{continue;}
+        else if (j == 7 && (nndata8[node_id] >= 0)){neighbor = nndata8[node_id];}
+        //else{continue;}
+        else if (j == 8 && (nndata9[node_id] >= 0)){neighbor = nndata9[node_id];}
+        //else{continue;}
+        else if (j == 9 && (nndata10[node_id] >= 0)){neighbor = nndata10[node_id];}
+        //else{continue;}
+        else if (j == 10 && (nndata11[node_id] >= 0)){neighbor = nndata11[node_id];}
+        //else{continue;}
+        else if (j == 11 && (nndata12[node_id] >= 0)){neighbor = nndata12[node_id];}
+        else{continue;}
+       //for (int i = 0; i < 12; i++){
+           if (nndata1[neighbor] >= 0 &&
+                 nndata1[neighbor] != node_id &&
+                 nndata1[neighbor] != neighbor1 &&
+                 nndata1[neighbor] != neighbor2 &&
+                 nndata1[neighbor] != neighbor3 &&
+                 nndata1[neighbor] != neighbor4 &&
+                 nndata1[neighbor] != neighbor5 &&
+                 nndata1[neighbor] != neighbor6 &&
+                 nndata1[neighbor] != neighbor7 &&
+                 nndata1[neighbor] != neighbor8 &&
+                 nndata1[neighbor] != neighbor9 &&
+                 nndata1[neighbor] != neighbor10 &&
+                 nndata1[neighbor] != neighbor11 &&
+                 nndata1[neighbor] != neighbor12 ){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata1[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata1[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata1[neighbor]] );
                 double R = sqrt( 
                             (xLoc_LR) * (xLoc_LR) + 
                             (yLoc_LR) * (yLoc_LR) + 
                             (zLoc_LR) * (zLoc_LR) );
+                if (R < abs_Rmin){
+                    magnitude = 2*epsilon_rep1*
+                                            (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (epsilon_rep2/R);
 
-                if (R < Rmin) {
-                    double magnitude = 2.0*epsilon_rep1*
-                                        (1.0-exp(-epsilon_rep2*(R-Rmin)))*
-                                        (-exp(-epsilon_rep2*(R-Rmin)))*
-                                        (epsilon_rep2/R);
-
-                    current_forceX += -magnitude*xLoc_LR;
-                    current_forceY += -magnitude*yLoc_LR;
-                    current_forceZ += -magnitude*zLoc_LR;
+                        current_forceX1 = -magnitude*xLoc_LR;
+                        current_forceY1 = -magnitude*yLoc_LR;
+                        current_forceZ1 = -magnitude*zLoc_LR;
                 }
-                //else if( R > abs_Rmin & R < Rmin){
-                 //   current_forceX += (epsilon*5.0)*(R - Rmin)*(xLoc_LR)/R;
-				//	current_forceY += (epsilon*5.0)*(R - Rmin)*(yLoc_LR)/R;
-				//	current_forceZ += (epsilon*5.0)*(R - Rmin)*(zLoc_LR)/R;
-                //}
+                else{
+                    current_forceX1 = 0.0;
+                    current_forceY1 = 0.0;
+                    current_forceZ1 = 0.0;
+                }
+           }
+           else{
+               current_forceX1 = 0.0;
+                current_forceY1 = 0.0;
+                current_forceZ1 = 0.0;
+           }
+           
+           if (nndata2[neighbor] >= 0 &&
+                 nndata2[neighbor] != node_id &&
+                 nndata2[neighbor] != neighbor1 &&
+                 nndata2[neighbor] != neighbor2 &&
+                 nndata2[neighbor] != neighbor3 &&
+                 nndata2[neighbor] != neighbor4 &&
+                 nndata2[neighbor] != neighbor5 &&
+                 nndata2[neighbor] != neighbor6 &&
+                 nndata2[neighbor] != neighbor7 &&
+                 nndata2[neighbor] != neighbor8 &&
+                 nndata2[neighbor] != neighbor9 &&
+                 nndata2[neighbor] != neighbor10 &&
+                 nndata2[neighbor] != neighbor11 &&
+                 nndata2[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata2[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata2[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata2[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+                if (R < abs_Rmin){
+                    magnitude = 2*epsilon_rep1*
+                                            (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (epsilon_rep2/R);
+
+                        current_forceX2 = -magnitude*xLoc_LR;
+                        current_forceY2 = -magnitude*yLoc_LR;
+                        current_forceZ2 = -magnitude*zLoc_LR;
+                }
+                else{
+                    current_forceX2 = 0.0;
+                    current_forceY2 = 0.0;
+                    current_forceZ2 = 0.0;
+                }
+           }
+           else{
+               current_forceX2 = 0.0;
+                current_forceY2 = 0.0;
+                current_forceZ2 = 0.0;
+           }
+           
+           if (nndata3[neighbor] >= 0 &&
+                nndata3[neighbor] != node_id &&
+                nndata3[neighbor] != neighbor1 &&
+                nndata3[neighbor] != neighbor2 &&
+                nndata3[neighbor] != neighbor3 &&
+                nndata3[neighbor] != neighbor4 &&
+                nndata3[neighbor] != neighbor5 &&
+                nndata3[neighbor] != neighbor6 &&
+                nndata3[neighbor] != neighbor7 &&
+                nndata3[neighbor] != neighbor8 &&
+                nndata3[neighbor] != neighbor9 &&
+                nndata3[neighbor] != neighbor10 &&
+                nndata3[neighbor] != neighbor11 &&
+                nndata3[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata3[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata3[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata3[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+                if (R < abs_Rmin){
+                    magnitude = 2*epsilon_rep1*
+                                            (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (epsilon_rep2/R);
+
+                        current_forceX3 = -magnitude*xLoc_LR;
+                        current_forceY3 = -magnitude*yLoc_LR;
+                        current_forceZ3 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX3 = 0.0;
+                        current_forceY3 = 0.0;
+                        current_forceZ3 = 0.0;
+                    }
             }
-        }
+           else{
+               current_forceX3 = 0.0;
+                current_forceY3 = 0.0;
+                current_forceZ3 = 0.0;
+           }
+           
+           if (nndata4[neighbor] >= 0 &&
+                 nndata4[neighbor] != node_id &&
+                 nndata4[neighbor] != neighbor1 &&
+                 nndata4[neighbor] != neighbor2 &&
+                 nndata4[neighbor] != neighbor3 &&
+                 nndata4[neighbor] != neighbor4 &&
+                 nndata4[neighbor] != neighbor5 &&
+                 nndata4[neighbor] != neighbor6 &&
+                 nndata4[neighbor] != neighbor7 &&
+                 nndata4[neighbor] != neighbor8 &&
+                 nndata4[neighbor] != neighbor9 &&
+                 nndata4[neighbor] != neighbor10 &&
+                 nndata4[neighbor] != neighbor11 &&
+                 nndata4[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata4[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata4[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata4[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                            (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (epsilon_rep2/R);
+
+                        current_forceX4 = -magnitude*xLoc_LR;
+                        current_forceY4 = -magnitude*yLoc_LR;
+                        current_forceZ4 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX4 = 0.0;
+                        current_forceY4 = 0.0;
+                        current_forceZ4 = 0.0;
+                    }
+            }
+           else{
+               current_forceX4 = 0.0;
+                current_forceY4 = 0.0;
+                current_forceZ4 = 0.0;
+           }
+           
+           if (nndata5[neighbor] >= 0 &&
+                 nndata5[neighbor] != node_id &&
+                 nndata5[neighbor] != neighbor1 &&
+                 nndata5[neighbor] != neighbor2 &&
+                 nndata5[neighbor] != neighbor3 &&
+                 nndata5[neighbor] != neighbor4 &&
+                 nndata5[neighbor] != neighbor5 &&
+                 nndata5[neighbor] != neighbor6 &&
+                 nndata5[neighbor] != neighbor7 &&
+                 nndata5[neighbor] != neighbor8 &&
+                 nndata5[neighbor] != neighbor9 &&
+                 nndata5[neighbor] != neighbor10 &&
+                 nndata5[neighbor] != neighbor11 &&
+                 nndata5[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata5[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata5[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata5[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                            (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                            (epsilon_rep2/R);
+
+                        current_forceX5 = -magnitude*xLoc_LR;
+                        current_forceY5 = -magnitude*yLoc_LR;
+                        current_forceZ5 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX5 = 0.0;
+                        current_forceY5 = 0.0;
+                        current_forceZ5 = 0.0;
+                    }
+            }
+           else{
+               current_forceX5 = 0.0;
+                current_forceY5 = 0.0;
+                current_forceZ5 = 0.0;
+           }
+          
+           if (nndata6[neighbor] >= 0 && 
+                nndata6[neighbor] != node_id &&
+                nndata6[neighbor] != neighbor1 &&
+                 nndata6[neighbor] != neighbor2 &&
+                 nndata6[neighbor] != neighbor3 &&
+                 nndata6[neighbor] != neighbor4 &&
+                 nndata6[neighbor] != neighbor5 &&
+                 nndata6[neighbor] != neighbor6 &&
+                 nndata6[neighbor] != neighbor7 &&
+                 nndata6[neighbor] != neighbor8 &&
+                 nndata6[neighbor] != neighbor9 &&
+                 nndata6[neighbor] != neighbor10 &&
+                 nndata6[neighbor] != neighbor11 &&
+                 nndata6[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata6[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata6[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata6[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX6 = -magnitude*xLoc_LR;
+                            current_forceY6 = -magnitude*yLoc_LR;
+                            current_forceZ6 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX6 = 0.0;
+                        current_forceY6 = 0.0;
+                        current_forceZ6 = 0.0;
+                    }
+            }
+           else{
+               current_forceX6 = 0.0;
+                current_forceY6 = 0.0;
+                current_forceZ6 = 0.0;
+           }
+           
+           if (nndata7[neighbor] >= 0 &&
+                nndata7[neighbor] != node_id &&
+                nndata7[neighbor] != neighbor1 &&
+                 nndata7[neighbor] != neighbor2 &&
+                 nndata7[neighbor] != neighbor3 &&
+                 nndata7[neighbor] != neighbor4 &&
+                 nndata7[neighbor] != neighbor5 &&
+                 nndata7[neighbor] != neighbor6 &&
+                 nndata7[neighbor] != neighbor7 &&
+                 nndata7[neighbor] != neighbor8 &&
+                 nndata7[neighbor] != neighbor9 &&
+                 nndata7[neighbor] != neighbor10 &&
+                 nndata7[neighbor] != neighbor11 &&
+                 nndata7[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata7[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata7[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata7[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX7 = -magnitude*xLoc_LR;
+                            current_forceY7 = -magnitude*yLoc_LR;
+                            current_forceZ7 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX7 = 0.0;
+                        current_forceY7 = 0.0;
+                        current_forceZ7 = 0.0;
+                    }
+            }
+           else{
+               current_forceX7 = 0.0;
+                current_forceY7 = 0.0;
+                current_forceZ7 = 0.0;
+           }
+           
+           if (nndata8[neighbor] >= 0 && 
+                nndata8[neighbor] != node_id &&
+                nndata8[neighbor] != neighbor1 &&
+                nndata8[neighbor] != neighbor2 &&
+                nndata8[neighbor] != neighbor3 &&
+                nndata8[neighbor] != neighbor4 &&
+                nndata8[neighbor] != neighbor5 &&
+                nndata8[neighbor] != neighbor6 &&
+                nndata8[neighbor] != neighbor7 &&
+                nndata8[neighbor] != neighbor8 &&
+                nndata8[neighbor] != neighbor9 &&
+                nndata8[neighbor] != neighbor10 &&
+                nndata8[neighbor] != neighbor11 &&
+                nndata8[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata8[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata8[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata8[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX8 = -magnitude*xLoc_LR;
+                            current_forceY8 = -magnitude*yLoc_LR;
+                            current_forceZ8 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX8 = 0.0;
+                        current_forceY8 = 0.0;
+                        current_forceZ8 = 0.0;
+                    }
+            }
+           else{
+               current_forceX8 = 0.0;
+                current_forceY8 = 0.0;
+                current_forceZ8 = 0.0;
+           }
+           
+           if (nndata9[neighbor] >= 0 && 
+                nndata9[neighbor] != node_id &&
+                nndata9[neighbor] != neighbor1 &&
+                 nndata9[neighbor] != neighbor2 &&
+                 nndata9[neighbor] != neighbor3 &&
+                 nndata9[neighbor] != neighbor4 &&
+                 nndata9[neighbor] != neighbor5 &&
+                 nndata9[neighbor] != neighbor6 &&
+                 nndata9[neighbor] != neighbor7 &&
+                 nndata9[neighbor] != neighbor8 &&
+                 nndata9[neighbor] != neighbor9 &&
+                 nndata9[neighbor] != neighbor10 &&
+                 nndata9[neighbor] != neighbor11 &&
+                 nndata9[neighbor] != neighbor12 ){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata9[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata9[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata9[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX9 = -magnitude*xLoc_LR;
+                            current_forceY9 = -magnitude*yLoc_LR;
+                            current_forceZ9 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX9 = 0.0;
+                        current_forceY9 = 0.0;
+                        current_forceZ9 = 0.0;
+                    }
+            }
+           else{
+               current_forceX9 = 0.0;
+                current_forceY9 = 0.0;
+                current_forceZ9 = 0.0;
+           }
+           
+           if (nndata10[neighbor] >= 0 && 
+                nndata10[neighbor] != node_id &&
+                nndata10[neighbor] != neighbor1 &&
+                nndata10[neighbor] != neighbor2 &&
+                nndata10[neighbor] != neighbor3 &&
+                nndata10[neighbor] != neighbor4 &&
+                nndata10[neighbor] != neighbor5 &&
+                nndata10[neighbor] != neighbor6 &&
+                nndata10[neighbor] != neighbor7 &&
+                nndata10[neighbor] != neighbor8 &&
+                nndata10[neighbor] != neighbor9 &&
+                nndata10[neighbor] != neighbor10 &&
+                nndata10[neighbor] != neighbor11 &&
+                nndata10[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata10[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata10[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata10[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX10 = -magnitude*xLoc_LR;
+                            current_forceY10 = -magnitude*yLoc_LR;
+                            current_forceZ10 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX10 = 0.0;
+                        current_forceY10 = 0.0;
+                        current_forceZ10 = 0.0;
+                    }
+            }
+           else{
+               current_forceX10 = 0.0;
+                current_forceY10 = 0.0;
+                current_forceZ10 = 0.0;
+           }
+          
+           if (nndata11[neighbor] >= 0 && 
+                nndata11[neighbor] != node_id &&
+                nndata11[neighbor] != neighbor1 &&
+                nndata11[neighbor] != neighbor2 &&
+                nndata11[neighbor] != neighbor3 &&
+                nndata11[neighbor] != neighbor4 &&
+                nndata11[neighbor] != neighbor5 &&
+                nndata11[neighbor] != neighbor6 &&
+                nndata11[neighbor] != neighbor7 &&
+                nndata11[neighbor] != neighbor8 &&
+                nndata11[neighbor] != neighbor9 &&
+                nndata11[neighbor] != neighbor10 &&
+                nndata11[neighbor] != neighbor11 &&
+                nndata11[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata11[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata11[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata11[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX11 = -magnitude*xLoc_LR;
+                            current_forceY11 = -magnitude*yLoc_LR;
+                            current_forceZ11 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX11 = 0.0;
+                        current_forceY11 = 0.0;
+                        current_forceZ11 = 0.0;
+                    }
+            }
+           else{
+               current_forceX11 = 0.0;
+                current_forceY11 = 0.0;
+                current_forceZ11 = 0.0;
+           }
+           
+           if (nndata12[neighbor] >= 0 && 
+                nndata12[neighbor] != node_id &&
+                nndata12[neighbor] != neighbor1 &&
+                nndata12[neighbor] != neighbor2 &&
+                nndata12[neighbor] != neighbor3 &&
+                nndata12[neighbor] != neighbor4 &&
+                nndata12[neighbor] != neighbor5 &&
+                nndata12[neighbor] != neighbor6 &&
+                nndata12[neighbor] != neighbor7 &&
+                nndata12[neighbor] != neighbor8 &&
+                nndata12[neighbor] != neighbor9 &&
+                nndata12[neighbor] != neighbor10 &&
+                nndata12[neighbor] != neighbor11 &&
+                nndata12[neighbor] != neighbor12){
+                xLoc_LR = -( posX - membraneNodeXAddr[nndata12[neighbor]] ); //This is like Rk - Rj, where Rj is the point we are trying to update
+                yLoc_LR = -( posY - membraneNodeYAddr[nndata12[neighbor]] );
+                zLoc_LR = -( posZ - membraneNodeZAddr[nndata12[neighbor]] );
+                double R = sqrt( 
+                            (xLoc_LR) * (xLoc_LR) + 
+                            (yLoc_LR) * (yLoc_LR) + 
+                            (zLoc_LR) * (zLoc_LR) );
+            if (R < abs_Rmin){
+                magnitude = 2*epsilon_rep1*
+                                                (1-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (-exp(-epsilon_rep2*(R-abs_Rmin)))*
+                                                (epsilon_rep2/R);
+
+                            current_forceX12 = -magnitude*xLoc_LR;
+                            current_forceY12 = -magnitude*yLoc_LR;
+                            current_forceZ12 = -magnitude*zLoc_LR;
+                    }
+                    else{
+                        current_forceX12 = 0.0;
+                        current_forceY12 = 0.0;
+                        current_forceZ12 = 0.0;
+                    }
+            }
+           else{
+               current_forceX12 = 0.0;
+                current_forceY12 = 0.0;
+                current_forceZ12 = 0.0;
+           }
+
+        current_forceX += current_forceX1 + current_forceX2 + current_forceX3 + current_forceX4 +
+                        current_forceX5 + current_forceX6 + current_forceX7 + current_forceX8 +
+                        current_forceX9 + current_forceX10 + current_forceX11 + current_forceX12 ;
+        current_forceY += current_forceY1 + current_forceY2 + current_forceY3 + current_forceY4 +
+                        current_forceY5 + current_forceY6 + current_forceY7 + current_forceY8 +
+                        current_forceY9 + current_forceY10 + current_forceY11 + current_forceY12 ;
+        current_forceZ += current_forceZ1 + current_forceZ2 + current_forceZ3 + current_forceZ4 +
+                        current_forceZ5 + current_forceZ6 + current_forceZ7 + current_forceZ8 +
+                        current_forceZ9 + current_forceZ10 + current_forceZ11 + current_forceZ12 ;    
+       //}
+    }
+
         return thrust::make_tuple(current_forceX, current_forceY, current_forceZ);
     }
 };

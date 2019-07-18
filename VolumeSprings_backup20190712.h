@@ -111,11 +111,7 @@ for (int i = 0; i < num_of_triangles; i++){
         r3 = triangles2Nodes_2[i];
     }   
     else{
-        forceX += 0.0;
-        forceY += 0.0;
-        forceZ += 0.0;
         continue;
-        
     }//if "counter" vertex does not belong to the current triangle, skip the computation.
 
     if (r1 != INT_MAX && r2 != INT_MAX && r3 != INT_MAX){
@@ -130,34 +126,20 @@ for (int i = 0; i < num_of_triangles; i++){
         double r3y = membraneNodeYAddr[r3];
         double r3z = membraneNodeZAddr[r3];
 
-        double n1 = (r2y - r1y)*(r3z - r1z) - (r3y - r1y)*(r2z - r1z);//un-normalized components of the normal vector
-        double n2 = -(r2x - r1x)*(r3z - r1z) + (r3x - r1x)*(r2z - r1z);
-        double n3 = (r2x - r1x)*(r3y - r1y) - (r3x - r1x)*(r2y - r1y);
-        double norm_n = sqrt(n1*n1 + n2*n2 + n3*n3);
-        double N1 = n1/norm_n;
-        double N2 = n2/norm_n;
-        double N3 = n3/norm_n;
+        double N1 = (r2y - r1y)*(r3z - r1z) - (r3y - r1y)*(r2z - r1z);
+        double N1_x = 0.0;
+        double N1_y = -(r3z - r1z) + (r2z - r1z);
+        double N1_z = -(r2y - r1y) + (r3y - r1y);
 
-        double n1_x = 0.0;
-        double n1_y = -(r3z - r1z) + (r2z - r1z);
-        double n1_z = -(r2y - r1y) + (r3y - r1y);        
-        double n2_x = (r3z - r1z) - (r2z - r1z);
-        double n2_y = 0.0;
-        double n2_z = (r2x - r1x) - (r3x - r1x);       
-        double n3_x = -(r3y - r1y) + (r2y - r1y);
-        double n3_y = -(r2x - r1x) + (r3x - r1x);
-        double n3_z = 0.0;
+        double N2 = -(r2x - r1x)*(r3z - r1z) + (r3x - r1x)*(r2z - r1z);
+        double N2_x = (r3z - r1z) - (r2z - r1z);
+        double N2_y = 0.0;
+        double N2_z = (r2x - r1x) - (r3x - r1x);
 
-        double N1_x = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n1_x - n1*(1.0/norm_n)*(n1*n1_x + n2*n2_x + n3*n3_x));
-        double N1_y = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n1_y - n1*(1.0/norm_n)*(n1*n1_y + n2*n2_y + n3*n3_y));
-        double N1_z = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n1_z - n1*(1.0/norm_n)*(n1*n1_z + n2*n2_z + n3*n3_z));
-        double N2_x = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n2_x - n2*(1.0/norm_n)*(n1*n1_x + n2*n2_x + n3*n3_x));
-        double N2_y = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n2_y - n2*(1.0/norm_n)*(n1*n1_y + n2*n2_y + n3*n3_y));
-        double N2_z = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n2_z - n2*(1.0/norm_n)*(n1*n1_z + n2*n2_z + n3*n3_z));
-        double N3_x = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n3_x - n3*(1.0/norm_n)*(n1*n1_x + n2*n2_x + n3*n3_x));
-        double N3_y = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n3_y - n3*(1.0/norm_n)*(n1*n1_y + n2*n2_y + n3*n3_y));
-        double N3_z = (1.0/norm_n)*(1.0/norm_n)*(norm_n*n3_z - n3*(1.0/norm_n)*(n1*n1_z + n2*n2_z + n3*n3_z));
-        
+        double N3 = (r2x - r1x)*(r3y - r1y) - (r3x - r1x)*(r2y - r1y);
+        double N3_x = -(r3y - r1y) + (r2y - r1y);
+        double N3_y = -(r2x - r1x) + (r3x - r1x);
+        double N3_z = 0.0;
 
         double r1dN = r1x*N1 + r1y*N2 + r1z*N3;
         
@@ -224,17 +206,14 @@ for (int i = 0; i < num_of_triangles; i++){
                         N2_z*(r1cr2y + r2cr3y + r3cr1y) + N2*(r1cr2y_z + r2cr3y_z + r3cr1y_z) +
                         N3_z*(r1cr2z + r2cr3z + r3cr1z) + N3*(r1cr2z_z + r2cr3z_z + r3cr1z_z);
 
-        r1_dx += r1dN_x*sqrt(NN*NN) + r1dN*(NN/sqrt(NN*NN))*NN_x;
-        r1_dy += r1dN_y*sqrt(NN*NN) + r1dN*(NN/sqrt(NN*NN))*NN_y;
-        r1_dz += r1dN_z*sqrt(NN*NN) + r1dN*(NN/sqrt(NN*NN))*NN_z;
+        r1_dx += r1dN_x*abs(NN) + r1dN*(NN/abs(NN))*NN_x;
+        r1_dy += r1dN_y*abs(NN) + r1dN*(NN/abs(NN))*NN_y;
+        r1_dz += r1dN_z*abs(NN) + r1dN*(NN/abs(NN))*NN_z;
 
-    dV_r1_dx = (1.0/12.0)*(2.0*current_total_volume/sqrt(current_total_volume*current_total_volume))*r1_dx;
-    dV_r1_dy = (1.0/12.0)*(2.0*current_total_volume/sqrt(current_total_volume*current_total_volume))*r1_dy;
-    dV_r1_dz = (1.0/12.0)*(2.0*current_total_volume/sqrt(current_total_volume*current_total_volume))*r1_dz; 
-    
-   // dV_r1_dx = (1.0/12.0)*(2.0*r1dN*NN/sqrt(current_total_volume*current_total_volume))*r1_dx;
-   // dV_r1_dy = (1.0/12.0)*(2.0*r1dN*NN/sqrt(current_total_volume*current_total_volume))*r1_dy;
-   // dV_r1_dz = (1.0/12.0)*(2.0*r1dN*NN/sqrt(current_total_volume*current_total_volume))*r1_dz; 
+    dV_r1_dx = (1.0/12.0)*(2.0*current_total_volume/abs(current_total_volume))*r1_dx;
+    dV_r1_dy = (1.0/12.0)*(2.0*current_total_volume/abs(current_total_volume))*r1_dy;
+    dV_r1_dz = (1.0/12.0)*(2.0*current_total_volume/abs(current_total_volume))*r1_dz; 
+
     }
     else{continue;}
 
@@ -249,7 +228,7 @@ forceZ += magnitude*(-dV_r1_dz);
 
 
 
-return thrust::make_tuple(forceX, forceY, forceZ);
+return thrust::make_tuple(-forceX, -forceY, -forceZ);
 
 
     }

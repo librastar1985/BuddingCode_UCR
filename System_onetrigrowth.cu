@@ -39,13 +39,13 @@ void System::Solve_Forces(){
 	thrust::fill(coordInfoVecs.nodeForceZ.begin(), coordInfoVecs.nodeForceZ.end(), 0.0);
 	
 	//setBucketScheme();
-	//std::cout<<"Error here! before linear"<<std::endl;
 	ComputeLinearSprings( 
 		generalParams, 
 		coordInfoVecs,
 		linearSpringInfoVecs, 
 		ljInfoVecs);
-	//	std::cout<<"LINEAR"<<std::endl;
+	//	std::cout<<"LINEAR"<<std::endl;	
+	//std::cout<<"ERROR DURING LINEARSPRING?"<<std::endl;
 	
 	//if (coordInfoVecs.nodeLocX.size() > 162){
 	//	std::cout<<"force ="<<coordInfoVecs.nodeForceX[generalParams.maxNodeCount-1]<<" "<<coordInfoVecs.nodeForceY[generalParams.maxNodeCount-1]<<" "<<coordInfoVecs.nodeForceZ[generalParams.maxNodeCount-1]<<std::endl;
@@ -56,12 +56,13 @@ void System::Solve_Forces(){
 		coordInfoVecs,
 		areaTriangleInfoVecs);
 	//	std::cout<<"AREA"<<std::endl;
-	
+	//std::cout<<"ERROR DURING AREASPRING?"<<std::endl;
 	//std::cout<<"Error here! before bending"<<std::endl;
 	ComputeCosTriangleSprings(
 		generalParams,
 		coordInfoVecs,  
 		bendingTriangleInfoVecs); 
+		//std::cout<<"ERROR DURING BENDINGSPRING?"<<std::endl;
 	
 	//std::cout<<"Error here! before memrepul"<<std::endl;
 	ComputeMemRepulsionSprings(
@@ -70,39 +71,41 @@ void System::Solve_Forces(){
 		capsidInfoVecs,
 		generalParams,
 		auxVecs);
-
-	/*ComputeVolume(
+		//std::cout<<"ERROR DURING REPULSION?"<<std::endl;
+	ComputeVolume(
 		generalParams,
 		coordInfoVecs,
 		linearSpringInfoVecs,
 		ljInfoVecs);
-
+		//std::cout<<"ERROR DURING VOLUME?"<<std::endl;
 	ComputeVolumeSprings(
 		coordInfoVecs,
 		linearSpringInfoVecs, 
 		capsidInfoVecs,
 		generalParams,
-		auxVecs);*/
-
+		auxVecs);
+		//std::cout<<"ERROR DURING VOLUMESPRING?"<<std::endl;
 	ComputeLineTensionSprings(
 		generalParams,
 		coordInfoVecs,
 		linearSpringInfoVecs);
+		//std::cout<<"ERROR DURING LINETENSION?"<<std::endl;
+		std::cout<<"ERROR AFTER RELAXATION?"<<std::endl;
 		
 };
 
 
 void System::solveSystem() {
 	int TESTING = 1;
-	double tip_depth = 0.3985;
+	double tip_depth = 0.5;//0.3985;
 	generalParams.safeguardthreshold = 12;
 	//double pull_strength = 1.0;
 	//std::cout<<"pull_strength from spring linking membrane and nucleus = "<<pull_strength<<std::endl;
-	int translate_frequency = 10;
-	double beta1 = 2.5;
+	int translate_frequency = 1;
+	double beta1 = 6.5;
 	double beta2 = 0.0;
 	std::cout<<"manual push speed = "<<beta1<<std::endl;
-	double EXPAN_THRESHOLD = 2.0;
+	double EXPAN_THRESHOLD = 0.1;
 	std::cout<<"EXPANSION THRESHOLD = "<<EXPAN_THRESHOLD<<std::endl;
 
 	double displacementX, displacementY, displacementZ;
@@ -140,11 +143,15 @@ void System::solveSystem() {
 	std::vector<double> V3 = { 0.6390, 0.0 ,  -0.5511 ,   0.0267 ,  -0.5240  , -0.4004 ,   0.2850 ,
 							   0.2032 ,  -0.1771 ,   0.4048 ,   0.3461 ,  -0.2034 ,
 							   0.5041 ,  -0.4535 ,	-0.1241 ,   0.5722 ,  -0.3748 ,  -0.1335 ,
-							   -0.0851 ,   0.3213 ,   0.2389 ,   0.0044 ,  -0.7424 ,  -0.5241};
+							   -0.0851 ,   0.3213 ,   0.2389 ,   0.0044 ,  -0.7424 ,  -0.7450};
 	
 	//std::vector<int> filament_base = {0,1,2,3,4,5,6,7,8,9,10,11};//{35, 21, 38, etc if we need more points}
-	//double filament_strength = 1.0;
-	//double filament_Rmin = 6.0;
+	double filament_strength = 5.0;
+	std::vector<double> filament_Rmin;
+	for (int i = 0; i < V3.size();i++){
+		filament_Rmin.push_back(sqrt((V3[i] - coordInfoVecs.nodeLocZ[38])*(V3[i] - coordInfoVecs.nodeLocZ[38])));
+	}
+	//double filament_Rmin = sqrt((V3.back() - coordInfoVecs.nodeLocZ[38])*(V3.back() - coordInfoVecs.nodeLocZ[38]));
 
 	for (int i = 0; i < V1.size(); i++){
 		ljInfoVecs.LJ_PosX_all.push_back(V1[i]); 
@@ -161,9 +168,13 @@ void System::solveSystem() {
 
 	generalParams.maxNodeCountLJ = ljInfoVecs.LJ_PosX_all.size();
 	std::vector<int> nucleus_in_upperhem(generalParams.maxNodeCountLJ, -1);
+	std::vector<int> nucleus_in_lowerhem(generalParams.maxNodeCountLJ, -1);
 	for (int i = 0; i < generalParams.maxNodeCountLJ; i++){
-		if (ljInfoVecs.LJ_PosZ_all[i] > 0.25){
+		if (ljInfoVecs.LJ_PosZ_all[i] > 0.5){
 			nucleus_in_upperhem[i] = 1;
+		}
+		if (ljInfoVecs.LJ_PosZ_all[i] < -0.6){
+			nucleus_in_lowerhem[i] = 1;
 		}
 	}
 	
@@ -207,8 +218,12 @@ void System::solveSystem() {
 		
 	//	std::cout<<"nodes "<<i<<" "<<generalParams.nodes_in_upperhem[i]<<std::endl;		
 	//}
+
+	double max_height = coordInfoVecs.nodeLocZ[35];
+	double min_height = coordInfoVecs.nodeLocZ[38];
+
 	for (int i = 0; i < generalParams.maxNodeCount; i++){
-		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + 6.0)){
+		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + -6.0)){
 			generalParams.nodes_in_upperhem[i] = 1;
 		}
 		else{
@@ -221,7 +236,7 @@ void System::solveSystem() {
 	std::vector<int> nodes_in_tip;
 	nodes_in_tip.resize(generalParams.maxNodeCount);
 	for (int i = 0; i < generalParams.maxNodeCount; i++){
-		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + 5.75)){
+		if (coordInfoVecs.nodeLocZ[i] > (generalParams.centerZ + 6.0)){
 			nodes_in_tip[i] = 1;
 		}
 		else{
@@ -248,7 +263,7 @@ void System::solveSystem() {
 			//triangles_in_upperhem.push_back(i);
 		}
 		else if ((aaa+bbb+ccc)==1){
-			generalParams.triangles_in_upperhem[i] = 1;
+			generalParams.triangles_in_upperhem[i] = 0;
 			//triangles_in_upperhem.push_back(i);
 		}
 		else{
@@ -267,7 +282,7 @@ void System::solveSystem() {
 			edges_in_upperhem.push_back(i);
 		}
 		else if (aaa == 1 || bbb == 1){
-			generalParams.edges_in_upperhem[i] = 1;
+			generalParams.edges_in_upperhem[i] = 1;//0;
 		}
 		else{
 			generalParams.edges_in_upperhem[i] = -1;
@@ -283,23 +298,25 @@ void System::solveSystem() {
 		double T2 = coordInfoVecs.edges2Triangles_2[i];
 		if (generalParams.triangles_in_upperhem[T1] == 1 && generalParams.triangles_in_upperhem[T2] == 0){
 			generalParams.boundaries_in_upperhem[i] = 1;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			coordInfoVecs.isNodeFixed[bdry_node1] = true;
-			coordInfoVecs.isNodeFixed[bdry_node2] = true;
+			//double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			//double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
+			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
 		}
 		else if (generalParams.triangles_in_upperhem[T1] == 0 && generalParams.triangles_in_upperhem[T2] == 1){
 			generalParams.boundaries_in_upperhem[i] = 1;
-			double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
-			double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
-			coordInfoVecs.isNodeFixed[bdry_node1] = true;
-			coordInfoVecs.isNodeFixed[bdry_node2] = true;
+			//double bdry_node1 = coordInfoVecs.edges2Nodes_1[i];
+			//double bdry_node2 = coordInfoVecs.edges2Nodes_2[i];
+			//coordInfoVecs.isNodeFixed[bdry_node1] = true;
+			//coordInfoVecs.isNodeFixed[bdry_node2] = true;
 		}
 		else {
 			generalParams.boundaries_in_upperhem[i] = -1;
 		}
 	}
 	generalParams.eq_total_boundary_length = generalParams.boundaries_in_upperhem.size()*generalParams.Rmin;
+	
+	
 
 	int true_num_edges_in_upperhem = 0;
 	for (int i = 0; i < edges_in_upperhem.size(); i++){
@@ -309,9 +326,6 @@ void System::solveSystem() {
 		}
 	}
 	
-	
-	double max_height = coordInfoVecs.nodeLocZ[35];
-	double min_height = coordInfoVecs.nodeLocZ[38];
 
 	//std::vector<int> edge_to_ljparticle;
 	//generalParams.edge_to_ljparticle.reserve(coordInfoVecs.num_edges);
@@ -327,7 +341,7 @@ void System::solveSystem() {
 	int num_edge_loop;
 	//double LJ_PosX_backup, LJ_PosY_backup, LJ_PosZ_backup;
 	
-	double Max_Runtime = 0.0020;
+	double Max_Runtime = 0.0001;
 	double Max_RunStep = Max_Runtime/generalParams.dt;
 	std::cout<<"Max runtime = "<<Max_Runtime<<std::endl;
 	std::cout<<"Max runstep = "<<Max_RunStep<<std::endl;
@@ -340,14 +354,16 @@ void System::solveSystem() {
 	//std::cout<<"spring_constnat_rep1 = "<<linearSpringInfoVecs.spring_constant_rep1<<std::endl;
 	//std::cout<<"spring_constnat_rep2 = "<<linearSpringInfoVecs.spring_constant_rep2<<std::endl;
 
-	generalParams.volume_spring_constant = 0.0;//1.65;//0.75;
+	generalParams.volume_spring_constant = 0.0;//0.75;
 	std::cout<<"volume spring constant = "<<generalParams.volume_spring_constant<<std::endl;
-	generalParams.line_tension_constant = 1500.0;
+	generalParams.line_tension_constant = 200.0;//80.0;
 	std::cout<<"line tension constant = "<<generalParams.line_tension_constant<<std::endl;
+	generalParams.length_scale = 0.8333;
+	std::cout<<"length_scale for line tension = "<<generalParams.length_scale<<std::endl;
 
-	double scale_linear = 25.0;
-	double scale_bend = 50.0;//20.0;
-	double scale_area = 50.0;
+	double scale_linear = 75.0/75.0;
+	double scale_bend = 75.0/75.0;//0.5*75.0;
+	double scale_area = 75.0/75.0;//0.5*75.0;
 	std::cout<<"scaling of different region linear = "<<scale_linear<<std::endl;
 	std::cout<<"scaling of different region bend = "<<scale_bend<<std::endl;
 	std::cout<<"scaling of different region area = "<<scale_area<<std::endl;
@@ -375,20 +391,20 @@ void System::solveSystem() {
 	generalParams.abs_Rmin = 0.75;//0.586955;
 	ljInfoVecs.Rmin_M = 1.25;
 	ljInfoVecs.Rcutoff_M = 1.25;
-	ljInfoVecs.Rmin_LJ = 1.5;//3.0//1.0;
+	ljInfoVecs.Rmin_LJ = 1.25;//3.0//1.0;
 	ljInfoVecs.Rcutoff_LJ = 1.5;//3.0;//1.0;
 	//ljInfoVecs.epsilon_M = 1.0;
 	ljInfoVecs.epsilon_M_att1 = 0.0;//6.0;//16.0;
 	ljInfoVecs.epsilon_M_att2 = 0.0;//1.0;//1.0;
 	std::cout<<"Morse_NM_D_att = "<<ljInfoVecs.epsilon_M_att1<<std::endl;
 	std::cout<<"Morse_NM_a_att = "<<ljInfoVecs.epsilon_M_att2<<std::endl;
-	ljInfoVecs.epsilon_M_rep1 = 12.5;//16.0;
+	ljInfoVecs.epsilon_M_rep1 = 6.25;//16.0;
 	ljInfoVecs.epsilon_M_rep2 = 0.5;//1.0;
 	std::cout<<"Morse_NM_D_rep = "<<ljInfoVecs.epsilon_M_rep1<<std::endl;
 	std::cout<<"Morse_NM_a_rep = "<<ljInfoVecs.epsilon_M_rep2<<std::endl;
 	//ljInfoVecs.epsilon_LJ = 0.25;
-	ljInfoVecs.epsilon_LJ_rep1 = 10.0;//0.5;// 0.06;//7.5;
-	ljInfoVecs.epsilon_LJ_rep2 = 0.5;//1.0;//1.0;//1.0;
+	ljInfoVecs.epsilon_LJ_rep1 = 8.0;//0.5;// 0.06;//7.5;
+	ljInfoVecs.epsilon_LJ_rep2 = 1.1;//1.0;//1.0;//1.0;
 	std::cout<<"Morse_NN_D = "<<ljInfoVecs.epsilon_LJ_rep1<<std::endl;
 	std::cout<<"Morse_NN_a = "<<ljInfoVecs.epsilon_LJ_rep2<<std::endl;
 	//std::cout<<"Absolute minimum edge size = "<<generalParams.abs_Rmin<<std::endl;
@@ -398,20 +414,19 @@ void System::solveSystem() {
 
 	double initial_kT;
 	initial_kT = generalParams.kT;//This is for the acceptance of change after looping through every edge within proximity.
-	//	double SAMPLE_SIZE = 0.02;
-	//std::cout<<"Sample size: "<<SAMPLE_SIZE<<std::endl;
+	double SAMPLE_SIZE = 0.1;
+	std::cout<<"Sample size: "<<SAMPLE_SIZE<<std::endl;
 	auto edgeswap_ptr = std::make_shared<Edgeswap>(coordInfoVecs, generalParams);
 	//auto growth_ptr = std::make_shared<Growth>(generalParams, coordInfoVecs, areaTriangleInfoVecs);
 
 
 	bool runSim = true;
 
-	int GROWTH_TIME = 35;
-	//int GROWTH_TIME_MEMBRANE = 2;
-	int RECORD_TIME = 100;//round(Max_RunStep/2);
+	int GROWTH_TIME = 1;
+	int RECORD_TIME = 1;//round(Max_RunStep/2);
 	std::cout<<"Record frequency = "<<RECORD_TIME<<std::endl;
 	std::cout<<"Growth frequency = "<<GROWTH_TIME<<std::endl;
-	int NKBT = 40000; //The max number of edge-swap attempt per kBT value
+	int NKBT = 2; //The max number of edge-swap attempt per kBT value
 	std::cout<<"Number of edge-swap per kBT value = "<<NKBT<<std::endl;
 	double min_kT = 0.21;
 	std::cout<<"min kT for sim. termination = "<<min_kT<<std::endl;
@@ -446,7 +461,7 @@ void System::solveSystem() {
 		ljInfoVecs
 	);
 
-	generalParams.eq_total_volume = generalParams.true_current_total_volume*4.0;//This is for setting different equilibrium volume to mimic growth or shirnkage.
+	generalParams.eq_total_volume = generalParams.true_current_total_volume*2.0;//This is for setting different equilibrium volume to mimic growth or shirnkage.
 	std::cout<<"true_current_total_volume = "<<generalParams.true_current_total_volume<<std::endl;
 	std::cout<<"eq_total_volume = "<<generalParams.eq_total_volume<<std::endl;
 
@@ -461,6 +476,7 @@ void System::solveSystem() {
 		int translate_counter = 0;
 			while (current_time < (Max_Runtime)){
 					translate_counter += 1;
+					std::cout<<"ERROR BEFORE RELAXATION"<<std::endl;
 					Solve_Forces();
 				
 					double energy_rep =
@@ -539,19 +555,19 @@ void System::solveSystem() {
 						
 					}
 
-					/*double beta;
+					double beta;
 					bool target_height_reached = false;
 					if (ljInfoVecs.LJ_PosZ_all[0] >= (min_height + 0.875*(max_height - min_height))){
 						target_height_reached = true;
-					}*/
+					}
 
-					//std::random_device rand_dev;
-					//std::mt19937 generator_noise(rand_dev());
-					//std::normal_distribution<double> distribution_noise(0.0, 0.01);
+					std::random_device rand_dev;
+					std::mt19937 generator_noise(rand_dev());
+					std::normal_distribution<double> distribution_noise(0.0, 0.01);
 
 					for (int i = 0; i < ljInfoVecs.LJ_PosX_all.size(); i++){
 						
-						/*if(nucleus_in_upperhem[i] == 1){
+						 if(nucleus_in_upperhem[i] == 1){
 							beta = beta1;
 						}
 						else{
@@ -561,18 +577,27 @@ void System::solveSystem() {
 						if (target_height_reached == true){
 							beta = 0.0;
 						}
+
 						//std::random_device rand_dev;
 						//std::mt19937 generator_noise(rand_dev());
 						//std::normal_distribution<double> distribution_noise(0.0, 0.01);
 						double noise1 = distribution_noise(generator_noise);
 						double noise2 = distribution_noise(generator_noise);
-						double noise3 = distribution_noise(generator_noise);*/
+						double noise3 = distribution_noise(generator_noise);
 
-						ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i]);// + noise1);
-						ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i]);// + noise2);
-						ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i]);// + beta + noise3);
+						ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i] + noise1);
+						ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i] + noise2);
+						ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i] + beta + noise3);
 					
 					}
+				
+				/*for (int i = 0; i < generalParams.maxNodeCount; i++){
+					if (coordInfoVecs.isNodeFixed[i] == true){
+						coordInfoVecs.nodeForceX[i] = 0.0;
+						coordInfoVecs.nodeForceY[i] = 0.0;
+						coordInfoVecs.nodeForceZ[i] = 0.0;
+					}
+				}*/
 
 				AdvancePositions(
 					coordInfoVecs,
@@ -623,7 +648,7 @@ void System::solveSystem() {
 			}
 			
 		   
-		/*	max_height = -10000.0;
+			max_height = -10000.0;
 			min_height = 10000.0;
 			for (int k = 0; k < generalParams.maxNodeCount; k++){
 				if (coordInfoVecs. nodeLocZ[k] >= max_height){
@@ -632,7 +657,7 @@ void System::solveSystem() {
 				if (coordInfoVecs.nodeLocZ[k] <= min_height){
 					min_height = coordInfoVecs.nodeLocZ[k];
 				}
-			}*/
+			}
 
 		std::cout<<"current time (1st iter before edgeswap): "<< current_time << std::endl;
 		std::cout<<"current total energy (1st iter before edgeswap) = "<<new_total_energy<<std::endl;
@@ -656,7 +681,10 @@ void System::solveSystem() {
 		//double postswap_energy;
 		//double Ediff = 0.0;
 		//initial_kT = generalParams.kT;
-		num_edge_loop = 4;//round(edges_in_upperhem.size()*SAMPLE_SIZE);	
+		num_edge_loop = round(true_num_edges_in_upperhem*SAMPLE_SIZE);
+		if (num_edge_loop == 0){
+			num_edge_loop = 1;
+		}	
 		std::cout<<"num_edge_loop = "<<num_edge_loop<<std::endl;
 	
  		while (initial_kT > 0){
@@ -676,7 +704,7 @@ void System::solveSystem() {
  							generalParams,
 							 auxVecs);
 					
-				
+				std::cout<<"ERROR BEFORE NUCLEI"<<std::endl;
  						for (int i = 0; i < ljInfoVecs.LJ_PosX_all.size(); i++){
  							ljInfoVecs.LJ_PosX = ljInfoVecs.LJ_PosX_all[i];
  							ljInfoVecs.LJ_PosY = ljInfoVecs.LJ_PosY_all[i];
@@ -739,20 +767,20 @@ void System::solveSystem() {
 							}	*/
 							 
  						}
-					
+						 std::cout<<"ERROR AFTER NUCLEI?"<<std::endl;
  						//now forces are computed, move nodes.
-						/*double beta;
-						bool target_height_reached = false;
+						 double beta;
+						 bool target_height_reached = false;
 						if (ljInfoVecs.LJ_PosZ_all[0] >= (min_height + 0.75*(max_height - min_height))){
 							target_height_reached = true;
 						}
 
 						std::random_device rand_dev;
 						std::mt19937 generator_noise(rand_dev());
-						std::normal_distribution<double> distribution_noise(0.0, 0.01);*/
+						std::normal_distribution<double> distribution_noise(0.0, 0.01);
 						 for (int i = 0; i < ljInfoVecs.LJ_PosX_all.size(); i++){
 						
-							/*if(nucleus_in_upperhem[i] == 1){
+							if(nucleus_in_upperhem[i] == 1){
 							   beta = beta1;
 						   }
 						   else{
@@ -762,23 +790,48 @@ void System::solveSystem() {
 						   if (target_height_reached == true){
 							   beta = 0.0;
 						   }
+
+						   if (nucleus_in_lowerhem[i] == 1){ //(i == (generalParams.maxNodeCountLJ-1)){
+							double R = sqrt( 
+								(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]) * (ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]) + 
+								(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]) * (ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]) + 
+								(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]) * (ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]) );
+							double magnitude = -2.0*(filament_strength/2.0)*(R - filament_Rmin[i])*(1.0/R);
+							double forceX = -magnitude*(ljInfoVecs.LJ_PosX_all[i] - coordInfoVecs.nodeLocX[38]);  
+							double forceY = -magnitude*(ljInfoVecs.LJ_PosY_all[i] - coordInfoVecs.nodeLocY[38]);  
+							double forceZ = -magnitude*(ljInfoVecs.LJ_PosZ_all[i] - coordInfoVecs.nodeLocZ[38]);  
+							ljInfoVecs.forceX_all[i] +=  -forceX;
+							ljInfoVecs.forceY_all[i] +=  -forceY;
+							ljInfoVecs.forceZ_all[i] +=  -forceZ;	
+							
+						}
 						   //std::random_device rand_dev;
 						   //std::mt19937 generator_noise(rand_dev());
 						   //std::normal_distribution<double> distribution_noise(0.0, 0.01);
 						   double noise1 = distribution_noise(generator_noise);
 						   double noise2 = distribution_noise(generator_noise);
-						   double noise3 = distribution_noise(generator_noise);*/
+						   double noise3 = distribution_noise(generator_noise);
    
-						   ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i]);// + noise1);
-						   ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i]);// + noise2);
-						   ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i]);// + beta + noise3);
+						   ljInfoVecs.LJ_PosX_all[i] = ljInfoVecs.LJ_PosX_all[i] + generalParams.dt * (ljInfoVecs.forceX_all[i] + noise1);
+						   ljInfoVecs.LJ_PosY_all[i] = ljInfoVecs.LJ_PosY_all[i] + generalParams.dt * (ljInfoVecs.forceY_all[i] + noise2);
+						   ljInfoVecs.LJ_PosZ_all[i] = ljInfoVecs.LJ_PosZ_all[i] + generalParams.dt * (ljInfoVecs.forceZ_all[i] + beta + noise3);
 					   
 					   }
+					   std::cout<<"ERROR AFTER NUCLEI POSITION UPDATE?"<<std::endl;
+
+					   /*for (int i = 0; i < generalParams.maxNodeCount; i++){
+						if (coordInfoVecs.isNodeFixed[i] == true){
+							coordInfoVecs.nodeForceX[i] = 0.0;
+							coordInfoVecs.nodeForceY[i] = 0.0;
+							coordInfoVecs.nodeForceZ[i] = 0.0;
+						}
+					}*/
 						 
  						AdvancePositions(
  							coordInfoVecs,
  							generalParams,
 							 domainParams);
+							 std::cout<<"ERROR AFTER MEMBRANE UPDATE?"<<std::endl;
 						
 						if (translate_counter % translate_frequency == 1){
 							newcenterX = 0.0;
@@ -806,6 +859,7 @@ void System::solveSystem() {
 								ljInfoVecs.LJ_PosY_all[i] += -displacementY;
 								ljInfoVecs.LJ_PosZ_all[i] += -displacementZ;
 							}
+							std::cout<<"ERROR AFTER TRANSLATION?"<<std::endl;
 						
 							ComputeVolume(
 								generalParams,
@@ -814,18 +868,21 @@ void System::solveSystem() {
 								ljInfoVecs);
 							//std::cout<<"ERROR 1"<<std::endl;
 							edgeswap_ptr->transferDtoH(coordInfoVecs, build_ptr->hostSetInfoVecs);
+
+							std::cout<<"ERROR BEFORE EDGESWAP?"<<std::endl;
+
 							//std::cout<<"ERROR 1.5"<<std::endl;
 							for (int edge_loop = 0; edge_loop < num_edge_loop; edge_loop++) {
 								//std::cout<<"edge_loop = "<<edge_loop<<std::endl;
 								
 								std::random_device rand_dev;
 								std::mt19937 generator(rand_dev());
-							   
-							   std::uniform_int_distribution<int> distribution(1,edges_in_upperhem.size());
-							   
+								   
+								   std::uniform_int_distribution<int> distribution(1,edges_in_upperhem.size());
+							  // std::uniform_int_distribution<int> distribution(1,coordInfoVecs.num_edges);
 							   int dice_roll = distribution(generator);
 							   
-							   int edge = edges_in_upperhem[dice_roll - 1];
+							   int edge =  edges_in_upperhem[dice_roll - 1];
 							   
 							   while (generalParams.boundaries_in_upperhem[edge] == 1 || edge == INT_MAX){
 									dice_roll = distribution(generator);
@@ -846,6 +903,7 @@ void System::solveSystem() {
 							//std::cout<<"ERROR 2"<<std::endl;
 							edgeswap_ptr->transferHtoD(coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
 							//std::cout<<"ERROR 2.5"<<std::endl;
+							std::cout<<"ERROR AFTER EDGESWAP?"<<std::endl;
 							
 							
 						}
@@ -866,7 +924,7 @@ void System::solveSystem() {
 					 }
 					 
 					 
-					/*max_height = -10000.0;
+					max_height = -10000.0;
 					min_height = 10000.0;
 					for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= max_height){
@@ -875,7 +933,7 @@ void System::solveSystem() {
 						if (coordInfoVecs.nodeLocZ[k] <= min_height){
 							min_height = coordInfoVecs.nodeLocZ[k];
 						}
-					}*/
+					}
 											
 			
  								
@@ -886,36 +944,43 @@ void System::solveSystem() {
 								generalParams.true_num_edges += 1;
 							}
 						 }
- 						storage->print_VTK_File();
+						 storage->print_VTK_File();
+						 //storage->storeVariables();
 						 std::cout<<"current total energy = "<< new_total_energy<<std::endl;
 						 std::cout<<"true current total volume = "<<generalParams.true_current_total_volume<<std::endl;
  					}
- 					if (edgeswap_iteration % NKBT == 0){
- 						//storage->storeVariables();
+ 					if (edgeswap_iteration == NKBT ){
+ 						storage->storeVariables();
 					 }
 
-								ComputeVolume(
-									generalParams,
-									coordInfoVecs,
-									linearSpringInfoVecs,
-									ljInfoVecs
-								);
-					 if (edgeswap_iteration % GROWTH_TIME == 0 && generalParams.true_current_total_volume <= generalParams.eq_total_volume){
+					
+
+					 edgeswap_iteration += 1;
+					 
+					/*if (edgeswap_iteration % GROWTH_TIME == 0){
+
+						for (int i = 0; i < coordInfoVecs.nodeLocX.size(); i++){
+							generalParams.centerX += coordInfoVecs.nodeLocX[i];
+							generalParams.centerY += coordInfoVecs.nodeLocY[i];
+							generalParams.centerZ += coordInfoVecs.nodeLocZ[i];
+						}
+						generalParams.centerX = generalParams.centerX/coordInfoVecs.nodeLocX.size();
+						generalParams.centerY = generalParams.centerY/coordInfoVecs.nodeLocX.size();
+						generalParams.centerZ = generalParams.centerZ/coordInfoVecs.nodeLocX.size();
+
 						double x,y,z;
 						std::random_device rand_dev0;
 						std::mt19937 generator0(rand_dev0());
-						std::uniform_real_distribution<double> guess1(generalParams.centerX-2.0, generalParams.centerX+2.0);
-						std::uniform_real_distribution<double> guess2(generalParams.centerY-2.0, generalParams.centerY+2.0);
-						std::uniform_real_distribution<double> guess3(generalParams.centerZ-2.0, generalParams.centerZ+2.0);						
+						std::uniform_real_distribution<double> guess(generalParams.centerX-1.0, generalParams.centerX+1.0);
 						x = 5.0;//guess(generator0);
 						y = 5.0;//guess(generator0);
 						z = 5.0;//guess(generator0);
 						bool goodchoice = false;
 						double GAP;
-						while (sqrt((x - generalParams.centerX)*(x - generalParams.centerX) + (y - generalParams.centerY)*(y -generalParams.centerY) + (z-generalParams.centerZ)*(z-generalParams.centerZ)) > (2.0) && goodchoice == false){
-							x = guess1(generator0);
-							y = guess2(generator0);
-							z = guess3(generator0);
+						while (sqrt(x*x + y*y + z*z) > (2.0) && goodchoice == false){
+							x = guess(generator0);
+							y = guess(generator0);
+							z = guess(generator0);
 							if (sqrt(x*x + y*y + z*z) > 2.0){
 								continue;
 							}
@@ -923,7 +988,7 @@ void System::solveSystem() {
 								GAP = sqrt((x-ljInfoVecs.LJ_PosX_all[i])*(x-ljInfoVecs.LJ_PosX_all[i]) +
 											(y-ljInfoVecs.LJ_PosY_all[i])*(x-ljInfoVecs.LJ_PosY_all[i]) +
 											(z-ljInfoVecs.LJ_PosZ_all[i])*(x-ljInfoVecs.LJ_PosZ_all[i]));
-								if (GAP < 0.5){
+								if (GAP < 0.65){
 									goodchoice = false;
 									break;
 								}
@@ -937,15 +1002,7 @@ void System::solveSystem() {
 						ljInfoVecs.forceY_all.resize(ljInfoVecs.LJ_PosX_all.size());
 						ljInfoVecs.forceZ_all.resize(ljInfoVecs.LJ_PosX_all.size());
 						generalParams.maxNodeCountLJ = ljInfoVecs.LJ_PosX_all.size();
-					}
-					else if(generalParams.true_current_total_volume > generalParams.eq_total_volume){
-						runSim = false;
-						generalParams.kT = -1.0;
-						break;
-
-					}
-
-					 edgeswap_iteration += 1;
+					}*/
  					//std::cout<<"edgeswap_iteration = "<<edgeswap_iteration<<std::endl;
  					if (edgeswap_iteration == NKBT){
  						generalParams.kT = -1.0;//generalParams.kT - 0.072;
@@ -957,15 +1014,6 @@ void System::solveSystem() {
 					runSim = false;
 					break;
 					 }
-					 for (int i = 0; i < coordInfoVecs.nodeLocX.size(); i++){
-						generalParams.centerX += coordInfoVecs.nodeLocX[i];
-						generalParams.centerY += coordInfoVecs.nodeLocY[i];
-						generalParams.centerZ += coordInfoVecs.nodeLocZ[i];
-					}
-					generalParams.centerX = generalParams.centerX/coordInfoVecs.nodeLocX.size();
-					generalParams.centerY = generalParams.centerY/coordInfoVecs.nodeLocX.size();
-					generalParams.centerZ = generalParams.centerZ/coordInfoVecs.nodeLocX.size();
-				
 
 //std::cout<<"ERROR BEFORE GROWTH"<<std::endl;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -979,35 +1027,36 @@ void System::solveSystem() {
 else{
 	EXPAN_THRESHOLD = 10000.0;
 }*/
-//if (GROWTH_TIME_MEMBRANE % edgeswap_iteration == 0){
+//VectorShuffleForGrowthLoop.clear();
+//for (int i = 0; i < coordInfoVecs.num_edges; i++){
+//	VectorShuffleForGrowthLoop.push_back(i);
+//}
 
-VectorShuffleForGrowthLoop.clear();
-for (int i = 0; i < coordInfoVecs.num_edges; i++){
-	VectorShuffleForGrowthLoop.push_back(i);
-}
-std::random_device rand_dev;
+
+/*std::random_device rand_dev;
 std::mt19937 generator2(rand_dev());
-std::shuffle(std::begin(VectorShuffleForGrowthLoop), std::end(VectorShuffleForGrowthLoop), generator2);
+std::uniform_int_distribution<int> distribution2(1, coordInfoVecs.num_triangles);
+int dice_roll2 = distribution2(generator2);
+int haha = dice_roll2;
+
+while (coordInfoVecs.triangles2Nodes_1[haha] == INT_MAX || coordInfoVecs.triangles2Nodes_2[haha] == INT_MAX || coordInfoVecs.triangles2Nodes_3[haha] == INT_MAX){
+	dice_roll2 = distribution2(generator2);
+	haha = dice_roll2;
+}
+std::cout<<haha<<std::endl;*/
 
 bool triggered = false;
 //int triggered_counter = 0;
-for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
+for (int p = 1; p < 2; p++){//(int p = 0;  p < coordInfoVecs.num_triangles; p++){
 	//std::cout<<"p = "<<p<<std::endl;
-		int k = p;//VectorShuffleForGrowthLoop[p];
-		if (coordInfoVecs. edges2Nodes_1[k] == INT_MAX || coordInfoVecs. edges2Nodes_2[k] == INT_MAX){
+		int k = p;
+		if (coordInfoVecs.triangles2Nodes_1[k] == INT_MAX || coordInfoVecs.triangles2Nodes_2[k] == INT_MAX || coordInfoVecs.triangles2Nodes_3[k] == INT_MAX){
+			std::cout<<"GROWTH NOT TRIGGERED"<<std::endl;
 			continue;
-		}
-		//int k = p;
-		//k -= triggered_counter;
-		int iedge = k;
-		//std::cout<<"node1 of iedge = "<<coordInfoVecs.edges2Nodes_1[iedge]<<std::endl;
-		//std::cout<<"node2 of iedge = "<<coordInfoVecs.edges2Nodes_2[iedge]<<std::endl;
-		int elem1 = coordInfoVecs.edges2Triangles_1[iedge];
-		int elem2 = coordInfoVecs.edges2Triangles_2[iedge];
-		//std::cout<<"elem1 of iedge = "<<elem1<<std::endl;
-		//std::cout<<"elem2 of iedge = "<<elem2<<std::endl;
-		////std::cout<<"GROWTH ERROR 1"<<std::endl;	
-        int first_v = coordInfoVecs.triangles2Nodes_1[elem1];
+			
+        }
+		int elem1 = k;
+		int first_v = coordInfoVecs.triangles2Nodes_1[elem1];
         int second_v = coordInfoVecs.triangles2Nodes_2[elem1];
         int third_v = coordInfoVecs.triangles2Nodes_3[elem1];
         double v1x = coordInfoVecs.nodeLocX[second_v] - coordInfoVecs.nodeLocX[first_v];
@@ -1019,149 +1068,142 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
         double This_area_v = sqrt((v1y*v2z - v2y*v1z)*(v1y*v2z - v2y*v1z) + 
                                 ((-v1x*v2z) + (v2x*v1z))*((-v1x*v2z) + (v2x*v1z)) +
 								(v1x*v2y - v2x*v1y)*(v1x*v2y - v2x*v1y))/2.0;
-		int first_w = coordInfoVecs.triangles2Nodes_1[elem2];
-        int second_w = coordInfoVecs.triangles2Nodes_2[elem2];
-        int third_w = coordInfoVecs.triangles2Nodes_3[elem2];
-        double w1x = coordInfoVecs.nodeLocX[second_w] - coordInfoVecs.nodeLocX[first_w];
-        double w1y = coordInfoVecs.nodeLocY[second_w] - coordInfoVecs.nodeLocY[first_w];
-        double w1z = coordInfoVecs.nodeLocZ[second_w] - coordInfoVecs.nodeLocZ[first_w];
-        double w2x = coordInfoVecs.nodeLocX[third_w] - coordInfoVecs.nodeLocX[first_w];
-        double w2y = coordInfoVecs.nodeLocY[third_w] - coordInfoVecs.nodeLocY[first_w];
-        double w2z = coordInfoVecs.nodeLocZ[third_w] - coordInfoVecs.nodeLocZ[first_w];
-        double This_area_w = sqrt((w1y*v2z - w2y*v1z)*(w1y*w2z - w2y*w1z) + 
-                                ((-w1x*w2z) + (w2x*w1z))*((-w1x*w2z) + (w2x*w1z)) +
-								(w1x*w2y - w2x*w1y)*(w1x*w2y - w2x*w1y))/2.0;
-		int node1 = coordInfoVecs.edges2Nodes_1[iedge];
-		int node2 = coordInfoVecs.edges2Nodes_2[iedge];
-		double edge_dist = sqrt((coordInfoVecs.nodeLocX[node1] - coordInfoVecs.nodeLocX[node2])*(coordInfoVecs.nodeLocX[node1] - coordInfoVecs.nodeLocX[node2]) + 
-					(coordInfoVecs.nodeLocY[node1] - coordInfoVecs.nodeLocY[node2])*(coordInfoVecs.nodeLocY[node1] - coordInfoVecs.nodeLocY[node2]) +
-				(coordInfoVecs.nodeLocZ[node1] - coordInfoVecs.nodeLocZ[node2])*(coordInfoVecs.nodeLocZ[node1] - coordInfoVecs.nodeLocZ[node2]));
-        if ((This_area_v/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD) || (This_area_w/ areaTriangleInfoVecs.initial_area >= EXPAN_THRESHOLD)){
-            triggered = true;
-			//triggered_counter += 1;
-		}
-		else if (edge_dist >= 2.0*generalParams.Rmin){
-			triggered = true;
-		}
-        else{continue;}
+		
+		if ((This_area_v/ areaTriangleInfoVecs.initial_area) >= EXPAN_THRESHOLD){
+					triggered = true;
+			}
+		else{continue;}
+		
 		////std::cout<<"GROWTH ERROR 2"<<std::endl;	
-		int t1e1, t1e2, t1e3, t2e1, t2e2, t2e3;
+		int e1, e2, e3, t1e1, t1e2, t1e3;	
+        e1 = coordInfoVecs.triangles2Edges_1[elem1];
+        e2 = coordInfoVecs.triangles2Edges_2[elem1];
+		e3 = coordInfoVecs.triangles2Edges_3[elem1];
+		if (coordInfoVecs.edges2Nodes_1[e1] == first_v && coordInfoVecs.edges2Nodes_2[e1] == second_v){
+			t1e1 = e1;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e1] == second_v && coordInfoVecs.edges2Nodes_2[e1] == first_v){
+			t1e1 = e1;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e2] == first_v && coordInfoVecs.edges2Nodes_2[e2] == second_v){
+			t1e1 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e2] == second_v && coordInfoVecs.edges2Nodes_2[e2] == first_v){
+			t1e1 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == first_v && coordInfoVecs.edges2Nodes_2[e3] == second_v){
+			t1e1 = e3;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == second_v && coordInfoVecs.edges2Nodes_2[e3] == first_v){
+			t1e1 = e3;
+		}
 
-		if (coordInfoVecs.triangles2Edges_1[elem1] == iedge){
-			t1e1 = coordInfoVecs.triangles2Edges_2[elem1];
-			t1e2 = coordInfoVecs.triangles2Edges_3[elem1];
-			//t1e3 = coordInfoVecs.triangles2Edges_1[elem1];
+		if (coordInfoVecs.edges2Nodes_1[e1] == third_v && coordInfoVecs.edges2Nodes_2[e1] == second_v){
+			t1e2 = e1;
 		}
-		else if (coordInfoVecs.triangles2Edges_2[elem1] == iedge){
-			t1e1 = coordInfoVecs.triangles2Edges_3[elem1];
-			t1e2 = coordInfoVecs.triangles2Edges_1[elem1];
-			//t1e3 = coordInfoVecs.triangles2Edges_2[elem1];
-		} 
-		else if (coordInfoVecs.triangles2Edges_3[elem1] == iedge){
-			t1e1 = coordInfoVecs.triangles2Edges_1[elem1];
-			t1e2 = coordInfoVecs.triangles2Edges_2[elem1];
-			//t1e3 = coordInfoVecs.triangles2Edges_3[elem1];
+		else if (coordInfoVecs.edges2Nodes_1[e1] == second_v && coordInfoVecs.edges2Nodes_2[e1] == third_v){
+			t1e2 = e1;
 		}
-		////std::cout<<"GROWTH ERROR 3"<<std::endl;	
+		else if (coordInfoVecs.edges2Nodes_1[e2] == third_v && coordInfoVecs.edges2Nodes_2[e2] == second_v){
+			t1e2 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e2] == second_v && coordInfoVecs.edges2Nodes_2[e2] == third_v){
+			t1e2 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == third_v && coordInfoVecs.edges2Nodes_2[e3] == second_v){
+			t1e2 = e3;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == second_v && coordInfoVecs.edges2Nodes_2[e3] == third_v){
+			t1e2 = e3;
+		}
 
-		if (coordInfoVecs.triangles2Edges_1[elem2] == iedge){
-			t2e1 = coordInfoVecs.triangles2Edges_2[elem2];
-			t2e2 = coordInfoVecs.triangles2Edges_3[elem2];
-			//t2e3 = coordInfoVecs.triangles2Edges_1[elem2];
+		if (coordInfoVecs.edges2Nodes_1[e1] == third_v && coordInfoVecs.edges2Nodes_2[e1] == first_v){
+			t1e3 = e1;
 		}
-		else if (coordInfoVecs.triangles2Edges_2[elem2] == iedge){
-			t2e1 = coordInfoVecs.triangles2Edges_3[elem2];
-			t2e2 = coordInfoVecs.triangles2Edges_1[elem2];
-			//t2e3 = coordInfoVecs.triangles2Edges_2[elem2];
-		} 
-		else if (coordInfoVecs.triangles2Edges_3[elem2] == iedge){
-			t2e1 = coordInfoVecs.triangles2Edges_1[elem2];
-			t2e2 = coordInfoVecs.triangles2Edges_2[elem2];
-			//t2e3 = coordInfoVecs.triangles2Edges_3[elem2];
+		else if (coordInfoVecs.edges2Nodes_1[e1] == first_v && coordInfoVecs.edges2Nodes_2[e1] == third_v){
+			t1e3 = e1;
 		}
-		//Note that in the above assignment, t1e3 and t2e3 are the edges shared by the neighboring triangles T1 and T2.
-		////std::cout<<"GROWTH ERROR 4"<<std::endl;	
+		else if (coordInfoVecs.edges2Nodes_1[e2] == third_v && coordInfoVecs.edges2Nodes_2[e2] == first_v){
+			t1e3 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e2] == first_v && coordInfoVecs.edges2Nodes_2[e2] == third_v){
+			t1e3 = e2;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == third_v && coordInfoVecs.edges2Nodes_2[e3] == first_v){
+			t1e3 = e3;
+		}
+		else if (coordInfoVecs.edges2Nodes_1[e3] == first_v && coordInfoVecs.edges2Nodes_2[e3] == third_v){
+			t1e3 = e3;
+		}
 
+		if (t1e1 == t1e2 || t1e1 == t1e3 || t1e2 == t1e3){
+			initial_kT = -1.0;
+			runSim = false;
+			std::cout<<"edge info data structure updates incorrectly"<<std::endl;
+			break;
+		}
 		
-		int n1, n2, n3, n4;
-		
-		if ((coordInfoVecs.edges2Nodes_1[t1e1] == coordInfoVecs. edges2Nodes_1[iedge]) || (coordInfoVecs.edges2Nodes_1[t1e1] == coordInfoVecs. edges2Nodes_2[iedge]) ){
-			n1 = coordInfoVecs.edges2Nodes_1[t1e1];
-			n2 = coordInfoVecs.edges2Nodes_2[t1e1];
-			if (coordInfoVecs.edges2Nodes_1[t1e1] == coordInfoVecs. edges2Nodes_1[iedge]){
-				n3 = coordInfoVecs.edges2Nodes_2[iedge];
-			}
-			else if (coordInfoVecs.edges2Nodes_1[t1e1] == coordInfoVecs. edges2Nodes_2[iedge]){
-				n3 = coordInfoVecs.edges2Nodes_1[iedge];
-			}
-		}
-		else if ((coordInfoVecs.edges2Nodes_2[t1e1] == coordInfoVecs. edges2Nodes_1[iedge]) || (coordInfoVecs.edges2Nodes_2[t1e1] == coordInfoVecs. edges2Nodes_2[iedge]) ){
-			n1 = coordInfoVecs.edges2Nodes_2[t1e1];
-			n2 = coordInfoVecs.edges2Nodes_1[t1e1];
-			if (coordInfoVecs.edges2Nodes_2[t1e1] == coordInfoVecs. edges2Nodes_1[iedge]){
-				n3 = coordInfoVecs.edges2Nodes_2[iedge];
-			}
-			else if (coordInfoVecs.edges2Nodes_2[t1e1] == coordInfoVecs. edges2Nodes_2[iedge]){
-				n3 = coordInfoVecs.edges2Nodes_1[iedge];
-			}
-		}
 		////std::cout<<"GROWTH ERROR 5"<<std::endl;	
 
-		if (coordInfoVecs.edges2Nodes_1[t2e1] == coordInfoVecs.edges2Nodes_1[iedge] || coordInfoVecs.edges2Nodes_1[t2e1] == coordInfoVecs.edges2Nodes_2[iedge]){
-			n4 = coordInfoVecs.edges2Nodes_2[t2e1];
-		}
-		else if (coordInfoVecs.edges2Nodes_2[t2e1] == coordInfoVecs.edges2Nodes_1[iedge] || coordInfoVecs.edges2Nodes_2[t2e1] == coordInfoVecs.edges2Nodes_2[iedge]){
-			n4 = coordInfoVecs.edges2Nodes_1[t2e1];
-		}
 		int safe_growth1 = 0;
 		int safe_growth2 = 0;
-		if (coordInfoVecs. nndata1[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata2[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata3[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata4[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata5[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata6[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata7[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata8[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata9[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata10[n2] >= 0){safe_growth1 += 1;        }
-        if (coordInfoVecs. nndata11[n2] >= 0){safe_growth1 += 1;        }
-		if (coordInfoVecs. nndata12[n2] >= 0){safe_growth1 += 1;        }
-		if (coordInfoVecs. nndata1[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata2[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata3[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata4[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata5[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata6[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata7[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata8[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata9[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata10[n4] >= 0){safe_growth2 += 1;        }
-        if (coordInfoVecs. nndata11[n4] >= 0){safe_growth2 += 1;        }
-		if (coordInfoVecs. nndata12[n4] >= 0){safe_growth2 += 1;        }
+		int safe_growth3 = 0;
+		if (coordInfoVecs. nndata1[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata2[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata3[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata4[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata5[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata6[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata7[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata8[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata9[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata10[first_v] >= 0){safe_growth1 += 1;        }
+        if (coordInfoVecs. nndata11[first_v] >= 0){safe_growth1 += 1;        }
+		if (coordInfoVecs. nndata12[first_v] >= 0){safe_growth1 += 1;        }
+		if (coordInfoVecs. nndata1[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata2[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata3[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata4[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata5[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata6[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata7[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata8[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata9[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata10[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata11[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata12[second_v] >= 0){safe_growth2 += 1;        }
+        if (coordInfoVecs. nndata1[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata2[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata3[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata4[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata5[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata6[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata7[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata8[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata9[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata10[third_v] >= 0){safe_growth3 += 1;        }
+        if (coordInfoVecs. nndata11[third_v] >= 0){safe_growth3 += 1;        }
+		if (coordInfoVecs. nndata12[third_v] >= 0){safe_growth3 += 1;        }
 		
-		if (safe_growth1 >= generalParams.safeguardthreshold || safe_growth2 >= generalParams.safeguardthreshold){
+		if (safe_growth1 >= generalParams.safeguardthreshold || safe_growth2 >= generalParams.safeguardthreshold || safe_growth3 >= generalParams.safeguardthreshold){
+			triggered = false;
+			std::cout<<"GROWTH NOT TRIGGERED"<<std::endl;
 			continue;
 		}
 
-		//std::cout<<"n1 = "<<n1<<std::endl;
-		//std::cout<<"n2 = "<<n2<<std::endl;
-		//std::cout<<"n3 = "<<n3<<std::endl;
-		//std::cout<<"n4 = "<<n4<<std::endl;
-		//These extract the indices of vertices of the selected triangles "elem1" and "elem2". Now we have n1, n2, n3, n4 in the correct orientation (supposedly).
-
+		
 		////std::cout<<"GROWTH ERROR 6"<<std::endl;	
 		int edgeindex, a, a1, a2, a3, temp1, temp2;
 		//std::cout<<"maxNodeCount = "<< generalParams.maxNodeCount<<std::endl;
-		double newx = (coordInfoVecs.nodeLocX[coordInfoVecs.edges2Nodes_1[iedge]] + coordInfoVecs.nodeLocX[coordInfoVecs.edges2Nodes_2[iedge]])/2.0;
+		double newx = (coordInfoVecs.nodeLocX[first_v] + coordInfoVecs.nodeLocX[second_v] + coordInfoVecs.nodeLocX[third_v])/3.0;
 		////std::cout<<"GROWTH ERROR 6.1"<<std::endl;	
 		coordInfoVecs.nodeLocX[generalParams. maxNodeCount] = newx;
 		////std::cout<<"GROWTH ERROR 6.2"<<std::endl;	
-		double newy = (coordInfoVecs.nodeLocY[coordInfoVecs.edges2Nodes_1[iedge]] + coordInfoVecs.nodeLocY[coordInfoVecs.edges2Nodes_2[iedge]])/2.0;
+		double newy = (coordInfoVecs.nodeLocY[first_v] + coordInfoVecs.nodeLocY[second_v] + coordInfoVecs.nodeLocY[third_v])/3.0;
 		////std::cout<<"GROWTH ERROR 6.3"<<std::endl;	
 		coordInfoVecs.nodeLocY[generalParams. maxNodeCount] = newy;
 		////std::cout<<"GROWTH ERROR 6.4"<<std::endl;	
-		double newz = (coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_1[iedge]] + coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_2[iedge]])/2.0;
+		double newz = (coordInfoVecs.nodeLocZ[first_v] + coordInfoVecs.nodeLocZ[second_v] + coordInfoVecs.nodeLocZ[third_v])/3.0;
 		////std::cout<<"GROWTH ERROR 6.5"<<std::endl;	
 		coordInfoVecs.nodeLocZ[generalParams. maxNodeCount] = newz;
 		//These are the coordinate of the new vertex. Its index is "coordInfoVecs.nodeLocX.size()-1"
@@ -1170,85 +1212,87 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 
 		//int NODESIZE= generalParams.maxNodeCount;//coordInfoVecs.nodeLocX.size();
 		////std::cout<<"GROWTH ERROR 7"<<std::endl;			
-		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] = n1;
-		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] = n2;
+		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] = first_v;
+		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] = second_v;
 		coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles] = generalParams.maxNodeCount;
 		coordInfoVecs.num_triangles += 1;
 		//NOTE: What this +1 actually does is that it specifies the location to write
 		//any new data. Here it points to the location to write new triangles information.
 		//This is a new triangle associated with (tn1, tn2, newnode). Its index is "coordInfoVecs.triangles2Nodes_1.size()-4".
 		////std::cout<<"GROWTH ERROR 8"<<std::endl;	
-		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] =(n2);
-		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] =(n3);
+		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] =second_v;
+		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] =third_v;
 		coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles] = generalParams.maxNodeCount;
 		coordInfoVecs.num_triangles += 1;
 		//This is a new triangle associated with (tn2, tn3, newnode). Its index is "coordInfoVecs.triangles2Nodes_1.size()-3".
 		////std::cout<<"GROWTH ERROR 9"<<std::endl;	
-		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] =(n3);
-		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] =(n4);
+		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] =third_v;
+		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] =first_v;
 		coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles] = generalParams.maxNodeCount;
 		coordInfoVecs.num_triangles += 1;
 		//This is a new triangle associated with (tn3, tn1, newnode). Its index is "coordInfoVecs.triangles2Nodes_1.size()-2".
 		////std::cout<<"GROWTH ERROR 10"<<std::endl;	
-		coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles] =(n4);
-		coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles] =(n1);
-		coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles] = generalParams.maxNodeCount;
-		coordInfoVecs.num_triangles += 1;
+
 		//This is a new triangle associated with (tn3, tn1, newnode). Its index is "coordInfoVecs.triangles2Nodes_1.size()-1".
 		////std::cout<<"GROWTH ERROR 11"<<std::endl;	
 		//Now we add new edges formed by the addition of the new node.
 		coordInfoVecs.edges2Nodes_1[coordInfoVecs.num_edges] = (generalParams.maxNodeCount);
-		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (n1);
-		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 4;
+		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (first_v);
+		std::cout<<"edges2Nodes_1( "<<coordInfoVecs.num_edges<<" ) = "<<generalParams.maxNodeCount<<std::endl;
+		std::cout<<"edges2Nodes_2( "<<coordInfoVecs.num_edges<<" ) = "<<first_v<<std::endl;
+		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 3;
 		coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 1;
 		coordInfoVecs.num_edges += 1;
 		////std::cout<<"GROWTH ERROR 12"<<std::endl;	
 		//This is a new edge associated with (newnode, tn1). Its index is "edges2Nodes_1.size()-4".
 		coordInfoVecs.edges2Nodes_1[coordInfoVecs.num_edges] = (generalParams.maxNodeCount);
-		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (n2);
-		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 3;
-		coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 4;
+		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (second_v);
+		std::cout<<"edges2Nodes_1( "<<coordInfoVecs.num_edges<<" ) = "<<generalParams.maxNodeCount<<std::endl;
+		std::cout<<"edges2Nodes_2( "<<coordInfoVecs.num_edges<<" ) = "<<second_v<<std::endl;
+		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 2;
+		coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 3;
 		coordInfoVecs.num_edges += 1;
 		////std::cout<<"GROWTH ERROR 13"<<std::endl;	
 		//This is a new edge associated with (newnode, tn2). Its index is "edges2Nodes_1.size()-3".
 		coordInfoVecs.edges2Nodes_1[coordInfoVecs.num_edges] = (generalParams.maxNodeCount);
-		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (n3);
-		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 2;
-		coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 3;
-		coordInfoVecs.num_edges += 1;
-		////std::cout<<"GROWTH ERROR 14"<<std::endl;	
-		//This is a new edge associated with (newnode, tn3). Its index is "edges2Nodes_1.size()-2".
-		coordInfoVecs.edges2Nodes_1[coordInfoVecs.num_edges] = (generalParams.maxNodeCount);
-		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (n4);
+		coordInfoVecs.edges2Nodes_2[coordInfoVecs.num_edges] = (third_v);
+		std::cout<<"edges2Nodes_1( "<<coordInfoVecs.num_edges<<" ) = "<<generalParams.maxNodeCount<<std::endl;
+		std::cout<<"edges2Nodes_2( "<<coordInfoVecs.num_edges<<" ) = "<<third_v<<std::endl;
 		coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 1;
 		coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges] = coordInfoVecs.num_triangles - 2;
 		coordInfoVecs.num_edges += 1;
+		////std::cout<<"GROWTH ERROR 14"<<std::endl;	
+		//This is a new edge associated with (newnode, tn3). Its index is "edges2Nodes_1.size()-2".
+		
 		////std::cout<<"GROWTH ERROR 15"<<std::endl;	
-		for (int j = 0; j < 4; j++){
+		for (int j = 0; j < 3; j++){
 		//	//std::cout<<"GROWTH ERROR 16"<<std::endl;				
 			//Now we check to see if the order of update is correct, i.e. are edges2Triangles data in correct orientation.
 			//This is crucial in the bendingspring computation.
-			edgeindex = (coordInfoVecs.num_edges - (4-j));
+			edgeindex = (coordInfoVecs.num_edges - (3-j));
 			a = coordInfoVecs.edges2Triangles_1[edgeindex];
-			if ((coordInfoVecs.triangles2Nodes_1[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_2[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
+            //
+            if ((coordInfoVecs.triangles2Nodes_1[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_2[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
 				a1 = 1;
 			}
 			else{
 				a1 = 0;
 			}
-			if ((coordInfoVecs.triangles2Nodes_2[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_3[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
+            //
+            if ((coordInfoVecs.triangles2Nodes_2[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_3[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
 				a2 = 1;
 			}
 			else{
 				a2 = 0;
-			}
+            }
+            //
 			if ((coordInfoVecs.triangles2Nodes_3[a] == coordInfoVecs.edges2Nodes_1[edgeindex]) && (coordInfoVecs.triangles2Nodes_1[a] == coordInfoVecs.edges2Nodes_2[edgeindex])){
 				a3 = 1;
 			}
 			else{
 				a3 = 0;
 			}
-
+            //
 			if ((a1+a2+a3) == 0){
 				temp1 = coordInfoVecs.edges2Triangles_1[edgeindex];
 				temp2 = coordInfoVecs.edges2Triangles_2[edgeindex];
@@ -1261,10 +1305,10 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 		//This is a new edge associated with (newnode, tn3). Its index is "edges2Nodes_1.size()-1".
 		generalParams.maxNodeCount += 1;
 
-		coordInfoVecs.nndata1[generalParams.maxNodeCount-1] =  (n1);
-		coordInfoVecs.nndata2[generalParams.maxNodeCount-1] =  (n2);
-		coordInfoVecs.nndata3[generalParams.maxNodeCount-1] =  (n3);
-		coordInfoVecs.nndata4[generalParams.maxNodeCount-1] =  (n4);
+		coordInfoVecs.nndata1[generalParams.maxNodeCount-1] =  (first_v);
+		coordInfoVecs.nndata2[generalParams.maxNodeCount-1] =  (second_v);
+		coordInfoVecs.nndata3[generalParams.maxNodeCount-1] =  (third_v);
+		coordInfoVecs.nndata4[generalParams.maxNodeCount-1] =  (-2);
 		coordInfoVecs.nndata5[generalParams.maxNodeCount-1] =  (-2);
 		coordInfoVecs.nndata6[generalParams.maxNodeCount-1] =  (-2);
 		coordInfoVecs.nndata7[generalParams.maxNodeCount-1] =  (-2);
@@ -1272,67 +1316,22 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 		coordInfoVecs.nndata9[generalParams.maxNodeCount-1] =  (-2);
 		coordInfoVecs.nndata10[generalParams.maxNodeCount-1] = (-2);
 		coordInfoVecs.nndata11[generalParams.maxNodeCount-1] = (-2);
-		coordInfoVecs.nndata12[generalParams.maxNodeCount-1] = (-2);
-		for (int j = 0; j < 2; j++){
-			int nn, nnn, nnnn;
-			if (j == 0){
-				nn = n1;
-				nnn = n3;
-				nnnn = generalParams.maxNodeCount-1;
-			}
-			else if (j == 1){
-				nn = n3;
-				nnn = n1;
-				nnnn = generalParams.maxNodeCount-1;
-			}
-			if (coordInfoVecs.nndata1[nn] == nnn){
-				coordInfoVecs.nndata1[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata2[nn] == nnn){
-				coordInfoVecs.nndata2[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata3[nn] == nnn){
-				coordInfoVecs.nndata3[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata4[nn] == nnn){
-				coordInfoVecs.nndata4[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata5[nn] == nnn){
-				coordInfoVecs.nndata5[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata6[nn] == nnn){
-				coordInfoVecs.nndata6[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata7[nn] == nnn){
-				coordInfoVecs.nndata7[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata8[nn] == nnn){
-				coordInfoVecs.nndata8[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata9[nn] == nnn){
-				coordInfoVecs.nndata9[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata10[nn] == nnn){
-				coordInfoVecs.nndata10[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata11[nn] == nnn){
-				coordInfoVecs.nndata11[nn] = nnnn;
-			}
-			else if (coordInfoVecs.nndata12[nn] == nnn){
-				coordInfoVecs.nndata12[nn] = nnnn;
-			}
-		}
-
-		for (int j = 0; j < 2; j++){
+        coordInfoVecs.nndata12[generalParams.maxNodeCount-1] = (-2);
+        
+		for (int j = 0; j < 3; j++){
 			int nn, nnn;
 			if (j == 0){
-				nn = n2;
+				nn = first_v;
 				nnn = generalParams.maxNodeCount-1;
 			}
 			else if (j == 1){
-				nn = n4;
+				nn = second_v;
 				nnn = generalParams.maxNodeCount-1;
-			}
+            }
+            else if (j == 2){
+                nn = third_v;
+                nnn = generalParams.maxNodeCount-1;
+            }
 			if (coordInfoVecs.nndata1[nn] < 0){
 				coordInfoVecs.nndata1[nn] = nnn;
 			}
@@ -1377,57 +1376,31 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 
 		////std::cout<<"GROWTH ERROR 17"<<std::endl;	
 		//Now we update the edges2Triangles data structure with new edges.
-		//std::cout<<"elem 1 = "<<elem1<<std::endl;
-		//std::cout<<"elem 2 = "<<elem2<<std::endl;
-		for (int i = 0; i < coordInfoVecs.num_edges; i++){
-		//	std::cout<<"edges2triangles"<<" "<< i <<" : "<<coordInfoVecs. edges2Triangles_1[i]<<" "<<coordInfoVecs. edges2Triangles_2[i]<<std::endl;
-		}
+		
 		int TRIANGLESIZE = coordInfoVecs.num_triangles;//coordInfoVecs.triangles2Nodes_1.size();
 		if (coordInfoVecs.edges2Triangles_1[t1e1] == elem1){
-			coordInfoVecs.edges2Triangles_1[t1e1] = TRIANGLESIZE-4;
+			coordInfoVecs.edges2Triangles_1[t1e1] = TRIANGLESIZE-3;
 		}
 		else if (coordInfoVecs.edges2Triangles_2[t1e1] == elem1){
-			coordInfoVecs.edges2Triangles_2[t1e1] = TRIANGLESIZE-4;
+			coordInfoVecs.edges2Triangles_2[t1e1] = TRIANGLESIZE-3;
 		}
 		else{}
 		////std::cout<<"GROWTH ERROR 18"<<std::endl;	
 		if (coordInfoVecs.edges2Triangles_1[t1e2] == elem1){
-			coordInfoVecs.edges2Triangles_1[t1e2] = TRIANGLESIZE-3;
+			coordInfoVecs.edges2Triangles_1[t1e2] = TRIANGLESIZE-2;
 		}
 		else if (coordInfoVecs.edges2Triangles_2[t1e2] == elem1){
-			coordInfoVecs.edges2Triangles_2[t1e2] = TRIANGLESIZE-3;
+			coordInfoVecs.edges2Triangles_2[t1e2] = TRIANGLESIZE-2;
 		}
-		else{}
-		////std::cout<<"GROWTH ERROR 19"<<std::endl;	
-		if (coordInfoVecs.edges2Triangles_1[t2e1] == elem2){
-			coordInfoVecs.edges2Triangles_1[t2e1] = TRIANGLESIZE-2;
-		}
-		else if (coordInfoVecs.edges2Triangles_2[t2e1] == elem2){
-			coordInfoVecs.edges2Triangles_2[t2e1] = TRIANGLESIZE-2;
-		}
-		else{}
-		////std::cout<<"GROWTH ERROR 20"<<std::endl;	
-		if (coordInfoVecs.edges2Triangles_1[t2e2] == elem2){
-			coordInfoVecs.edges2Triangles_1[t2e2] = TRIANGLESIZE-1;
-		}
-		else if (coordInfoVecs.edges2Triangles_2[t2e2] == elem2){
-			coordInfoVecs.edges2Triangles_2[t2e2] = TRIANGLESIZE-1;
-		}
-		else{}
-		//std::cout<<"t1e1 "<<t1e1<<std::endl;
-		//std::cout<<"t1e2 "<<t1e2<<std::endl;
-		//std::cout<<"t1e3 "<<t1e3<<std::endl;
-		//std::cout<<"t2e1 "<<t2e1<<std::endl;
-		//std::cout<<"t2e2 "<<t2e2<<std::endl;
-		//std::cout<<"t2e3 "<<t2e3<<std::endl;
+        else{}
 
-		//for (int i = 0; i < coordInfoVecs.num_edges; i++){
-		//	std::cout<<"edges2triangles"<<" "<< i <<" : "<<coordInfoVecs. edges2Triangles_1[i]<<" "<<coordInfoVecs. edges2Triangles_2[i]<<std::endl;
-		//}
-		//The above change the existing edges2Triangles data structure to accomodate new triangles added.
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (coordInfoVecs.edges2Triangles_1[t1e3] == elem1){
+			coordInfoVecs.edges2Triangles_1[t1e3] = TRIANGLESIZE-1;
+		}
+		else if (coordInfoVecs.edges2Triangles_2[t1e3] == elem1){
+			coordInfoVecs.edges2Triangles_2[t1e3] = TRIANGLESIZE-1;
+		}
+		else{}
 		
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1436,75 +1409,56 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 		//Now we will take care of the last unedited data structure "triangles2Edges".
 		//int aa, bb;
 		int EDGESIZE = coordInfoVecs.num_edges;//coordInfoVecs.edges2Nodes_1.size();
-		for (int j = 0; j < 4; j++){
+		for (int j = 0; j < 3; j++){
 		//	//std::cout<<"GROWTH ERROR 21"<<std::endl;	
 			if (j == 0){
-				coordInfoVecs.triangles2Edges_1[coordInfoVecs.num_triangles - 4] = (EDGESIZE-4);
-				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 4] = (t1e1);
-				coordInfoVecs.triangles2Edges_3[coordInfoVecs.num_triangles - 4] = (EDGESIZE-3);   
-			}
-			else if (j == 1){
 				coordInfoVecs.triangles2Edges_1[coordInfoVecs.num_triangles - 3] = (EDGESIZE-3);
-				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 3] = (t1e2);
+				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 3] = (t1e1);
 				coordInfoVecs.triangles2Edges_3[coordInfoVecs.num_triangles - 3] = (EDGESIZE-2);   
 			}
-			else if (j ==2){
+			else if (j == 1){
 				coordInfoVecs.triangles2Edges_1[coordInfoVecs.num_triangles - 2] = (EDGESIZE-2);
-				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 2] = (t2e1);
+				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 2] = (t1e2);
 				coordInfoVecs.triangles2Edges_3[coordInfoVecs.num_triangles - 2] = (EDGESIZE-1);   
 			}
-			else if (j ==3){
+			else if (j ==2){
 				coordInfoVecs.triangles2Edges_1[coordInfoVecs.num_triangles - 1] = (EDGESIZE-1);
-				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 1] = (t2e2);
-				coordInfoVecs.triangles2Edges_3[coordInfoVecs.num_triangles - 1] = (EDGESIZE-4);   
+				coordInfoVecs.triangles2Edges_2[coordInfoVecs.num_triangles - 1] = (t1e3);
+				coordInfoVecs.triangles2Edges_3[coordInfoVecs.num_triangles - 1] = (EDGESIZE-3);   
 			}
 			
 		}
 	
 		
-		if (generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_1[iedge]] == 1 && generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_2[iedge]] == 1){
+		if (generalParams.nodes_in_upperhem[first_v] == 1 && generalParams.nodes_in_upperhem[second_v] == 1 ){
 			generalParams.nodes_in_upperhem.push_back(1);
-		}
+        }
+        else if (generalParams.nodes_in_upperhem[second_v] == 1 && generalParams.nodes_in_upperhem[third_v] == 1 ){
+            generalParams.nodes_in_upperhem.push_back(1);
+        }
+        else if (generalParams.nodes_in_upperhem[first_v] == 1 && generalParams.nodes_in_upperhem[third_v] == 1 ){
+            generalParams.nodes_in_upperhem.push_back(1);
+        }
 		else{
 			generalParams.nodes_in_upperhem.push_back(-1);
 		}
-		//Finally, we will fill the edge data chosen for growth (expansion) with INT_MAX so its data is no longer relevant to the computation
-		////std::cout<<"GROWTH ERROR 22"<<std::endl;	
-		coordInfoVecs.edges2Nodes_1[iedge] = INT_MAX;
-		coordInfoVecs.edges2Nodes_2[iedge] = INT_MAX;
-		for (int i = 0; i < coordInfoVecs.num_triangles; i++){
-		//	//std::cout<<"GROWTH ERROR 23"<<std::endl;	
-			if (coordInfoVecs.triangles2Edges_1[i] == iedge){
-				coordInfoVecs.triangles2Edges_1[i] = INT_MAX;
-			}
-			if (coordInfoVecs.triangles2Edges_2[i] == iedge){
-				coordInfoVecs.triangles2Edges_2[i] = INT_MAX;
-			}
-			if (coordInfoVecs.triangles2Edges_3[i] == iedge){
-				coordInfoVecs.triangles2Edges_3[i] = INT_MAX;
-			}
-		}
-		coordInfoVecs.edges2Triangles_1[iedge] = INT_MAX;
-		coordInfoVecs.edges2Triangles_2[iedge] = INT_MAX;
+		
 		
 		////std::cout<<"GROWTH ERROR 24"<<std::endl;	
 		
 			coordInfoVecs.triangles2Nodes_1[elem1] = INT_MAX;
 			coordInfoVecs.triangles2Nodes_2[elem1] = INT_MAX;
 			coordInfoVecs.triangles2Nodes_3[elem1] = INT_MAX;
-			coordInfoVecs.triangles2Nodes_1[elem2] = INT_MAX;
-			coordInfoVecs.triangles2Nodes_2[elem2] = INT_MAX;
-			coordInfoVecs.triangles2Nodes_3[elem2] = INT_MAX;
+			
 			
 			//Delete the associated vertices information of the selected triangle.
-			//Since we delete the chosen triangles, any triangle indexed lower than the deleted one will have its index reduced (or moved up) by 1.
-			//Hence, we need to sweep through all data structures using the triangle index to change the index accordingly.
-			for (int i = 0; i < coordInfoVecs.num_edges; i++){
+			
+			/*for (int i = 0; i < coordInfoVecs.num_edges; i++){
 		//		//std::cout<<"GROWTH ERROR 25"<<std::endl;	
-				if (coordInfoVecs.edges2Triangles_1[i] == elem1 || coordInfoVecs.edges2Triangles_1[i] == elem2){
+				if (coordInfoVecs.edges2Triangles_1[i] == elem1){
 					coordInfoVecs.edges2Triangles_1[i] = INT_MAX;
 				}
-				if (coordInfoVecs.edges2Triangles_2[i] == elem1 || coordInfoVecs.edges2Triangles_2[i] == elem2){
+				if (coordInfoVecs.edges2Triangles_2[i] == elem1){
 					coordInfoVecs.edges2Triangles_2[i] = INT_MAX;
 				}
 			if (coordInfoVecs.edges2Triangles_1[i] != INT_MAX && coordInfoVecs.edges2Triangles_2[i] == INT_MAX){
@@ -1513,27 +1467,12 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 				else if (coordInfoVecs.edges2Triangles_1[i] == INT_MAX && coordInfoVecs.edges2Triangles_2[i] != INT_MAX){
 					std::cout<<"modified edges2Triangles "<<coordInfoVecs.edges2Triangles_1[i]<<" "<<coordInfoVecs.edges2Triangles_2[i]<<std::endl;
 					}
-			}
+			}*/
 			//This completes the sweep. After this, the indices of triangle used in edges2Triangles data structure should be the correct one.
 		//	//std::cout<<"GROWTH ERROR 26"<<std::endl;	
 			coordInfoVecs.triangles2Edges_1[elem1] = INT_MAX;
 			coordInfoVecs.triangles2Edges_2[elem1] = INT_MAX;
 			coordInfoVecs.triangles2Edges_3[elem1] = INT_MAX;
-			coordInfoVecs.triangles2Edges_1[elem2] = INT_MAX;
-			coordInfoVecs.triangles2Edges_2[elem2] = INT_MAX;
-			coordInfoVecs.triangles2Edges_3[elem2] = INT_MAX;
-			for (int i = 0; i < coordInfoVecs.num_triangles; i++){
-		//		//std::cout<<"GROWTH ERROR 27"<<std::endl;	
-				if (coordInfoVecs.triangles2Edges_1[i] == iedge){
-					coordInfoVecs.triangles2Edges_1[i] = INT_MAX;
-				}
-				if (coordInfoVecs.triangles2Edges_2[i] == iedge ){
-					coordInfoVecs.triangles2Edges_2[i] = INT_MAX;
-				}
-				if (coordInfoVecs.triangles2Edges_3[i] == iedge ){
-					coordInfoVecs.triangles2Edges_3[i] = INT_MAX;
-				}
-			}
 		
 		//Erase the edge infomation related to the deleted triangle. Note the deletion should always start with the largest index.
 
@@ -1547,18 +1486,12 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 						//This ensures that the newly created edges will have the correct associated spring constant.
 //std::cout<<"ERROR HERE?"<<std::endl;
 		//generalParams.edges_in_upperhem[iedge] = INT_MAX;
-		for (int i = 0; i < edges_in_upperhem.size(); i++){
-			if (edges_in_upperhem[i] == iedge){
-				edges_in_upperhem[i] == INT_MAX;
-				//break;
-			}
-		}
 
-		for (int q = 0; q < 4; q++){
+		for (int q = 0; q < 3; q++){
 		//	//std::cout<<"GROWTH ERROR 30"<<std::endl;	
-			int nodeP = coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles - (4-q)]; 
-			int nodeQ = coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles - (4-q)];
-			int nodeR = coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles - (4-q)];
+			int nodeP = coordInfoVecs.triangles2Nodes_1[coordInfoVecs.num_triangles - (3-q)]; 
+			int nodeQ = coordInfoVecs.triangles2Nodes_2[coordInfoVecs.num_triangles - (3-q)];
+			int nodeR = coordInfoVecs.triangles2Nodes_3[coordInfoVecs.num_triangles - (3-q)];
 
 			if (generalParams.nodes_in_upperhem[nodeP]==1 && generalParams.nodes_in_upperhem[nodeQ] ==1 && generalParams.nodes_in_upperhem[nodeR] ==1){
 				generalParams.triangles_in_upperhem.push_back(1);
@@ -1579,21 +1512,16 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 		//std::cout<<"edges2Triangles size"<<""<<coordInfoVecs.edges2Triangles_1.size()<<" "<<coordInfoVecs.edges2Triangles_2.size()<<std::endl;
 		//std::cout<<"triangles_in_upperhem size "<<generalParams.triangles_in_upperhem.size()<<std::endl;	
 		//std::cout<<"GROWTH ERROR 29"<<std::endl;	
-		for (int q = 0; q < 4; q++){
+		for (int q = 0; q < 3; q++){
 			//std::cout<<"GROWTH ERROR 31"<<std::endl;	
-			int elem_1 = coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges-(4 - q)];
-			//std::cout<<coordInfoVecs.num_edges-(4 - q)<<std::endl;
-			//std::cout<<"elem_1 "<<elem_1<<std::endl;
-			//std::cout<<generalParams.nodes_in_upperhem[nodeP]<<std::endl;
-			int elem_2 = coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges-(4 - q)];
-			//std::cout<<"elem_2"<<elem_2<<std::endl;
-			//std::cout<<generalParams.nodes_in_upperhem[nodeQ]<<std::endl;
-			//std::cout<<"GROWTH ERROR 31.5"<<std::endl;
+			int elem_1 = coordInfoVecs.edges2Triangles_1[coordInfoVecs.num_edges-(3 - q)];
+			int elem_2 = coordInfoVecs.edges2Triangles_2[coordInfoVecs.num_edges-(3 - q)];
+			
 			if (generalParams.triangles_in_upperhem[elem_1] == 1 && generalParams.triangles_in_upperhem[elem_2] == 1){
 				
 				generalParams.edges_in_upperhem.push_back(1);
 				//generalParams.edges_in_upperhem_index.push_back(generalParams.num_of_edges - (4 - q));
-				edges_in_upperhem.push_back(coordInfoVecs.num_edges - (4 - q));
+				edges_in_upperhem.push_back(coordInfoVecs.num_edges - (3 - q));
 			}
 			
 			else if (generalParams.triangles_in_upperhem[elem_1] == 1 || generalParams.triangles_in_upperhem[elem_2] == 1){
@@ -1611,7 +1539,6 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 			
 		}
 		generalParams.triangles_in_upperhem[elem1] = INT_MAX;
-		generalParams.triangles_in_upperhem[elem2] = INT_MAX;
 
 		nodes_in_tip.push_back(-1);
 		
@@ -1631,45 +1558,188 @@ for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 						
 						//This should completes the dreadful data structure update associated with cell (membrane) growth.
 						//Have fun modifying it if you need more function!
-						//if (triggered == true){
-						//	break;
-						//}
+						if (triggered == true){
+							std::cout<<"t1e1 = "<<t1e1<<std::endl;
+							std::cout<<"t1e2 = "<<t1e2<<std::endl;
+							std::cout<<"t1e3 = "<<t1e3<<std::endl;
+						}
 					}
 
 					//Recalculate the nodes_in_tip data.
 				if (triggered == true){	
-					true_num_edges_in_upperhem = 0;
-					for (int i = 0; i < edges_in_upperhem.size(); i++){
-						if (edges_in_upperhem[i] != INT_MAX && edges_in_upperhem[i] >= 0){
-						true_num_edges_in_upperhem += 1;
-						//break;
+					std::cout<<"GROWTH TRIGGERED"<<std::endl;
+					
+					/* generalParams.true_num_edges = 0;
+					for (int i = 0; i < coordInfoVecs.num_edges; i++){
+						if (coordInfoVecs.edges2Nodes_1[i] != INT_MAX && coordInfoVecs.edges2Nodes_2[i] != INT_MAX){
+							generalParams.true_num_edges += 1;
 						}
-					}
+						}
+					storage->print_VTK_File();
+					initial_kT = -1.0;
+					runSim = false;
+					break; */
+					
+					/*if (edgeswap_iteration >= 0){
+					//generalParams.nodes_in_upperhem.clear();
+					//generalParams.nodes_in_upperhem.resize(generalParams.maxNodeCount,-1);
 					double max_z = -2000.0;
 					for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= max_z){
 							max_z = coordInfoVecs. nodeLocZ[k];
 						}
 					}
-					for (int k = 0; k < generalParams.maxNodeCount; k++){
+
+					for (int i = 0; i < generalParams.maxNodeCount; i++){
+						if (coordInfoVecs.nodeLocZ[i] > (max_z - tip_depth)){
+							generalParams.nodes_in_upperhem[i] = 1;
+						}
+						else{
+							generalParams.nodes_in_upperhem[i] = -1;
+						}
+					//	std::cout<<"nodes "<<i<<" "<<generalParams.nodes_in_upperhem[i]<<std::endl;		
+					}*/
+				
+					//std::vector<int> nodes_to_center;
+				
+					////////////////////////////////////////////////////////////////////////////////////////////
+				
+				
+				
+					////////////////////////////////////////////////////////////////////////////////////////////
+					//generalParams.triangles_in_upperhem.resize(coordInfoVecs.num_triangles);
+					/*for (int i = 0; i < coordInfoVecs.num_triangles; i++){
+						if (coordInfoVecs.triangles2Nodes_1[i] == INT_MAX || coordInfoVecs.triangles2Nodes_2[i] == INT_MAX || coordInfoVecs.triangles2Nodes_3[i] == INT_MAX){
+							generalParams.triangles_in_upperhem[i] = INT_MAX;
+							continue;
+						}
+						int aaa = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_1[i]];
+						//std::cout<<aaa<<std::endl;
+						int bbb = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_2[i]];
+						//std::cout<<bbb<<std::endl;
+						int ccc = generalParams.nodes_in_upperhem[coordInfoVecs.triangles2Nodes_3[i]];
+						//std::cout<<ccc<<std::endl;
+						if ((aaa+bbb+ccc)==3){
+							generalParams.triangles_in_upperhem[i] = 1;
+							//triangles_in_upperhem.push_back(i);
+						}
+						else if ((aaa+bbb+ccc)==1){
+							generalParams.triangles_in_upperhem[i] = 0;
+							//triangles_in_upperhem.push_back(i);
+						}
+						else{
+							generalParams.triangles_in_upperhem[i] = -1;
+						}
+					//	std::cout<<"triangle "<<i<<" "<<generalParams.triangles_in_upperhem[i]<<std::endl;		
+					}
+					//std::cout<<"WHERE iS THE PROBLEM 1"<<std::endl;
+				
+					//std::vector<int> edges_in_upperhem;
+					edges_in_upperhem.clear();
+					//generalParams.edges_in_upperhem.resize(coordInfoVecs.num_edges);
+					for (int i = 0; i < coordInfoVecs.num_edges; i++){
+						
+						if (coordInfoVecs.edges2Nodes_1[i] == INT_MAX || coordInfoVecs.edges2Nodes_2[i] == INT_MAX){
+							generalParams.edges_in_upperhem[i] = INT_MAX;
+							continue;
+						}
+						
+						//std::cout<<"edges2Triangles_1 = "<<coordInfoVecs.edges2Triangles_1[i]<<std::endl;
+						//std::cout<<"edges2Triangles_2 = "<<coordInfoVecs.edges2Triangles_2[i]<<std::endl;
+						int aaa = generalParams.triangles_in_upperhem[coordInfoVecs.edges2Triangles_1[i]];//generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_1[i]];
+						int bbb = generalParams.triangles_in_upperhem[coordInfoVecs.edges2Triangles_2[i]];//generalParams.nodes_in_upperhem[coordInfoVecs.edges2Nodes_2[i]];
+						
+						if (aaa == 1 && bbb == 1){
+							generalParams.edges_in_upperhem[i] = 1;
+							edges_in_upperhem.push_back(i);
+						}
+						else if (aaa == 1 || bbb == 1){
+							generalParams.edges_in_upperhem[i] = 1;//0;
+						}
+						else{
+							generalParams.edges_in_upperhem[i] = -1;
+						}
+						
+					}
+				}*/
+					//std::cout<<"WHERE iS THE PROBLEM 2"<<std::endl;
+					
+					
+					/*for (int k = 0; k < generalParams.maxNodeCount; k++){
 						if (coordInfoVecs. nodeLocZ[k] >= (max_z - tip_depth)){
 							nodes_in_tip[k] == 1;
 						}
 						else{
 							nodes_in_tip[k] == -1;
 						}
+					}*/
+					true_num_edges_in_upperhem = 0;
+					for (int i = 0; i < edges_in_upperhem.size(); i++){
+						if (edges_in_upperhem[i] != INT_MAX && edges_in_upperhem[i] >= 0){
+							true_num_edges_in_upperhem += 1;
+							//break;
+						}
 					}
+					//std::cout<<"WHERE iS THE PROBLEM 3"<<std::endl;
 				}
 			
 			TESTING = 0;
-		 //}
-//std::cout<<"GROWTH DONE!"<<std::endl;
+			
+			
+std::cout<<"ERROR BEFORE POSTGROWTH COMP!"<<std::endl;
  ////storage->print_VTK_File();
 ////storage->storeVariables();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////// END OF GROWTH SECTION //////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ComputeVolume(
+	generalParams,
+	coordInfoVecs,
+	linearSpringInfoVecs,
+	ljInfoVecs);
+std::cout<<"ERROR AFTER POSTGROWTH VOLUME COMP"<<std::endl;
+edgeswap_ptr->transferDtoH(coordInfoVecs, build_ptr->hostSetInfoVecs);
+std::cout<<"ERROR BEFORE POSTGROWTH EDGESWAP"<<std::endl;
+//std::cout<<"ERROR 1.5"<<std::endl;
+for (int edge_loop = 0; edge_loop < num_edge_loop; edge_loop++) {
+	//std::cout<<"edge_loop = "<<edge_loop<<std::endl;
+	
+	std::random_device rand_dev;
+	std::mt19937 generator(rand_dev());
+   
+   std::uniform_int_distribution<int> distribution(1,edges_in_upperhem.size());
+   
+   int dice_roll = distribution(generator);
+   
+   int edge = 1005;//edges_in_upperhem[dice_roll - 1];
+   
+   //while (generalParams.boundaries_in_upperhem[edge] == 1 || edge == INT_MAX){
+	//	dice_roll = distribution(generator);
+		
+	//	edge =  edges_in_upperhem[dice_roll - 1];
+	 //}
+   std::cout<<"edge = "<<edge<<std::endl;
+   std::cout<<coordInfoVecs.edges2Nodes_1[edge]<<std::endl;
+   std::cout<<coordInfoVecs.edges2Nodes_2[edge]<<std::endl;
+   std::cout<<"for edge 1920 "<<coordInfoVecs.edges2Nodes_1[1920]<<std::endl;
+   std::cout<<"for edge 1920 "<<coordInfoVecs.edges2Nodes_2[1920]<<std::endl;
+   
+	int ALPHA = edgeswap_ptr->edge_swap_host_vecs(
+		edge,
+		generalParams,
+		build_ptr->hostSetInfoVecs,
+		linearSpringInfoVecs,
+		bendingTriangleInfoVecs,
+		areaTriangleInfoVecs);
+	
+}
+//NOTE: EDGESWAP ALGORITHM CURRENTLY IS WRITTEN TO ALLOW AT MOST 8 NEIGHBORING NODES PER NODE.
+//std::cout<<"ERROR POSTGROWTH EDGESWAP"<<std::endl;
+edgeswap_ptr->transferHtoD(coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
+std::cout<<"ERROR AFTER POSTGROWTH EDGESWAP"<<std::endl;
+
+
 
  					
 					
@@ -1708,7 +1778,7 @@ void System::initializeSystem(HostSetInfoVecs& hostSetInfoVecs) {
 	std::cout<<"num elems: "<< coordInfoVecs.num_triangles << std::endl;
 	//allocate memory
 	int mem_prealloc = 4;
-	coordInfoVecs.isNodeFixed.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
+	coordInfoVecs.isNodeFixed.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size(),false);
 	coordInfoVecs.prevNodeLocX.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
 	coordInfoVecs.prevNodeLocY.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());
 	coordInfoVecs.prevNodeLocZ.resize(mem_prealloc*hostSetInfoVecs.nodeLocX.size());

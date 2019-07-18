@@ -10,7 +10,7 @@ void ComputeVolume(
     LJInfoVecs& ljInfoVecs) {  
     
         thrust::counting_iterator<int> triangleIdBegin(0);
-        thrust::counting_iterator<int> triangleIdEnd(coordInfoVecs.triangles2Nodes_1.size());
+       // thrust::counting_iterator<int> triangleIdEnd(coordInfoVecs.num_triangles);//coordInfoVecs.triangles2Nodes_1.size());
 
     generalParams.current_total_volume=
     thrust::transform_reduce(  
@@ -37,7 +37,7 @@ void ComputeVolume(
         generalParams.true_current_total_volume = sqrt(generalParams.current_total_volume*generalParams.current_total_volume)/6.0;
         generalParams.volume_energy = generalParams.volume_spring_constant*(generalParams.true_current_total_volume - generalParams.eq_total_volume)*
                                         (generalParams.true_current_total_volume - generalParams.eq_total_volume)/
-                                        (2*generalParams.Rmin*generalParams.Rmin*generalParams.Rmin*generalParams.eq_total_volume);
+                                        (2.0*generalParams.Rmin*generalParams.Rmin*generalParams.Rmin*generalParams.eq_total_volume);
         //std::cout<<"Current volume = "<<generalParams.current_total_volume<<std::endl;
 
 };

@@ -45,7 +45,7 @@ void Storage::print_VTK_File(void) {
 		//std::string initial = "Animation_realistic_finaltry/wrap_v0d0001_dt0d0001_newrange_";
 		//std::string initial = "Animation_realistic/membrane_";//volumetest40_n2d0lowhem10_ka0_eqvol1d5_";//spheretest_rad0d17549_lowerhem5_ka5_ks25kb5_LJR2_"; //Anneal_adh15_Rv0d75_MD20a7d5_v0d2_NKBT4000_dt0d0002_";
 		//std::string initial = "Animation_realistic/yeastbudding_septinring_test_3particle_";
-		std::string initial = "Animation_realistic5/withseptin_postswapremesh_1triexp_lw15d0bw7d5aw5d0_tau0d5_volsp7d0_ss0d1_mem_dt0d00002_";//yeastbudding_septin40_test_6particle_1pullonly_";
+		std::string initial = "Animation_realistic6/withseptin_correctedvolsp3_newrule3_";//yeastbudding_septin40_test_6particle_1pullonly_";
 		//std::string initial = "Animation_realistic_flow/Pflow0d5_v0d0005_MRT0d005_dt0d0002_";
 		std::ofstream ofs;
 		if (digits == 1 || digits == 0) {
@@ -156,12 +156,12 @@ void Storage::print_VTK_File(void) {
 	}
 
 	//now print out the file for the capsid
-	if ((SYSTEM)) {
+	/*if ((SYSTEM)) {
 		unsigned digits = ceil(log10(iteration + 1));
 		std::string format = ".vtk";
 		std::string Number;
 		//std::string initial = "Animation_realistic/yeastbudding_septinring_nucleus_test_3particle_";
-		std::string initial = "Animation_realistic5/withseptin_postswapremesh_1triexp_lw15d0bw7d5aw5d0_tau0d5_volsp7d0_ss0d1_particle_dt0d00002_";//yeastbudding_septin40_nucleus_test_6particle_1pullonly_";
+		std::string initial = "Animation_realistic6/withseptin_rule3_lw15bw7d5aw15_volsp15_particle_dt0d00002_";//yeastbudding_septin40_nucleus_test_6particle_1pullonly_";
 		std::ofstream ofs;
 		if (digits == 1 || digits == 0) {
 			Number = "0000" + std::to_string(iteration);
@@ -256,7 +256,7 @@ void Storage::print_VTK_File(void) {
 			ofs<< 3 <<std::endl;
 		}
 		ofs.close();
-	}
+	}*/
 	
 };
 
@@ -276,7 +276,7 @@ void Storage::storeVariables(void) {
 		//std::string initial = "Animation_realistic_finaltry/wrap_v0d0001_dt0d0001_newrange_";
 		//std::string initial = "Animation_realistic/membrane_";//volumetest40_n2d0lowhem10_ka0_eqvol1d5_";//spheretest_rad0d17549_lowerhem5_ka5_ks25kb5_LJR2_"; //Anneal_adh15_Rv0d75_MD20a7d5_v0d2_NKBT4000_dt0d0002_";
 		//std::string initial = "Animation_realistic/yeastbudding_septinring_test_3particle_";
-		std::string initial = "Variables_realistic4/withseptin_twotriangles_mem_dt0d0005_";//yeastbudding_septin40_test_6particle_1pullonly_";
+		std::string initial = "Variables_realistic6/equilibrium_data3_";//yeastbudding_septin40_test_6particle_1pullonly_";
 		//std::string initial = "Animation_realistic_flow/Pflow0d5_v0d0005_MRT0d005_dt0d0002_";
 		std::ofstream ofs;
 		if (digits == 1 || digits == 0) {
@@ -333,43 +333,43 @@ void Storage::storeVariables(void) {
 			int t2n_1 = SYSTEM->coordInfoVecs.triangles2Nodes_1[i];
 			int t2n_2 = SYSTEM->coordInfoVecs.triangles2Nodes_2[i];
 			int t2n_3 = SYSTEM->coordInfoVecs.triangles2Nodes_3[i];
-			ofs << std::setprecision(5) <<std::fixed<< "<elem> " << t2n_1 << " " << t2n_2 << " " << t2n_3 <<" </elem>"<<std::endl;
+			ofs << std::setprecision(5) <<std::fixed<< "<elem> " << t2n_1+1 << " " << t2n_2+1 << " " << t2n_3+1 <<" </elem>"<<std::endl;
 		
 		}
 
-		for (int i = 0; i < SYSTEM->generalParams.maxNodeCount; i++){
-			double t2n_1 = SYSTEM->coordInfoVecs.nodeForceX[i];
-			double t2n_2 = SYSTEM->coordInfoVecs.nodeForceY[i];
-			double t2n_3 = SYSTEM->coordInfoVecs.nodeForceZ[i];
-			ofs << std::setprecision(5) <<std::fixed<< " " << t2n_1 << " " << t2n_2 << " " << t2n_3 <<" "<<std::endl;
-		
-		}
+		//for (int i = 0; i < SYSTEM->generalParams.maxNodeCount; i++){
+		//	double t2n_1 = SYSTEM->coordInfoVecs.nodeForceX[i];
+		//	double t2n_2 = SYSTEM->coordInfoVecs.nodeForceY[i];
+		//	double t2n_3 = SYSTEM->coordInfoVecs.nodeForceZ[i];
+		//	ofs << std::setprecision(5) <<std::fixed<< " " << t2n_1 << " " << t2n_2 << " " << t2n_3 <<" "<<std::endl;
+		//
+		//}
 
-		/*for (int i = 0; i < SYSTEM->coordInfoVecs.triangles2Nodes_1.size(); i++) {
+		for (int i = 0; i < SYSTEM->coordInfoVecs.num_triangles; i++) {
 			int t2n_1 = SYSTEM->coordInfoVecs.triangles2Edges_1[i];
 			int t2n_2 = SYSTEM->coordInfoVecs.triangles2Edges_2[i];
 			int t2n_3 = SYSTEM->coordInfoVecs.triangles2Edges_3[i];
-			ofs << std::setprecision(5) <<std::fixed<< "<elem2edge> " << t2n_1 << " " << t2n_2 << " " << t2n_3 <<" </elem2edge>"<<std::endl;
+			ofs << std::setprecision(5) <<std::fixed<< "<elem2edge> " << t2n_1+1 << " " << t2n_2+1 << " " << t2n_3+1 <<" </elem2edge>"<<std::endl;
 		
 		}
 
-		for (int i = 0; i < SYSTEM->coordInfoVecs.edges2Nodes_1.size(); i++) {
+		for (int i = 0; i < SYSTEM->coordInfoVecs.num_edges; i++) {
 			int t2n_1 = SYSTEM->coordInfoVecs.edges2Nodes_1[i];
 			int t2n_2 = SYSTEM->coordInfoVecs.edges2Nodes_2[i];
-			ofs << std::setprecision(5) <<std::fixed<< "<edgeinfo> " << t2n_1 << " " << t2n_2 <<" </edgeinfo>"<<std::endl;
+			ofs << std::setprecision(5) <<std::fixed<< "<edgeinfo> " << t2n_1+1 << " " << t2n_2+1 <<" </edgeinfo>"<<std::endl;
 		
 		}
 
-		for (int i = 0; i < SYSTEM->coordInfoVecs.edges2Nodes_1.size(); i++) {
+		for (int i = 0; i < SYSTEM->coordInfoVecs.num_edges; i++) {
 			int t2n_1 = SYSTEM->coordInfoVecs.edges2Triangles_1[i];
 			int t2n_2 = SYSTEM->coordInfoVecs.edges2Triangles_2[i];
-			ofs << std::setprecision(5) <<std::fixed<< "<edge2elem> " << t2n_1 << " " << t2n_2 <<" </edge2elem>"<<std::endl;
+			ofs << std::setprecision(5) <<std::fixed<< "<edge2elem> " << t2n_1+1 << " " << t2n_2+1 <<" </edge2elem>"<<std::endl;
 		
-		}*/
+		}
 
 
 
-		/*for (int i = 0; i < SYSTEM->coordInfoVecs.nndata1.size(); i++) {
+		for (int i = 0; i < SYSTEM->generalParams.maxNodeCount; i++) {
 			int nn1 = SYSTEM->coordInfoVecs.nndata1[i];
 			int nn2 = SYSTEM->coordInfoVecs.nndata2[i];
 			int nn3 = SYSTEM->coordInfoVecs.nndata3[i];
@@ -382,9 +382,9 @@ void Storage::storeVariables(void) {
 			int nn10 = SYSTEM->coordInfoVecs.nndata10[i];
 			int nn11 = SYSTEM->coordInfoVecs.nndata11[i];
 			int nn12 = SYSTEM->coordInfoVecs.nndata12[i];
-			ofs << std::setprecision(5) <<std::fixed<< " " << nn1 << " " << nn2 <<" "<< nn3 <<" "<< nn4 <<" "<< nn5 <<" "<< nn6 <<" "<< nn7 <<" "<< nn8 <<" "<< nn9 <<" "<< nn10 <<" "<< nn11 <<" "<< nn12 <<" "<<std::endl;
+			ofs << std::setprecision(5) <<std::fixed<< "<nndata> " << nn1+1 << " " << nn2+1 <<" "<< nn3+1 <<" "<< nn4+1 <<" "<< nn5+1 <<" "<< nn6+1 <<" "<< nn7+1 <<" "<< nn8+1 <<" "<< nn9+1 <<" "<< nn10+1 <<" "<< nn11+1 <<" "<< nn12+1 <<" </nndata> "<<std::endl;
 		
-		}*/
+		}
 
 	}
 }

@@ -8,7 +8,7 @@ setenv LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/afs/crc.nd.edu/x86_64_linux/m/matlab
 #$ -q  gpu 	 # Specify queue
 #$ -l gpu_card=1
 #s -pe smp 4         #specifies threads??? maybe
-#$ -N  "withseptin_postswapremesh_1triexp_lw15d0bw7d5aw5d0_tau0d5_volsp7d0_ss0d1_dt0d00002_" # Specify job name
+#$ -N  "withseptin_correctedvolsp3_newrule3" # Specify job name
 #$ -t 1       #specify number of data input files
 
 
@@ -25,5 +25,5 @@ echo -n "This computer is called ";hostname
 echo -n "I am currently in the directory ";pwd
 
 
-./virus-model  -solve_time=100 -dt=0.00005 $data[${SGE_TASK_ID}]
+./virus-model  -solve_time=100 -dt=0.0001 $data[${SGE_TASK_ID}]
 

@@ -37,15 +37,15 @@ struct VolumeCompFunctor {
         int r3 = thrust::get<3>(u4);
 
         if (r1 != INT_MAX && r2 != INT_MAX && r3 != INT_MAX){
-        int r1x = locXAddr[r1];
-        int r1y = locYAddr[r1];
-        int r1z = locZAddr[r1];
-        int r2x = locXAddr[r2];
-        int r2y = locYAddr[r2];
-        int r2z = locZAddr[r2];
-        int r3x = locXAddr[r3];
-        int r3y = locYAddr[r3];
-        int r3z = locZAddr[r3];
+        double r1x = locXAddr[r1];
+        double r1y = locYAddr[r1];
+        double r1z = locZAddr[r1];
+        double r2x = locXAddr[r2];
+        double r2y = locYAddr[r2];
+        double r2z = locZAddr[r2];
+        double r3x = locXAddr[r3];
+        double r3y = locYAddr[r3];
+        double r3z = locZAddr[r3];
 
         //(v1x + v2x + v3x)*((v2y-v1y)*(v3z-v1z) - (v3y-v2y)*(v2z-v1z))+
         //(v1y + v2y + v3y)*(-(v2x-v1x)*(v3z-v2z) + (v3x-v2x)*(v2z-v1z))+
@@ -54,7 +54,11 @@ struct VolumeCompFunctor {
         double N1 = (r2y - r1y)*(r3z - r1z) - (r3y - r1y)*(r2z - r1z);
         double N2 = -(r2x - r1x)*(r3z - r1z) + (r3x - r1x)*(r2z - r1z);
         double N3 = (r2x - r1x)*(r3y - r1y) - (r3x - r1x)*(r2y - r1y);
-
+        double normN = sqrt(N1*N1 + N2*N2 + N3*N3);
+        N1 = N1/normN;
+        N2 = N2/normN;
+        N3 = N3/normN;
+        
         double r1_dot_N = r1x*N1 + r1y*N2 + r1z*N3;
         double r1cr2x = r1y*r2z - r2y*r1z;
         double r1cr2y = -r1x*r2z + r2x*r1z;
@@ -68,11 +72,16 @@ struct VolumeCompFunctor {
 
         double NN = N1*(r1cr2x + r2cr3x + r3cr1x) + N2*(r1cr2y + r2cr3y + r3cr1y) + N3*(r1cr2z + r2cr3z + r3cr1z);
         double volume = r1_dot_N*sqrt(NN*NN);
+        //if (normN != 0.0){
+         //   volume = 1.0;   
+        //}
 
         return volume;
+        
         }
         else{
             double volume = 0.0;
+            
             return volume;
         }
 

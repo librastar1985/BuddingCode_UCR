@@ -12,6 +12,7 @@ Overall flow of the simulation steps:
 1. Initialization of global parameters and data structures.
 2. Run a predetermined number of relaxation steps of the model system to attain quasi-steady state.
 3. Start the actual simulation:
+
  a. Update parameters (if necessary).
  b. Run a predetermined number of relaxation steps or dynamical number of relaxation steps depending on simulation types (molecular dynamics vs energy minimization).
  c. Run edge-swap algorithm.

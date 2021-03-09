@@ -8,7 +8,8 @@ Case 1. yeast budding
 
 Case 2. Viral budding
 
-      Starting from an initial flat triangulated sheet representing a piece of membrane, a selected region can undergo changes in mechanical properties leading to deformation.         Interaction with a single viral particle or a cluster of viral particles can also be accommodated.
+      Starting from an initial flat triangulated sheet representing a piece of membrane, a selected region can undergo changes in mechanical properties leading to deformation.
+      Interaction with a single viral particle or a cluster of viral particles can also be accommodated.
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

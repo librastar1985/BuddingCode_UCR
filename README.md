@@ -1,5 +1,13 @@
 # BuddingCode_UCR
 Budding model. The initial condition can be a closed system or an open system.
+Case[yeast budding]
+      Starting from an initial spherical (or non-spherical) triangulated model cell, a selected region can undergo changes in mechanical properties leading to deformation. 
+      Additional triangles can be introduced into the selected region to simulate local growth.
+Case[Viral budding]
+      Starting from an initial flat triangulated sheet representing a piece of membrane, a selected region can undergo changes in mechanical properties leading to deformation.         Interaction with a single viral particle or a cluster of viral particles can also be accommodated.
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 The general flow of simulation steps can be found at "void System::solveSystem()" in System.cu.
 For particular functions such as linear spring, please refer to LinearSpring.cu and LinearSpring.h files. The same applies to bending spring and area springs.

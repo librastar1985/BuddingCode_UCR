@@ -12,11 +12,11 @@ Overall flow of the simulation steps:
 1. Initialization of global parameters and data structures.
 2. Run a predetermined number of relaxation steps of the model system to attain quasi-steady state.
 3. Start the actual simulation:
-      a. Update parameters (if necessary).
-      b. Run a predetermined number of relaxation steps or dynamical number of relaxation steps depending on simulation types (molecular dynamics vs energy minimization).
-      c. Run edge-swap algorithm.
-      d. Repeat (a-c) for a number of times, and then test for growth (if applicable).
-      e. Repeat (a-d) until simulation terminates.
+ a. Update parameters (if necessary).
+ b. Run a predetermined number of relaxation steps or dynamical number of relaxation steps depending on simulation types (molecular dynamics vs energy minimization).
+ c. Run edge-swap algorithm.
+ d. Repeat (a-c) for a number of times, and then test for growth (if applicable).
+ e. Repeat (a-d) until simulation terminates.
 
 To run the simulation on UCR HPCC:
 1. Make sure you have every file & folder in this repository on your HPCC account.

@@ -1,9 +1,13 @@
 # BuddingCode_UCR
 Budding model. The initial condition can be a closed system or an open system.
-Case[yeast budding]
+
+Case 1. yeast budding
+
       Starting from an initial spherical (or non-spherical) triangulated model cell, a selected region can undergo changes in mechanical properties leading to deformation. 
       Additional triangles can be introduced into the selected region to simulate local growth.
-Case[Viral budding]
+
+Case 2. Viral budding
+
       Starting from an initial flat triangulated sheet representing a piece of membrane, a selected region can undergo changes in mechanical properties leading to deformation.         Interaction with a single viral particle or a cluster of viral particles can also be accommodated.
 
 

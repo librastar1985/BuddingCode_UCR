@@ -61,10 +61,19 @@ vector rj.
 //we want to take 
 //output forces on six nodes
 struct CosBendingFunctor {
+	int SCALE_TYPE;
+	bool nonuniform_wall_weakening;
+	double scaling_pow;
+	double gausssigma;
+	double hilleqnconst;
+    double hilleqnpow;
+	double* scaling_per_edge;
 	double spring_constant;
 	double spring_constant_weak;
 	int* edges_in_upperhem;
+	int* boundaries_in_upperhem;
 	double angle_0;
+	double angle_0_bud;
 	double* locXAddr;
     double* locYAddr;
     double* locZAddr;
@@ -79,10 +88,19 @@ struct CosBendingFunctor {
 	int* triangle2Nodes_3Addr;
 
 	__host__ __device__ CosBendingFunctor(
+		int& _SCALE_TYPE,
+		bool& _nonuniform_wall_weakening,
+		double& _scaling_pow,
+		double& _gausssigma,
+		double& _hilleqnconst,
+    	double& _hilleqnpow,
+		double* _scaling_per_edge,
 		double& _spring_constant,
 		double& _spring_constant_weak,
 		int* _edges_in_upperhem,
+		int* _boundaries_in_upperhem,
 		double& _angle_0,
+		double& _angle_0_bud,
 		double* _locXAddr,
 		double* _locYAddr,
 		double* _locZAddr,
@@ -96,12 +114,19 @@ struct CosBendingFunctor {
 		int* _triangle2Nodes_2Addr,
 		int* _triangle2Nodes_3Addr) :
 		
-
-
+		SCALE_TYPE(_SCALE_TYPE),
+		nonuniform_wall_weakening(_nonuniform_wall_weakening),
+		scaling_pow(_scaling_pow),
+		gausssigma(_gausssigma),
+		hilleqnconst(_hilleqnconst),
+    	hilleqnpow(_hilleqnpow),
+		scaling_per_edge(_scaling_per_edge),
 		spring_constant(_spring_constant),
 		spring_constant_weak(_spring_constant_weak),
 		edges_in_upperhem(_edges_in_upperhem),
+		boundaries_in_upperhem(_boundaries_in_upperhem),
 		angle_0(_angle_0),
+		angle_0_bud(_angle_0_bud),
 		locXAddr(_locXAddr),
 		locYAddr(_locYAddr),
 		locZAddr(_locZAddr),
@@ -117,19 +142,84 @@ struct CosBendingFunctor {
 
 	//hand in counting iterator and id's of two triangles, and two nodes involved. 
 	__device__ double operator()(const Tuuuuu &u5) {
+		//double scaling_pow =  4.0;
 		double energy = 0.0;
 		int counter = thrust::get<0>(u5);
 		int place = 4 * counter;//represents location in write to vector.
 
 		double what_spring_constant;
-		if (edges_in_upperhem[counter] == 1){
-			what_spring_constant = spring_constant_weak;
+		double angle0;
+		if (SCALE_TYPE == 0){
+			what_spring_constant = spring_constant*(1.0 - ((1.0/sqrt(2*3.14159*gausssigma))*exp(-(scaling_per_edge[counter]*scaling_per_edge[counter])/gausssigma)));
+			if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}
+			//if (boundaries_in_upperhem[counter] == 1){
+			//	what_spring_constant = spring_constant_weak;
+			//}
+			/*if (edges_in_upperhem[counter] == 1){
+				what_spring_constant = spring_constant_weak;
+			}
+			else if (edges_in_upperhem[counter] == 0){
+				what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+			} 
+			else{
+				what_spring_constant = spring_constant;
+			}*/
 		}
-		else if (edges_in_upperhem[counter] == 0){
-			what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
-		} 
-		else{
-			what_spring_constant = spring_constant;
+		else if (SCALE_TYPE == 1){
+			what_spring_constant = spring_constant*pow(scaling_per_edge[counter],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[counter],scaling_pow));
+		}
+		else if (SCALE_TYPE == 2){
+			what_spring_constant = spring_constant - (spring_constant - spring_constant_weak)*scaling_per_edge[counter];
+		}
+		else if (SCALE_TYPE == 3){
+			if (edges_in_upperhem[counter] == 1){
+				what_spring_constant = spring_constant_weak;
+				angle0 = angle_0_bud;
+			}
+			else if (edges_in_upperhem[counter] == 0){
+				what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+				angle0 = (angle_0 + angle_0_bud)/2.0;
+			} 
+			else{
+				what_spring_constant = spring_constant;
+				angle0 = angle_0;
+			}
+
+			if (boundaries_in_upperhem[counter] == 1){
+				what_spring_constant = spring_constant*0.135;
+			}
+		}
+		else if (SCALE_TYPE == 4){
+			if (nonuniform_wall_weakening == true){
+				//double scaling = 0.0;//(spring_constant_weak/spring_constant);
+				//what_spring_constant = spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*(1-scaling) + scaling);
+				double spectrum = spring_constant - spring_constant_weak;
+				what_spring_constant = spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*spectrum);
+				if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}
+				if (edges_in_upperhem[counter] == 1){
+					angle0 = angle_0_bud;
+				}
+				else if (edges_in_upperhem[counter] == 0){
+					angle0 = (angle_0 + angle_0_bud)/2.0;
+				} 
+				else{
+					angle0 = angle_0;
+				}
+			}
+			else{
+				if (edges_in_upperhem[counter] == 1){
+					what_spring_constant = spring_constant_weak;
+					angle0 = angle_0_bud;
+				}
+				else if (edges_in_upperhem[counter] == 0){
+					what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+					angle0 = (angle_0 + angle_0_bud)/2.0;
+				} 
+				else{
+					what_spring_constant = spring_constant;
+					angle0 = angle_0;
+				}
+			}
 		}
 
 		int id_l, id_j;
@@ -752,7 +842,7 @@ struct CosBendingFunctor {
 
 				double theta_current = acos( cosAngle );
 				
-				energy = spring_constant * (1 - cos(theta_current - angle_0) );
+				energy = spring_constant * (1 - cos(theta_current - angle0) );
 				
 			}
 		}

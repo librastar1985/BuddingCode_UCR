@@ -77,6 +77,26 @@ struct CapsidInfoVecs {
 
 //Data Structure for node location. velocity and force
 struct CoordInfoVecs {
+
+	thrust::device_vector<double> scaling_per_edge;
+
+	thrust::device_vector<int> nodes2Triangles_1;
+	thrust::device_vector<int> nodes2Triangles_2;
+	thrust::device_vector<int> nodes2Triangles_3;
+	thrust::device_vector<int> nodes2Triangles_4;
+	thrust::device_vector<int> nodes2Triangles_5;
+	thrust::device_vector<int> nodes2Triangles_6;
+	thrust::device_vector<int> nodes2Triangles_7;
+	thrust::device_vector<int> nodes2Triangles_8;
+	thrust::device_vector<int> nodes2Triangles_9;
+//	thrust::device_vector<int> nodes2Triangles_10;
+//	thrust::device_vector<int> nodes2Triangles_11;
+//	thrust::device_vector<int> nodes2Triangles_12;
+
+	thrust::device_vector<double> SurfaceNormalX;
+	thrust::device_vector<double> SurfaceNormalY;
+	thrust::device_vector<double> SurfaceNormalZ;
+
 	thrust::device_vector<int> nndata1;
 	thrust::device_vector<int> nndata2;
 	thrust::device_vector<int> nndata3;
@@ -86,9 +106,9 @@ struct CoordInfoVecs {
 	thrust::device_vector<int> nndata7;
 	thrust::device_vector<int> nndata8;
 	thrust::device_vector<int> nndata9;
-	thrust::device_vector<int> nndata10;
-	thrust::device_vector<int> nndata11;
-	thrust::device_vector<int> nndata12;
+//	thrust::device_vector<int> nndata10;
+//	thrust::device_vector<int> nndata11;
+//	thrust::device_vector<int> nndata12;
 
 	thrust::device_vector<bool> isNodeFixed;
 	//GLOBAL COORDS
@@ -222,7 +242,7 @@ struct LJInfoVecs{
 };
 
 struct AreaTriangleInfoVecs {
-
+	double dummy;
 	int factor = 3;//used for reduction
 	double initial_area = 0.0048013;
 	double spring_constant;
@@ -253,6 +273,7 @@ struct BendingTriangleInfoVecs {
 	double initial_angle = 0.0;//radians
 	double initial_angle_raft;
 	double initial_angle_coat;
+	double initial_angle_bud;
 
 	double bending_triangle_energy;
 
@@ -294,10 +315,16 @@ struct LinearSpringInfoVecs {
 };
 
 struct GeneralParams{
+	std::vector<int> edge_undergoing_growth;
+	bool nonuniform_wall_weakening;
+	double ratio_for_HillFunctionStiffness;
+	double current_bud_area;
 	double kT;
+	double kT_growth;
 	double tau;
 	int solve_time=100;
 	double Rmin = 1.0; //Current mesh minimum edge length, subject to change.
+	double Rmin_growth;
 	double abs_Rmin;
 	int iteration = 0;
 	int maxNodeCount;
@@ -307,11 +334,18 @@ struct GeneralParams{
 
 	double dt;
 	double nodeMass = 1.0;
+	int edges_in_upperhem_list_length;
+	double growth_energy_scaling;
 	thrust::device_vector<int> edge_to_ljparticle;
+	thrust::device_vector<int> nodes_in_tip;
 	thrust::device_vector<int> nodes_in_upperhem;
 	thrust::device_vector<int> edges_in_upperhem;
+	thrust::device_vector<int> edges_in_upperhem_list;
+	thrust::device_vector<int> edges_in_tip;
+	thrust::device_vector<int> triangles_in_tip;
 	thrust::device_vector<int> triangles_in_upperhem;
 	thrust::device_vector<int> boundaries_in_upperhem;
+	thrust::device_vector<double> angle_per_edge;
 	double centerX = 0.0;
 	double centerY = 0.0;
 	double centerZ = 0.0;
@@ -330,6 +364,19 @@ struct GeneralParams{
 	//int num_of_triangles;
 	//int num_of_edges;
 	int true_num_edges;
+
+	double insertion_energy_cost;
+	double strain_threshold;
+
+	int SCALE_TYPE;
+	double scaling_pow;
+	double gausssigma;
+	double hilleqnconst;
+	double hilleqnpow;
+
+	thrust::device_vector<int> no_weakening;
+	double septin_ring_z;
+	double boundary_z;
 
 };
 

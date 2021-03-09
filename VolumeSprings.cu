@@ -66,9 +66,9 @@ void ComputeVolumeSprings(
             );
             
             
-    //for (int i = 0; i < generalParams.maxNodeCount; i++){
-     //   std::cout<<"Force from volume on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
-    //}
+    for (int i = 0; i < generalParams.maxNodeCount; i++){
+        std::cout<<"Force from volume on node 36 = "<<coordInfoVecs.nodeForceX[35]<<" "<<coordInfoVecs.nodeForceY[35]<<" "<<coordInfoVecs.nodeForceZ[35]<<std::endl;
+    }
     //std::cout<<"VOLUME"<<std::endl;
 };
 

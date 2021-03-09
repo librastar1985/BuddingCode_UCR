@@ -100,7 +100,7 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 	}
 
 
-	if (auto p = props.child("edge_eq")){
+	/*if (auto p = props.child("edge_eq")){
 		builder->defaultEdgeEq = (p.text().as_double());
 		std::cout<<"Setting edge equilibrium: "<< builder->defaultEdgeEq << std::endl;
 	}
@@ -113,7 +113,7 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 	if (auto p = props.child("angle_eq")){
 		builder->defaultAngleEq = (p.text().as_double());
 		std::cout<<"Setting angle equilibrium: "<< builder->defaultAngleEq << std::endl;
-	}
+	}*/
 
 	//add nodes
 	double x,y,z;
@@ -126,8 +126,12 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			std::cout << "parse node error\n";
 			return 0;
 		}
+		else{
+			
+		}
 		builder->addNode(x,y,z);
-	}
+	};
+	std::cout<<"parse node success"<<std::endl;
 	
 	//add edges
 	int from, to;	
@@ -136,6 +140,9 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			if (2 != sscanf(edge.text().as_string(""), "%u %u" , &from, &to)) {
 				std::cout << "parse link error\n";
 				return 0;
+			}
+			else{
+				
 			}
 			//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 			builder->addEdge(from-1, to-1, builder->defaultEdgeEq); //adds edges into saved vectors. 
@@ -149,7 +156,8 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 			builder->addEdge(from-1, to-1); //adds edges into saved vectors, calculates length. 
 		}*/
-	}
+	};
+	std::cout<<"parse link success"<<std::endl;
 //	std::cout<<"Error1"<<std::endl;
 	//add triangles
 	int E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, E12;	
@@ -158,9 +166,13 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			std::cout << "parse elem error\n";
 			return 0;
 		}
+		else{
+			
+		}
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 		builder->addElement(E1-1, E2-1, E3-1); //adds edges into saved vectors
-	}
+	};
+	std::cout<<"parse elem success"<<std::endl;
 //std::cout<<"Error2"<<std::endl;
 	//add indices of edges in each element
 	for (auto elem2edge = elem2edges.child("elem2edge"); elem2edge; elem2edge = elem2edge.next_sibling("elem2edge")) {
@@ -168,29 +180,43 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			std::cout << "parse elem2edge error\n";
 			return 0;
 		}
+		else{
+			
+		}
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 		builder->addElement2Edge(E1-1, E2-1, E3-1); //adds edges into saved vectors
-	}
+	};
+	std::cout<<"parse elem2edge success"<<std::endl;
 //std::cout<<"Error3"<<std::endl;
 	//add indices of nndata (neighboring nodes of node "i")
 	for (auto nndata = nndatas.child("nndata"); nndata; nndata = nndata.next_sibling("nndata")) {
-		if (12 != sscanf(nndata.text().as_string(""), "%u %u %u %u %u %u %u %u %u %u %u %u" , &E1, &E2, &E3, &E4, &E5, &E6, &E7, &E8, &E9, &E10, &E11, &E12)) {
+		//std::cout<<"ERROR "<<nndata<<std::endl;
+		if (9 != sscanf(nndata.text().as_string(""), "%u %u %u %u %u %u %u %u %u" , &E1, &E2, &E3, &E4, &E5, &E6, &E7, &E8, &E9)) {
+		//if (12 != sscanf(nndata.text().as_string(""), "%u %u %u %u %u %u %u %u %u %u %u %u" , &E1, &E2, &E3, &E4, &E5, &E6, &E7, &E8, &E9, &E10, &E11, &E12)) {
 			std::cout << "parse nndata error\n";
 			return 0;
 		}
+		else{
+			
+		}
+
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
-		builder->addNndata(E1-1, E2-1, E3-1, E4-1, E5-1, E6-1, E7-1, E8-1, E9-1, E10-1, E11-1, E12-1); //adds edges into saved vectors
-	}
+		builder->addNndata(E1-1, E2-1, E3-1, E4-1, E5-1, E6-1, E7-1, E8-1, E9-1); //adds edges into saved vectors
+		//builder->addNndata(E1-1, E2-1, E3-1, E4-1, E5-1, E6-1, E7-1, E8-1, E9-1, E10-1, E11-1, E12-1); //adds edges into saved vectors
+	};
+	std::cout<<"parse nndata success"<<std::endl;
 //	std::cout<<"Error4"<<std::endl;
 	//add indices of elems in each edge
 	for (auto edge2elem = edge2elems.child("edge2elem"); edge2elem; edge2elem = edge2elem.next_sibling("edge2elem")) {
 		if (2 != sscanf(edge2elem.text().as_string(""), "%u %u" , &E1, &E2)) {
-			std::cout << "parse elem2edge error\n";
+			std::cout << "parse edge2elem error\n";
 			return 0;
 		}
+		else{}
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 		builder->addEdge2Elem(E1-1, E2-1); //adds edges into saved vectors
-	}
+	};
+	std::cout<<"parse edge2elem success"<<std::endl;
 //std::cout<<"Error5"<<std::endl;
 	//add indices of capsid nodes
 	for (auto capsidnode = capsidnodes.child("capsidnode"); capsidnode; capsidnode = capsidnode.next_sibling("capsidnode")) {
@@ -202,9 +228,11 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			std::cout << "parse capsid node error\n";
 			return 0;
 		}
+		else{		}
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 		builder->addCapsidNode(x,y,z);
-	}
+	};
+	std::cout<<"parse capsid node success"<<std::endl;
 //std::cout<<"Error6"<<std::endl;
 	//add indices of fixed nodes
 	for (auto id = fixnodes.child("fix"); id; id = id.next_sibling("fix")) {
@@ -212,9 +240,11 @@ std::shared_ptr<System> createSystem(const char* schemeFile, std::shared_ptr<Sys
 			std::cout << "parse fixnode error\n";
 			return 0;
 		}
+		else{}
 		//std::cout << "putting spring between: " << from << ' ' <<to<<  std::endl;
 		builder->fixNodes(E1-1); //adds edges into saved vectors
 	};
+	std::cout<<"parse fixnode success"<<std::endl;
 
 
 //std::cout<<"Error7"<<std::endl;

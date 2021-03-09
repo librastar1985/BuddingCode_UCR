@@ -36,7 +36,7 @@ public:
 	double defaultLJ_Y = 0.0;
 	double defaultLJ_Z = -0.1;
 
-	double defaultEdgeEq = 1.0;
+	double defaultEdgeEq = 1.0;//0.1503;
 	double defaultAreaEq = 0.0;
 	double defaultAngleEq = 0.0;
 
@@ -51,7 +51,8 @@ public:
 	
 	void addNode(double x, double y, double z);
 
-	void addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9, double x10,double x11, double x12 );
+	void addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9);
+	//void addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9, double x10,double x11, double x12 );
 
 	void addEdge(int idL, int idR );
 

@@ -24,7 +24,8 @@ void SystemBuilder::addNode(double x,double y, double z ) {
 	//std::cout<<"adding node: "<< x << " " << y << " "<< z <<  std::endl;
 }
 
-void SystemBuilder::addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9, double x10,double x11, double x12 ) {
+void SystemBuilder::addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9) {
+//void SystemBuilder::addNndata(double x1,double x2, double x3, double x4,double x5, double x6, double x7,double x8, double x9, double x10,double x11, double x12 ) {
 	hostSetInfoVecs.nndata1.push_back(x1);
 	hostSetInfoVecs.nndata2.push_back(x2);
 	hostSetInfoVecs.nndata3.push_back(x3);
@@ -34,9 +35,9 @@ void SystemBuilder::addNndata(double x1,double x2, double x3, double x4,double x
 	hostSetInfoVecs.nndata7.push_back(x7);
 	hostSetInfoVecs.nndata8.push_back(x8);
 	hostSetInfoVecs.nndata9.push_back(x9);
-	hostSetInfoVecs.nndata10.push_back(x10);
-	hostSetInfoVecs.nndata11.push_back(x11);
-	hostSetInfoVecs.nndata12.push_back(x12);
+	//hostSetInfoVecs.nndata10.push_back(x10);
+	//hostSetInfoVecs.nndata11.push_back(x11);
+	//hostSetInfoVecs.nndata12.push_back(x12);
 
 	//std::cout<<"adding node: "<< x << " " << y << " "<< z <<  std::endl;
 }

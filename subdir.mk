@@ -11,24 +11,22 @@ current_dir := $(shell pwd)
 LIBS:=  -lpugixml -L/$(current_dir)/pugixml/lib64
 #-lgsl -lgslcblas
 
-ILIBSCPP := -I/afs/crc.nd.edu/x86_64_linux/c/cuda/8.0/include/
-ILIBS1 := -I/afs/crc.nd.edu/x86_64_linux/c/cuda/9.2/include/
+ILIBS_cuda8 = -I/opt/linux/centos/7.x/x86_64/pkgs/cuda/8.0/include/
+ILIBS_cuda9 := -I/opt/linux/centos/7.x/x86_64/pkgs/cuda/9.1/include/
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../TurgorForce.cu \
 ../AreaTriangles.cu \
 ../BendingTriangles.cu \
-../MemRepulsionSprings.cu\
+../MemRepulsionSprings_universal.cu\
+../MemRepulsionSprings_local.cu\
 ../LinearSprings.cu \
-../LJSprings.cu \
-../LJSprings_LJ.cu \
+../AreaCompBud.cu \
 ../VolumeComp.cu \
 ../VolumeSprings.cu \
 ../LineTensionSprings.cu \
 ../NodeAdvance.cu \
-../AreaTrianglesEnergy.cu \
-../BendingTrianglesEnergy.cu \
-../LinearSpringsEnergy.cu \
 ../MemRepulsionEnergy.cu \
 ../System.cu \
 ../Edgeswap_test.cpp \
@@ -39,19 +37,17 @@ CPP_SRCS += \
 
 # this is a variable
 OBJS += \
+./TurgorForce.o \
 ./AreaTriangles.o \
 ./BendingTriangles.o \
-./MemRepulsionSprings.o\
+./MemRepulsionSprings_universal.o\
+./MemRepulsionSprings_local.o\
 ./LinearSprings.o \
-./LJSprings.o \
-./LJSprings_LJ.o \
+./AreaCompBud.o \
 ./VolumeComp.o \
 ./VolumeSprings.o \
 ./LineTensionSprings.o \
 ./NodeAdvance.o \
-./AreaTrianglesEnergy.o \
-./BendingTrianglesEnergy.o \
-./LinearSpringsEnergy.o \
 ./MemRepulsionEnergy.o \
 ./System.o \
 ./Edgeswap_test.o \
@@ -61,19 +57,17 @@ OBJS += \
 
 
 CPP_DEPS += \
+./TurgorForce.d \
 ./AreaTriangles.d \
 ./BendingTriangles.d \
-./MemRepulsionSprings.d\
+./MemRepulsionSprings_universal.d\
+./MemRepulsionSprings_local.d\
 ./LinearSprings.d \
-./LJSprings.d \
-./LJSPrings_LJ.d \
+./AreaCompBud.d \
 ./VolumeComp.d \
 ./VolumeSprings.d \
 ./LineTensionSprings.d \
 ./NodeAdvance.d \
-./AreaTrianglesEnergy.d \
-./BendingTrianglesEnergy.d \
-./LinearSpringsEnergy.d \
 ./MemRepulsionEnergy.d \
 ./System.d \
 ./Edgeswap_test.d \
@@ -84,9 +78,9 @@ CPP_DEPS += \
 #need o have ILIBS2
 #cpp files
 %.o : ./%.cpp 
-	 $(CXX) $(CFLAGS) $(ILIBSCPP) $(LIBS) -o $@ -c $^ 
+	 $(CXX) $(CFLAGS) $(ILIBS_cuda8) $(LIBS) -o $@ -c $^ 
 
 	
 #cuda files
 %.o : ./%.cu 
-	$(NVCC) $(NVCCFLAGS) $(ILIBS1) -dc -o $@ $^
+	$(NVCC) $(NVCCFLAGS) $(ILIBS_cuda9) -dc -o $@ $^

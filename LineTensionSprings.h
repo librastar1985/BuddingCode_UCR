@@ -14,6 +14,7 @@ struct LineTensionSpringFunctor {
     double spring_constant;
     double spring_constant_weak;
     double length_scale;
+    double length_zero;
     int* edges_in_upperhem;
     int* boundaries_in_upperhem;
     double* locXAddr;
@@ -29,6 +30,7 @@ struct LineTensionSpringFunctor {
         double& _spring_constant,
         double& _spring_constant_weak,
         double& _length_scale,
+        double& _length_zero,
         int* _edges_in_upperhem,
         int* _boundaries_in_upperhem,
         double* _locXAddr,
@@ -42,6 +44,7 @@ struct LineTensionSpringFunctor {
         spring_constant(_spring_constant),
         spring_constant_weak(_spring_constant_weak),
         length_scale(_length_scale),
+        length_zero(_length_zero),
         edges_in_upperhem(_edges_in_upperhem),
         boundaries_in_upperhem(_boundaries_in_upperhem),
         locXAddr(_locXAddr),
@@ -64,7 +67,7 @@ struct LineTensionSpringFunctor {
 
         if (edgeL != INT_MAX && edgeR != INT_MAX && boundaries_in_upperhem[counter] == 1){
             double what_spring_constant = spring_constant;           
-            double length_zero = thrust::get<3>(u3d);
+            //double length_zero = thrust::get<3>(u3d);
 
             // compute forces.
             double xLoc_LR = locXAddr[edgeL] - locXAddr[edgeR];
@@ -78,7 +81,7 @@ struct LineTensionSpringFunctor {
 
             double energy = 0.0;
             if (length_current != length_zero){
-                double magnitude = -what_spring_constant * (length_current - length_scale*length_zero);
+                double magnitude = -(what_spring_constant/(length_scale*length_zero*length_scale*length_zero)) * (length_current - length_scale*length_zero);
                 
                 
                     idKey[place] = edgeL;
@@ -94,7 +97,7 @@ struct LineTensionSpringFunctor {
                     forceYAddr[place + 1] = -magnitude * (yLoc_LR/length_current);
                     forceZAddr[place + 1] = -magnitude * (zLoc_LR/length_current);
                 
-                energy = (what_spring_constant/2.0) * (length_current - length_scale*length_zero) * (length_current - length_scale*length_zero);
+                energy = (what_spring_constant/(2.0*length_scale*length_zero*length_scale*length_zero)) * (length_current - length_scale*length_zero) * (length_current - length_scale*length_zero);
             }
             return energy;
         }

@@ -4,16 +4,25 @@
 #include "SystemStructures.h"
 
 void ComputeAreaTriangleSprings(
+  
     GeneralParams& generalParams,
     CoordInfoVecs& coordInfoVecs,
     AreaTriangleInfoVecs& areaTriangleInfoVecs);
 
 
 struct AreaSpringFunctor {
+    int SCALE_TYPE;
+    bool nonuniform_wall_weakening;
+    double scaling_pow;
+    double gausssigma;
+    double hilleqnconst;
+    double hilleqnpow;
+    double* scaling_per_edge;
 	double area_0;
     double spring_constant;
     double spring_constant_weak;
     int* triangles_in_upperhem;
+    //int* triangles_in_tip;
     double* locXAddr;
     double* locYAddr;
     double* locZAddr;
@@ -24,10 +33,18 @@ struct AreaSpringFunctor {
     double* forceZAddr;
     
 	__host__ __device__ AreaSpringFunctor(
+        int& _SCALE_TYPE,
+        bool& _nonuniform_wall_weakening,
+        double& _scaling_pow,
+        double& _gausssigma,
+        double& _hilleqnconst,
+        double& _hilleqnpow,
+        double* _scaling_per_edge,
         double& _area_0,
         double& _spring_constant,
         double& _spring_constant_weak,
         int* _triangles_in_upperhem,
+        //int* _triangles_in_tip,
         double* _locXAddr,
         double* _locYAddr,
         double* _locZAddr,
@@ -35,10 +52,18 @@ struct AreaSpringFunctor {
         double* _forceXAddr,
         double* _forceYAddr,
         double* _forceZAddr):
+        SCALE_TYPE(_SCALE_TYPE),
+        nonuniform_wall_weakening(_nonuniform_wall_weakening),
+        scaling_pow(_scaling_pow),
+        gausssigma(_gausssigma),
+        hilleqnconst(_hilleqnconst),
+        hilleqnpow(_hilleqnpow),
+        scaling_per_edge(_scaling_per_edge),
         area_0(_area_0),
         spring_constant(_spring_constant),
         spring_constant_weak(_spring_constant_weak),
         triangles_in_upperhem(_triangles_in_upperhem),
+        //triangles_in_tip(_triangles_in_tip),
         locXAddr(_locXAddr),
         locYAddr(_locYAddr),
         locZAddr(_locZAddr),
@@ -48,27 +73,86 @@ struct AreaSpringFunctor {
         forceZAddr(_forceZAddr) {}
 
 	//hand in counting iterator and id of triangle
-	__device__ double operator()(const Tuuuu &u4) {
+	__device__ double operator()(const Tuuuuuuu &u7) {
         //test placing the ids of the nodes and then get positions. 
-		int counter = thrust::get<0>(u4);
+        //double scaling_pow = 4.0;
+		int counter = thrust::get<0>(u7);
 		int place = 3 * counter;//represents location in write to vector.
 
-        int id_i = thrust::get<1>(u4);
-        int id_j = thrust::get<2>(u4);
-        int id_k = thrust::get<3>(u4);
+        int id_i = thrust::get<1>(u7);
+        int id_j = thrust::get<2>(u7);
+        int id_k = thrust::get<3>(u7);
+        int e_id_i = thrust::get<4>(u7);
+        int e_id_j = thrust::get<5>(u7);
+        int e_id_k = thrust::get<6>(u7);
+        double target_area;
         
-        if (id_i != INT_MAX && id_j != INT_MAX && id_k != INT_MAX){
-            
+        //if (id_i != INT_MAX && id_j != INT_MAX && id_k != INT_MAX){
+        if ((id_i < (INT_MAX-100) && id_i >= 0) && (id_j < (INT_MAX-100) && id_j >= 0) && (id_k < (INT_MAX-100) && id_k >= 0)){   
             double what_spring_constant;
-            if (triangles_in_upperhem[counter] == 1){
-                what_spring_constant = spring_constant_weak;
+            if (SCALE_TYPE == 0){
+             what_spring_constant = spring_constant*((1.0 - ((1.0/sqrt(2*3.14159*gausssigma))*exp(-pow(scaling_per_edge[e_id_i],2.0)/gausssigma))) +
+                                            (1.0 - ((1.0/sqrt(2*3.14159*gausssigma))*exp(-pow(scaling_per_edge[e_id_j],2.0)/gausssigma))) +
+                                            (1.0 - ((1.0/sqrt(2*3.14159*gausssigma))*exp(-pow(scaling_per_edge[e_id_k],2.0)/gausssigma))))/3.0;
+                                            if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}
             }
-            else if (triangles_in_upperhem[counter] == 0){
-                what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+            else if (SCALE_TYPE == 1){
+                 what_spring_constant = ((spring_constant_weak*2.0)*pow(scaling_per_edge[e_id_i],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_i],scaling_pow)) +
+                                            (spring_constant_weak*2.0)*pow(scaling_per_edge[e_id_j],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_j],scaling_pow)) +
+                                            (spring_constant_weak*2.0)*pow(scaling_per_edge[e_id_k],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_k],scaling_pow)))/3.0;
+                // what_spring_constant = (spring_constant*pow(scaling_per_edge[e_id_i],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_i],scaling_pow)) +
+                //                             spring_constant*pow(scaling_per_edge[e_id_j],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_j],scaling_pow)) +
+                //                             spring_constant*pow(scaling_per_edge[e_id_k],scaling_pow) + spring_constant_weak*(1-pow(scaling_per_edge[e_id_k],scaling_pow)))/3.0;
             }
-            else{
-                what_spring_constant = spring_constant;
+            else if (SCALE_TYPE == 2){
+                what_spring_constant = (spring_constant - (spring_constant - spring_constant_weak)*scaling_per_edge[e_id_i] +
+                                            spring_constant - (spring_constant - spring_constant_weak)*scaling_per_edge[e_id_j] +
+                                            spring_constant - (spring_constant - spring_constant_weak)*scaling_per_edge[e_id_k])/3.0;
             }
+            else if (SCALE_TYPE == 3){        
+                if (triangles_in_upperhem[counter] == 1){// && triangles_in_tip[counter]==1){
+                    what_spring_constant = spring_constant_weak;
+                    target_area = area_0*1.0;
+                }
+                else if (triangles_in_upperhem[counter] == 0){// && triangles_in_tip[counter]!=1){
+                    //what_spring_constant = (spring_constant_weak*2.0);
+                    what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+                    target_area = area_0*1.0;
+                }
+                else{
+                    what_spring_constant = spring_constant;
+                    target_area = area_0*1.0;
+                }
+            }
+            else if (SCALE_TYPE == 4){
+                if (nonuniform_wall_weakening == true){
+                    //double scaling = 0.0;//spring_constant_weak/spring_constant;
+                    // what_spring_constant = (spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_i], hilleqnpow)))*(1-scaling) + scaling) +
+                    //                         spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_j], hilleqnpow)))*(1-scaling) + scaling) +
+                    //                         spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_k], hilleqnpow)))*(1-scaling) + scaling))/3.0;
+                    double spectrum = spring_constant - spring_constant_weak;
+                    what_spring_constant = (spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_i], hilleqnpow)))*spectrum) +
+                                            spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_j], hilleqnpow)))*spectrum) +
+                                            spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[e_id_k], hilleqnpow)))*spectrum))/3.0;
+                    if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}
+                    target_area = area_0*1.0;
+                }
+                else{
+                    if (triangles_in_upperhem[counter] == 1){// && triangles_in_tip[counter]==1){
+                        what_spring_constant = spring_constant_weak;
+                        target_area = area_0*1.0;
+                    }
+                    else if (triangles_in_upperhem[counter] == 0){// && triangles_in_tip[counter]!=1){
+                        //what_spring_constant = (spring_constant_weak*2.0);
+                        what_spring_constant = (spring_constant_weak + spring_constant)/2.0;
+                        target_area = area_0*1.0;
+                    }
+                    else{
+                        what_spring_constant = spring_constant;
+                        target_area = area_0*1.0;
+                    }
+                }
+		    }
 
         
 
@@ -80,7 +164,7 @@ struct AreaSpringFunctor {
             CVec3 rkj = CVec3_subtract(rk, rj);
             CVec3 rij = CVec3_subtract(ri, rj);
 
-            double area_current = sqrt( CVec3_dot( CVec3_cross(rkj, rij), CVec3_cross(rkj, rij) ) )/2;
+            double area_current = sqrt( CVec3_dot( CVec3_cross(rkj, rij), CVec3_cross(rkj, rij) ) )/2.0;
 
             //computes derivative wrt to area
             CVec3 A = CVec3_cross(rkj, rij);//rkj must come first
@@ -151,7 +235,7 @@ struct AreaSpringFunctor {
             forceYAddr[place+2] = thrust::get<1>( rk_force );
             forceZAddr[place+2] = thrust::get<2>( rk_force );
 
-            double energy =  what_spring_constant/(2.0) * (area_current - area_0) * (area_current - area_0) / area_0;
+            double energy =  (what_spring_constant/(2.0)) * (area_current - target_area) * (area_current - target_area) / target_area;
             return energy;
         }
         else{

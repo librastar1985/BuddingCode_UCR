@@ -45,9 +45,9 @@ double ComputeMemRepulsionEnergy(
             thrust::raw_pointer_cast(coordInfoVecs.nndata7.data()),
             thrust::raw_pointer_cast(coordInfoVecs.nndata8.data()),
             thrust::raw_pointer_cast(coordInfoVecs.nndata9.data()),
-            thrust::raw_pointer_cast(coordInfoVecs.nndata10.data()),
-            thrust::raw_pointer_cast(coordInfoVecs.nndata11.data()),
-            thrust::raw_pointer_cast(coordInfoVecs.nndata12.data()),
+            //thrust::raw_pointer_cast(coordInfoVecs.nndata10.data()),
+            //thrust::raw_pointer_cast(coordInfoVecs.nndata11.data()),
+            //thrust::raw_pointer_cast(coordInfoVecs.nndata12.data()),
 
 
             thrust::raw_pointer_cast(coordInfoVecs.nodeLocX.data()),

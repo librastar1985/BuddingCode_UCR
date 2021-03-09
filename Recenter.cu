@@ -1,11 +1,13 @@
 #include "SystemStructures.h"
 #include "System.h" 
-#include "NodeAdvance.h" 
+#include "Recenter.h" 
  
-void AdvancePositions(
+void Recentering(
+    double old_center_x,
+    double old_center_y,
+    double old_center_z,
 	CoordInfoVecs& coordInfoVecs,
-	GeneralParams& generalParams,
-	DomainParams& domainParams) {
+	GeneralParams& generalParams) {
 
     
 		//At this point, the previous node location is the same as the current node, 
@@ -35,9 +37,9 @@ void AdvancePositions(
 			//save result in third vector to test values
 			thrust::make_zip_iterator(
 				thrust::make_tuple(
-					coordInfoVecs.nodeLocX.begin(),
-					coordInfoVecs.nodeLocY.begin(),
-					coordInfoVecs.nodeLocZ.begin())),
+					coordInfoVecs.displacementx.begin(),
+					coordInfoVecs.displacementy.begin(),
+					coordInfoVecs.displacementz.begin())),
 				SaxpyFunctorPrimary(
 				generalParams.dt,
 				generalParams.nodeMass,
@@ -45,7 +47,7 @@ void AdvancePositions(
 				domainParams.originMaxX,
 				domainParams.originMaxY,
 				domainParams.originMaxZ));
-		
+				
 		//now that nodeLoc is different, we can calculate change and then set previous location
 		//to the current location. 
 	

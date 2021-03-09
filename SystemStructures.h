@@ -42,12 +42,14 @@ typedef thrust::tuple<bool, double> Tbd;
 
 typedef thrust::tuple<int, int, double> Tuud;
 
+typedef thrust::tuple<int, int, int, int, int, int, int> Tuuuuuuu;
 typedef thrust::tuple<int, int, int, int, double> Tuuuud;
 typedef thrust::tuple<int, int, int,int, int> Tuuuuu;
 typedef thrust::tuple<int, int, int,int> Tuuuu;
 typedef thrust::tuple<int, int, int, double> Tuuud;
 typedef thrust::tuple<int, int, int> Tuuu;
 typedef thrust::tuple<int, int> Tuu;
+
 
 typedef thrust::tuple<int, double, double, double> Tuddd;
 typedef thrust::tuple<double, double, double, int> Tdddu;
@@ -61,6 +63,7 @@ typedef thrust::tuple<int, int, double, double, double, double> U2CVec4;
 typedef thrust::tuple<int, int, double, double, double> U2CVec3;
 typedef thrust::tuple<int, double, double, double> UCVec3;
 typedef thrust::tuple<bool, double, double, double> BoolCVec3;
+
 
 typedef thrust::tuple<double, double, double, double, double, double, double, double, double> CVec9;
 typedef thrust::tuple<double, double, double, double, double, double, double, double> CVec8;
@@ -86,6 +89,29 @@ struct LJInfoVecs;
 
 struct HostSetInfoVecs {
 
+	thrust::host_vector<double> scaling_per_edge;
+	thrust::host_vector<int> nodes_in_upperhem;
+	thrust::host_vector<int> triangles_in_upperhem;
+	thrust::host_vector<int> edges_in_upperhem;
+	thrust::host_vector<int> edges_in_upperhem_list;
+	thrust::host_vector<int> boundaries_in_upperhem;
+	thrust::host_vector<int> nodes_in_tip;
+	thrust::host_vector<int> edges_in_tip;
+	thrust::host_vector<int> triangles_in_tip;
+
+	thrust::host_vector<int> nodes2Triangles_1;
+	thrust::host_vector<int> nodes2Triangles_2;
+	thrust::host_vector<int> nodes2Triangles_3;
+	thrust::host_vector<int> nodes2Triangles_4;
+	thrust::host_vector<int> nodes2Triangles_5;
+	thrust::host_vector<int> nodes2Triangles_6;
+	thrust::host_vector<int> nodes2Triangles_7;
+	thrust::host_vector<int> nodes2Triangles_8;
+	thrust::host_vector<int> nodes2Triangles_9;
+	//thrust::host_vector<int> nodes2Triangles_10;
+	//thrust::host_vector<int> nodes2Triangles_11;
+	//thrust::host_vector<int> nodes2Triangles_12;
+
 	thrust::host_vector<int> nndata1;
 	thrust::host_vector<int> nndata2;
 	thrust::host_vector<int> nndata3;
@@ -95,9 +121,9 @@ struct HostSetInfoVecs {
 	thrust::host_vector<int> nndata7;
 	thrust::host_vector<int> nndata8;
 	thrust::host_vector<int> nndata9;
-	thrust::host_vector<int> nndata10;
-	thrust::host_vector<int> nndata11;
-	thrust::host_vector<int> nndata12;
+	//thrust::host_vector<int> nndata10;
+	//thrust::host_vector<int> nndata11;
+	//thrust::host_vector<int> nndata12;
 	
 	thrust::host_vector<double> capsidNodeLocX;
 	thrust::host_vector<double> capsidNodeLocY;

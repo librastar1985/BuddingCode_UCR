@@ -44,6 +44,7 @@ void ComputeLineTensionSprings(
             generalParams.line_tension_constant, 
             linearSpringInfoVecs.spring_constant_weak,
             generalParams.length_scale,
+            generalParams.Rmin,
             thrust::raw_pointer_cast(generalParams.edges_in_upperhem.data()),
             thrust::raw_pointer_cast(generalParams.boundaries_in_upperhem.data()),
             thrust::raw_pointer_cast(coordInfoVecs.nodeLocX.data()),

@@ -36,7 +36,7 @@ III. Start the actual simulation:
 
       1. Update parameters (if necessary).
       2. Run a predetermined number of relaxation steps or dynamical number of relaxation steps depending on simulation types (molecular dynamics vs energy minimization).
-      3. Run edge-swap algorithm.
+      3. Run edge-swap algorithm (if applicable).
       4. Repeat (a-c) for a number of times, and then test for growth (if applicable).
       5. Repeat (a-d) until simulation terminates.
 

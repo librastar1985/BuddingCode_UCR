@@ -38,7 +38,7 @@ void Storage::print_VTK_File(void) {
 		std::string Number;
 		// std::string initial = "Animation_realistic/YB_ExpDataCalib_7_";
 		// std::string initial = "Animation_realistic/YB_recalibedAlt_L0d75B0d135_test1_5thtry_";
-		std::string initial = "Animation_realistic2/YB_recalibed_L0d75A0d75B0d135_GrowthFreq25_restiff4d0Rmin_budNeck0d135_";
+		std::string initial = "Animation_realistic/YB_recalibed_L0d75A0d75B0d135_GrowthFreq25_restiff4d0Rmin_budNeck0d135_";
 		// std::string initial = "Animation_realistic2/YB_recalibed_L0d75A0d75B0d135_GrowthFreq25_strain0d05_Hillcoef16_delay2_";
 		
 		std::ofstream ofs;
@@ -420,7 +420,7 @@ void Storage::storeVariables(void) {
 		//std::string initial = "Animation_realistic/yeastbudding_septinring_test_3particle_";
 		//std::string initial = "Variables_realistic/YB_reactive_isotropic_scalels0d01bs0d01as0d01_vols4d0_expthresh1d5rule1_";//yeastbudding_septin40_test_6particle_1pullonly_";
 		//std::string initial = "Variables_realistic/YB_cellwall3_l0d2b0d05a0d2_edgegrowth_areastrain0d2_maxt400_esfreq100_longsim200_";
-		std::string initial = "Variables_realistic9/YB_cellwall4_newinitialmesh6_";
+		std::string initial = "Variables_realistic/YB_cellwall4_newinitialmesh6_";
 		//std::string initial = "Variables_realistic6/YB_cellwall3_l1d0b0d02a1d0_kT0d07_detgrowth_strain0d1_septin200_surfacegrowth_";
 		//std::string initial = "Animation_realistic_flow/Pflow0d5_v0d0005_MRT0d005_dt0d0002_";
 		std::ofstream ofs;

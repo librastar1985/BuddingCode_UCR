@@ -15,13 +15,19 @@ Case 2. Viral budding
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 The general flow of simulation steps can be found at "void System::solveSystem()" in System.cu.
+
 For particular functions such as linear spring, please refer to LinearSpring.cu and LinearSpring.h files. The same applies to bending spring and area springs.
+
 For edge-swap algorithm and general data structure manipulation functions, please refer to Edgeswap_test.cpp and Edgeswap_test.h.
+
 To change the name of saved animation and data output, please refer to Storage.cpp and Storage.h.
+
 To change the simulation job title and to some extend simulation time step size, please refer to SBATCH.sh.
+
 Initial data structure (built via MATLAB functions) is located in Data_Structure.xml.
 
 Overall flow of the simulation steps:
+
 I. Initialization of global parameters and data structures.
 II. Run a predetermined number of relaxation steps of the model system to attain quasi-steady state.
 III. Start the actual simulation:

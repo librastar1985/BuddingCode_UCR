@@ -29,8 +29,11 @@ Initial data structure (built via MATLAB functions) is located in Data_Structure
 Overall flow of the simulation steps:
 
 I. Initialization of global parameters and data structures.
+
 II. Run a predetermined number of relaxation steps of the model system to attain quasi-steady state.
+
 III. Start the actual simulation:
+
       1. Update parameters (if necessary).
       2. Run a predetermined number of relaxation steps or dynamical number of relaxation steps depending on simulation types (molecular dynamics vs energy minimization).
       3. Run edge-swap algorithm.

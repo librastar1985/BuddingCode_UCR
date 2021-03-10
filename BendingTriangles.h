@@ -185,9 +185,9 @@ struct CosBendingFunctor {
 				angle0 = angle_0;
 			}
 
-			if (boundaries_in_upperhem[counter] == 1){
-				what_spring_constant = spring_constant*0.135;
-			}
+			// if (boundaries_in_upperhem[counter] == 1){
+			// 	what_spring_constant = spring_constant*0.135;
+			// }
 		}
 		else if (SCALE_TYPE == 4){
 			if (nonuniform_wall_weakening == true){

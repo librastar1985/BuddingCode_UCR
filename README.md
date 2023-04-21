@@ -49,7 +49,7 @@ To run the simulation on UCR HPCC:
 
 ###################################################
 
-If the above steps does not work, try the following (ported from Episcale code):
+If the above steps do not work, try the following (ported from Episcale code):
 To run simulation on UCR HPCC cluster: 
 After uploading all the files under this repository, follow the command below.
 1. cd [The folder where all your files are placed in]

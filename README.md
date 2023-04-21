@@ -46,3 +46,19 @@ To run the simulation on UCR HPCC:
 3. type: module load extra; module load GCC; module load cuda/9.1
 4. type: make (Or make -j N, N can be 2,3,4,....,or 12. But this should only be done if you are using an interactive gpu session. See UCR HPCC website for detail)
 5. type: sbatch -p gpu --gres=gpu:1 --time=144:00:00 SBATCH.sh 
+
+###################################################
+
+If the above steps does not work, try the following (ported from Episcale code):
+To run simulation on UCR HPCC cluster: 
+   After uploading all the files under this repository, follow the command below.
+   (1) cd [The folder where all your files are placed in]
+   (2) module load singluarity
+   (3) module load centos
+   (4) centos.sh
+   (5) module load extra; module load GCC; module load cuda;
+   (6) (IF it is the first time compiling) module load cmake;
+   (7) (IF it is the first time compiling) cmake .
+   (8) make
+   (9) After compilation, enter: exit
+   (10) sbatch -p gpu --gres=gpu:1 --time=X:00:00 SBATCH.sh (X here is the number of hours you want to keep the simulation running)

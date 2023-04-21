@@ -38,7 +38,8 @@ void ComputeCosTriangleSprings(
                 coordInfoVecs.edges2Nodes_2.begin())) + coordInfoVecs.num_edges,
         CosBendingFunctor(
             generalParams.SCALE_TYPE,
-            generalParams.nonuniform_wall_weakening,
+            generalParams.nonuniform_wall_weakening_bend,
+            generalParams.maxSpringScaler_bend,
             generalParams.scaling_pow,
             generalParams.gausssigma,
             generalParams.hilleqnconst,

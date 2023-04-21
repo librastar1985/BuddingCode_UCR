@@ -62,7 +62,8 @@ vector rj.
 //output forces on six nodes
 struct CosBendingFunctor {
 	int SCALE_TYPE;
-	bool nonuniform_wall_weakening;
+	bool nonuniform_wall_weakening_bend;
+	double maxSpringScaler_bend;
 	double scaling_pow;
 	double gausssigma;
 	double hilleqnconst;
@@ -89,7 +90,8 @@ struct CosBendingFunctor {
 
 	__host__ __device__ CosBendingFunctor(
 		int& _SCALE_TYPE,
-		bool& _nonuniform_wall_weakening,
+		bool& _nonuniform_wall_weakening_bend,
+		double& _maxSpringScaler_bend,
 		double& _scaling_pow,
 		double& _gausssigma,
 		double& _hilleqnconst,
@@ -115,7 +117,8 @@ struct CosBendingFunctor {
 		int* _triangle2Nodes_3Addr) :
 		
 		SCALE_TYPE(_SCALE_TYPE),
-		nonuniform_wall_weakening(_nonuniform_wall_weakening),
+		nonuniform_wall_weakening_bend(_nonuniform_wall_weakening_bend),
+		maxSpringScaler_bend(_maxSpringScaler_bend),
 		scaling_pow(_scaling_pow),
 		gausssigma(_gausssigma),
 		hilleqnconst(_hilleqnconst),
@@ -190,10 +193,10 @@ struct CosBendingFunctor {
 			// }
 		}
 		else if (SCALE_TYPE == 4){
-			if (nonuniform_wall_weakening == true){
+			if (nonuniform_wall_weakening_bend == true){
 				//double scaling = 0.0;//(spring_constant_weak/spring_constant);
 				//what_spring_constant = spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*(1-scaling) + scaling);
-				double spectrum = spring_constant - spring_constant_weak;
+				double spectrum = maxSpringScaler_bend*spring_constant - spring_constant_weak;
 				what_spring_constant = spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*spectrum);
 				if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}
 				if (edges_in_upperhem[counter] == 1){

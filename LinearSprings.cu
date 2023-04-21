@@ -40,7 +40,8 @@ void ComputeLinearSprings(
                 coordInfoVecs.edges2Nodes_2.begin())) + (coordInfoVecs.num_edges),
         LinearSpringFunctor(
             generalParams.SCALE_TYPE,
-            generalParams.nonuniform_wall_weakening,
+            generalParams.nonuniform_wall_weakening_linear,
+            generalParams.maxSpringScaler_linear,
             generalParams.scaling_pow,
             generalParams.gausssigma,
             generalParams.hilleqnconst,

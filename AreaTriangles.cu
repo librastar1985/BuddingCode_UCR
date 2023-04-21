@@ -38,7 +38,8 @@ void ComputeAreaTriangleSprings(
                     coordInfoVecs.triangles2Edges_3.begin())) + coordInfoVecs.num_triangles,
             AreaSpringFunctor( 
                 generalParams.SCALE_TYPE,
-                generalParams.nonuniform_wall_weakening,
+                generalParams.nonuniform_wall_weakening_area,
+                generalParams.maxSpringScaler_area,
                 generalParams.scaling_pow,
                 generalParams.gausssigma,
                 generalParams.hilleqnconst,

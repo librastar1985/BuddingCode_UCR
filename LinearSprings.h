@@ -12,7 +12,8 @@ void ComputeLinearSprings(
     
 struct LinearSpringFunctor {
     int SCALE_TYPE;
-    bool nonuniform_wall_weakening;
+    bool nonuniform_wall_weakening_linear;
+    double maxSpringScaler_linear;
     double scaling_pow;
     double gausssigma;
     double hilleqnconst;
@@ -36,7 +37,8 @@ struct LinearSpringFunctor {
     
 	__host__ __device__ LinearSpringFunctor(
         int& _SCALE_TYPE,
-        bool& _nonuniform_wall_weakening,
+        bool& _nonuniform_wall_weakening_linear,
+        double& _maxSpringScaler_linear,
         double& _scaling_pow,
         double& _gausssigma,
         double& _hilleqnconst,
@@ -57,7 +59,8 @@ struct LinearSpringFunctor {
         double* _forceYAddr,
         double* _forceZAddr) :
         SCALE_TYPE(_SCALE_TYPE),
-        nonuniform_wall_weakening(_nonuniform_wall_weakening),
+        nonuniform_wall_weakening_linear(_nonuniform_wall_weakening_linear),
+        maxSpringScaler_linear(_maxSpringScaler_linear),
         scaling_pow(_scaling_pow),
         gausssigma(_gausssigma),
         hilleqnconst(_hilleqnconst),
@@ -114,9 +117,9 @@ struct LinearSpringFunctor {
                 }
             }
             else if (SCALE_TYPE == 4){
-                if (nonuniform_wall_weakening == true){
+                if (nonuniform_wall_weakening_linear == true){
                     //double scaling = 0.0;//spring_constant_weak/spring_constant;
-                    double spectrum = spring_constant - spring_constant_weak;
+                    double spectrum = maxSpringScaler_linear*spring_constant - spring_constant_weak;
                     //what_spring_constant = spring_constant*((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*(1-scaling) + scaling);
                     what_spring_constant = spring_constant_weak + ((1.0/(1.0+pow(hilleqnconst/scaling_per_edge[counter], hilleqnpow)))*spectrum);
                     if (what_spring_constant < spring_constant_weak){what_spring_constant = spring_constant_weak;}

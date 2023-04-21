@@ -135,7 +135,7 @@ void System::solveSystem(){
 	//Determines how far away from the tip can new material be inserted.
 	// double current_edge_to_tip_dist_scale = 4.0;
 	// std::cout<<"current_edge_to_tip_dist_scale = "<<current_edge_to_tip_dist_scale<<std::endl;
-	double bdry_to_tip_height_scale = INT_MAX;//4.0;
+	double bdry_to_tip_height_scale = 4.0;
 	std::cout<<"bdry_to_tip_height_scale = "<<bdry_to_tip_height_scale<<std::endl;
 
 	bool isRestiffening = false;
@@ -158,7 +158,6 @@ void System::solveSystem(){
 	bool triggered = false;
 	generalParams.current_total_sim_step = 0;
 	int relax_max_steps_before_growth_and_edgeswap = 3e3;
-	std::cout<<"relax max steps before growth and edgeswap = "<<relax_max_steps_before_growth_and_edgeswap<<"*max_runTime"<<std::endl;
 	// Front *front = new Front();
 	// RBC *rbc = new RBC();
 	// RBC *n_rbc = new RBC();
@@ -234,7 +233,7 @@ void System::solveSystem(){
 
 	double MAX_VOLUME_RATIO = 2.0;
 	double MAX_BUD_AREA_RATIO = 100.0;
-	int MAX_GROWTH_PER_GROWTH_EVENT = 1;//INT_MAX;
+	int MAX_GROWTH_PER_GROWTH_EVENT = INT_MAX;
 	std::cout<<"MAX_GROWTH_NUMBER (# of edge to expand) per growth event = "<<MAX_GROWTH_PER_GROWTH_EVENT<<std::endl;
 	int GROWTH_FREQUENCY = 25;//150;//100;//95;//70;//25*3;
 	std::cout<<"GROWTH_FREQ (how many times Max_Runtime has to be reached to perform growth"<<GROWTH_FREQUENCY<<std::endl;
@@ -256,25 +255,10 @@ void System::solveSystem(){
 	//Note that (3) is used in combination with sigma = INT_MAX;
 	std::cout<<"SCALE TYPE = "<<generalParams.SCALE_TYPE<<std::endl;
 	std::cout<<"0:= sigmoidal Gaussian-like weakening, 1:= a1*(pow(x,b)) + a2*(1-pow(x,b)) type weakening, 2:= pure Gaussian weakening, 3:= isotropic, 4:= hill equation"<<std::endl;
-	if (generalParams.SCALE_TYPE == 1){
-		generalParams.scaling_pow = 2.0;
-		std::cout<<"scaling_pow (this is for SCALE_TYPE = 1 case) = "<<generalParams.scaling_pow<<std::endl;
-	}
-	if (generalParams.SCALE_TYPE == 0){
-		generalParams.gausssigma = 0.1;
-		std::cout<<"gausssigma (this is for the SCALE_TYPE = 0 case) = "<<generalParams.gausssigma<<std::endl;
-	}
-	bool display_token = true;
-	double dtb_scaler, targetHillEqnPow;
-	if (generalParams.SCALE_TYPE == 4){
-		generalParams.ratio_for_HillFunctionStiffness = 4.0;
-		std::cout<<"Hill function dependent wall stiffness triggers when the the distance between tip of the bud and the septin ring is "<<generalParams.ratio_for_HillFunctionStiffness<<std::endl;
-		std::cout<<"times larger than the equilibrium length Rmin"<<std::endl;
-		dtb_scaler = 1.0;
-		targetHillEqnPow = 16.0;
-		std::cout<<"The EC50 position is scaled by "<<dtb_scaler<<" on the distance from tip to boundary, hence the EC50 occurs on dtb*"<<dtb_scaler<<"/dtb_max"<<std::endl;
-		std::cout<<"Target hill equation power = "<<targetHillEqnPow<<std::endl;		
-	}
+	generalParams.scaling_pow = 2.0;
+	std::cout<<"scaling_pow (this is for SCALE_TYPE = 1 case) = "<<generalParams.scaling_pow<<std::endl;
+	generalParams.gausssigma = 0.1;
+	std::cout<<"gausssigma (this is for the SCALE_TYPE = 0 case) = "<<generalParams.gausssigma<<std::endl;
 	//coordInfoVecs.scaling_per_edge.
 	//generalParams.hilleqnconst = 0.9;
 	//generalParams.hilleqnpow = 40.0;
@@ -283,18 +267,16 @@ void System::solveSystem(){
 	std::vector<int> edges_in_growth;
 	double dtb; //dtb := distance to boundary
 	double dtb_max; //dtb_max := the max distance used to calculate the distance ratio in the Hill equation.
-	double sigma, sigma_true;
-	if (generalParams.SCALE_TYPE == 0){
-		sigma = 0.0;//INT_MAX; //if this is set to be INT_MAX then we assume isotropic weakening.
-		sigma_true = sqrt(0.5); //This is the variance used to calculate the scaling of the wall weakening.
-		std::cout<<"initial sigma (for gradient distribution variance), based on initial distribution of Cdc42, if using true gaussian weakening = "<<sigma<<std::endl;
-		std::cout<<"If sigma = INT_MAX, then we have isotropic weakening scenario"<<std::endl;
-		std::cout<<"true sigma (for gaussian-related distribution variance) = "<<sigma_true<<std::endl;
-	}
+	double sigma = 0.0;//INT_MAX; //if this is set to be INT_MAX then we assume isotropic weakening.
+	double sigma_true = sqrt(0.5); //This is the variance used to calculate the scaling of the wall weakening.
+	std::cout<<"initial sigma (for gradient distribution variance), based on initial distribution of Cdc42, if using true gaussian weakening = "<<sigma<<std::endl;
+	std::cout<<"If sigma = INT_MAX, then we have isotropic weakening scenario"<<std::endl;
+	std::cout<<"true sigma (for gaussian-related distribution variance) = "<<sigma_true<<std::endl;
+
 	generalParams.insertion_energy_cost = -log(0.0025);
 	std::cout<<"GROWTH: material insertion energy cost (dependent on local chemical concentration) = "<<generalParams.insertion_energy_cost<<std::endl;
-	double strain_threshold1 = 0.05;//0.01;
-	double strain_threshold2 = 0.05;
+	double strain_threshold1 = 0.1;//0.01;
+	double strain_threshold2 = 0.1;
 	generalParams.strain_threshold = strain_threshold1;
 	std::cout<<"GROWTH: critical strain threshold used for insertion probability calculation = "<<generalParams.strain_threshold<<", value loaded = "<<strain_threshold1<<std::endl;
 	std::cout<<"GROWTH: critical strain threshold used for insertion probability calculation if changes are needed= "<<strain_threshold2<<std::endl;
@@ -424,18 +406,18 @@ void System::solveSystem(){
 	std::vector<int> VectorShuffleForFilamentLoop;
 	std::vector<int> VectorShuffleForEdgeswapLoop;
 
-	// double max_height = coordInfoVecs.nodeLocZ[35];
+	double max_height = coordInfoVecs.nodeLocZ[35];
 	double min_height = coordInfoVecs.nodeLocZ[38];
-	// int max_height_index = 35;
-	double max_height = -10000.0;
+	int max_height_index = 35;
+	/*double max_height = -10000.0;
 	int max_height_index = -1;
-	// std::vector<int> Stiffness_gradient();
+	std::vector<int> Stiffness_gradient();
     for (int k = 0; k < generalParams.maxNodeCount; k++){
         if (coordInfoVecs. nodeLocZ[k] >= max_height){
 			max_height = coordInfoVecs. nodeLocZ[k];
 			max_height_index = k;
             }
-	}
+	}*/
 	//Max and min height of the membrane nodes, these have to be changed if the mesh used is changed.
 
 	generalParams.Rmin = 0.3012;//0.15;
@@ -487,9 +469,7 @@ void System::solveSystem(){
 	//std::cout<<"equilibrium length of each segment of the septin ring = "<<generalParams.length_scale<<std::endl;
 
 	// bendingTriangleInfoVecs.spring_constant = bendingTriangleInfoVecs.spring_constant*(2.0/sqrt(3));
-	generalParams.maxSpringScaler_linear = 1.0;
-	generalParams.maxSpringScaler_area = 1.0;
-	generalParams.maxSpringScaler_bend = 1.0;
+
 	double scale_linear = linearSpringInfoVecs.spring_constant*1.0;//0.25;//25.0/2.5;//75.0/15.0;
 	double scale_bend = bendingTriangleInfoVecs.spring_constant*1.0;//0.05;//10.0/1.0;//75.0/7.5;
 	double scale_area = areaTriangleInfoVecs.spring_constant*1.0;//0.25;//50.0/5.0;//75.0/15.0;
@@ -679,11 +659,6 @@ void System::solveSystem(){
 	//   2197,2198,2199,2200,2201,2202,2203, 2204, 2205,2206,2207, 2208,2209,2210,2211,2212,2213};
 	//std::vector<int> nodes_to_center;
 	//generalParams.nodes_in_upperhem.resize(generalParams.maxNodeCount,-1);
-
-	for (int i = 0; i < generalParams.maxNodeCount; i++){
-		generalParams.nodes_in_upperhem[i] = -1;
-		// generalParams.nodes_in_upperhem[i] = 1;
-	}
 
 	for (int i = 0; i < row2.size(); i++){
 		generalParams.nodes_in_upperhem[row2[i]] = 1;
@@ -941,12 +916,10 @@ void System::solveSystem(){
 	std::cout<<"Notice that here, the distance from the tip to the boundary is slightly extended by half of the equilibrium length of an edge"<<std::endl;
 	//std::cout<<"If this message is present, we are forcing a fixed portion of the bud tip to be occupied by the max concentration"<<std::endl;
 	//generalParams.hilleqnconst = (dtb + generalParams.Rmin/4.0)/dtb_max;
-	generalParams.hilleqnconst = (dtb*dtb_scaler)/dtb_max;
-	generalParams.hilleqnpow = targetHillEqnPow;
-	if (generalParams.SCALE_TYPE == 4){
-		std::cout<<"hill equation constant K = "<<generalParams.hilleqnconst<<std::endl;
-		std::cout<<"hill (equation) coefficient = "<<generalParams.hilleqnpow<<std::endl;
-	}
+	generalParams.hilleqnconst = dtb/dtb_max;
+	generalParams.hilleqnpow = 70.0;
+	// std::cout<<"hill equation constant K = "<<generalParams.hilleqnconst<<std::endl;
+	// std::cout<<"hill (equation) coefficient = "<<generalParams.hilleqnpow<<std::endl;
 	// std::cout<<"NOTE: IN THIS SIMULATION, THE LOCATION WHERE 50% WEAKENING IS EXPERIENCED IS LOCATED SLIGHTLY AWAY FROM THE SEPTIN RING, "<<std::endl;
 	// std::cout<<"THIS IS DUE TO THE FACT THAT IN ISOTROPIC CASE, SEPTIN RING LOCATION MUST BE SUFFICIENTLY WEAKENED TO INDUCE BUDDING"<<std::endl;
 	// std::cout<<" "<<std::endl;
@@ -1025,11 +998,11 @@ void System::solveSystem(){
 		std::cout<<"true_current_total_volume (before growth and edge swaps) = "<<generalParams.true_current_total_volume<<std::endl;
 		// std::cout<<"eq_total_volume = "<<generalParams.eq_total_volume<<std::endl;
 		std::cout<<"current KBT = "<<generalParams.kT<<std::endl;
-		// if (isnan(new_total_energy)==1){
-		// 	std::cout<<"Nan or Inf position update !!!!"<<std::endl;
-		// 	runSim = false;
-		// 	break;
-		// }
+		if (isnan(new_total_energy)==1){
+			std::cout<<"Nan or Inf position update !!!!"<<std::endl;
+			runSim = false;
+			break;
+		}
 		double current_bud_area = 0.0;
 		for (int k = 0; k < coordInfoVecs.num_triangles; k++){
 			if (coordInfoVecs.triangles2Nodes_1[k] >= (INT_MAX - 1000.0) || coordInfoVecs.triangles2Nodes_1[k] <= (-INT_MAX + 1000.0) ||
@@ -1067,14 +1040,6 @@ void System::solveSystem(){
 		generalParams.length_scale = 1.0;//0.85;//0.1577;//1.0*generalParams.Rmin;// 0.8333;
 		//std::cout<<"equilibrium length of each segment of the septin ring = "<<generalParams.length_scale<<std::endl;
 
-		if (generalParams.SCALE_TYPE == 4){
-			generalParams.maxSpringScaler_linear = 1.0;
-			generalParams.maxSpringScaler_area = 1.0;
-			generalParams.maxSpringScaler_bend = 1.0;
-		}
-		std::cout<<"maxSpringScaler_linear (not 1.0 if we want max linear spring in the hill function scaling not equal to mother cell) = "<<generalParams.maxSpringScaler_linear<<std::endl;
-		std::cout<<"maxSpringScaler_area (not 1.0 if we want max area spring in the hill function scaling not equal to mother cell) = "<<generalParams.maxSpringScaler_area<<std::endl;
-		std::cout<<"maxSpringScaler_bend (not 1.0 if we want max bend spring in the hill function scaling not equal to mother cell) = "<<generalParams.maxSpringScaler_bend<<std::endl;
 		double scale_linear = linearSpringInfoVecs.spring_constant*0.75;//0.25;//25.0/2.5;//75.0/15.0;
 		double scale_bend = bendingTriangleInfoVecs.spring_constant*0.135;//0.05;//10.0/1.0;//75.0/7.5;
 		double scale_area = areaTriangleInfoVecs.spring_constant*0.75;//0.25;//50.0/5.0;//75.0/15.0;
@@ -1243,75 +1208,6 @@ void System::solveSystem(){
 		}
 
 		end_of_relaxation = true;
-		double current_center_x = 0.0;
-		double current_center_y = 0.0;
-		double bdry_to_tip_height = 0.0;
-		if (generalParams.SCALE_TYPE == 4){
-			max_height = -10000.0;
-			for (int k = 0; k < generalParams.maxNodeCount; k++){
-				if (generalParams.nodes_in_upperhem[k] == 1){
-					current_center_x += coordInfoVecs.nodeLocX[k];
-					current_center_y += coordInfoVecs.nodeLocX[k];
-				}
-				
-				if (coordInfoVecs. nodeLocZ[k] >= max_height){
-					max_height = coordInfoVecs.nodeLocZ[k];
-					max_height_index = k;
-				}
-
-			}
-			current_center_x = current_center_x/generalParams.maxNodeCount;
-			current_center_y = current_center_y/generalParams.maxNodeCount;
-			if (generalParams.nonuniform_wall_weakening_bend == false && generalParams.nonuniform_wall_weakening_linear==false && generalParams.nonuniform_wall_weakening_area==false){
-				bdry_to_tip_height = 0.0;
-				for (int y = 0; y < boundary_edge_list.size(); y++){
-					// double edge_mdpt_x = (coordInfoVecs.nodeLocX[coordInfoVecs.edges2Nodes_1[boundary_edge_list[y]]] +
-					// 						coordInfoVecs.nodeLocX[coordInfoVecs.edges2Nodes_2[boundary_edge_list[y]]])/2.0;
-					// double edge_mdpt_y = (coordInfoVecs.nodeLocY[coordInfoVecs.edges2Nodes_1[boundary_edge_list[y]]] +
-					// 						coordInfoVecs.nodeLocY[coordInfoVecs.edges2Nodes_2[boundary_edge_list[y]]])/2.0;
-					double edge_mdpt_z = (coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_1[boundary_edge_list[y]]] +
-											coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_2[boundary_edge_list[y]]])/2.0;
-					// bdry_to_tip += sqrt(pow(current_center_x - edge_mdpt_x,2.0)+pow(current_center_y - edge_mdpt_y,2.0)+pow(coordInfoVecs.nodeLocZ[max_height_index] - edge_mdpt_z,2.0));
-					bdry_to_tip_height += sqrt(pow(coordInfoVecs.nodeLocZ[max_height_index] - edge_mdpt_z,2.0));
-				}
-				// bdry_to_tip = bdry_to_tip/boundary_edge_list.size();
-				bdry_to_tip_height = bdry_to_tip_height/boundary_edge_list.size();
-				for (int y = 0; y < coordInfoVecs.num_edges; y++){
-					// std::cout<<y<<std::endl;
-					if (generalParams.edges_in_upperhem_list[y] >= 0 &&
-						generalParams.edges_in_upperhem_list[y] != INT_MAX &&
-						generalParams.edges_in_upperhem_list[y] <= (INT_MAX-1000) &&
-						generalParams.edges_in_upperhem_list[y] >= (-INT_MAX+1000) &&
-						generalParams.boundaries_in_upperhem[y] != 1){
-							if (coordInfoVecs.edges2Nodes_1[y] < 0 || coordInfoVecs.edges2Nodes_1[y] >= (INT_MAX-1000)){
-								continue;
-							}
-							else if (coordInfoVecs.edges2Nodes_2[y] < 0 || coordInfoVecs.edges2Nodes_2[y] >= (INT_MAX-1000)){
-								continue;
-							}
-							double edge_mdpt_z = (coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_1[y]] +
-													coordInfoVecs.nodeLocZ[coordInfoVecs.edges2Nodes_2[y]])/2.0;
-							double current_edge_to_tip_height = sqrt(pow(coordInfoVecs.nodeLocZ[max_height_index] - edge_mdpt_z,2.0));
-						if (bdry_to_tip_height >= (generalParams.Rmin*generalParams.ratio_for_HillFunctionStiffness)){
-							// if (generalParams.nonuniform_wall_weakening_bend==false && display_token == true){
-							if (generalParams.nonuniform_wall_weakening_bend==false && generalParams.nonuniform_wall_weakening_area==false && generalParams.nonuniform_wall_weakening_linear==false && display_token == true){
-								std::cout<<"generalParams.nonuniform_wall_weakening_XXXX is set to be true from this point"<<std::endl;
-								display_token = false;
-							}
-							generalParams.nonuniform_wall_weakening_bend = true;
-							generalParams.nonuniform_wall_weakening_area = true;
-							generalParams.nonuniform_wall_weakening_linear = true;
-							
-						}
-						else if(bdry_to_tip_height < (generalParams.Rmin*generalParams.ratio_for_HillFunctionStiffness)){
-							generalParams.nonuniform_wall_weakening_bend = false;
-							generalParams.nonuniform_wall_weakening_linear = false;
-							generalParams.nonuniform_wall_weakening_area = false;								
-						}
-					}				
-				}
-			}
-		}
 
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// ////////////////////Recalculate "u" since the system is relaxed, potentially becoming different ////////////////////
@@ -1424,64 +1320,7 @@ void System::solveSystem(){
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (generalParams.SCALE_TYPE ==4){
-			if (generalParams.nonuniform_wall_weakening_bend == true || generalParams.nonuniform_wall_weakening_linear==true || generalParams.nonuniform_wall_weakening_area==true){
-				//std::cout<<"max_height_index = "<<max_height_index<<std::endl;
-				dtb = 0.0;//dtb := distance to boundary
-				generalParams.septin_ring_z = 0.0;
-				generalParams.boundary_z = 0.0;
-				//for (int k = 0; k < boundary_edge_list.size(); k++){
-				for (int k = 0; k < boundary_node_list.size(); k++){
-					double n1 = boundary_node_list[k];//coordInfoVecs.edges2Nodes_1[boundary_edge_list[k]];
-					//double n2 = coordInfoVecs.edges2Nodes_2[boundary_edge_list[k]];
-					//double cent_of_edge_x = (coordInfoVecs.nodeLocX[n1] + coordInfoVecs.nodeLocX[n2])/2.0;
-					//double cent_of_edge_y = (coordInfoVecs.nodeLocY[n1] + coordInfoVecs.nodeLocY[n2])/2.0;
-					//double cent_of_edge_z = (coordInfoVecs.nodeLocZ[n1] + coordInfoVecs.nodeLocZ[n2])/2.0;
-					double dist_x = current_center_x - coordInfoVecs.nodeLocX[n1];//coordInfoVecs.nodeLocX[max_height_index] - coordInfoVecs.nodeLocX[n1];//cent_of_edge_x;
-					double dist_y = current_center_y - coordInfoVecs.nodeLocY[n1];//coordInfoVecs.nodeLocY[max_height_index] - coordInfoVecs.nodeLocY[n1];//cent_of_edge_y;
-					double dist_z = max_height - coordInfoVecs.nodeLocZ[n1];//coordInfoVecs.nodeLocZ[max_height_index] - coordInfoVecs.nodeLocZ[n1];//cent_of_edge_z;
-					// double temp_dist = sqrt((coordInfoVecs.nodeLocX[max_height_index] - coordInfoVecs.nodeLocX[n1])*(coordInfoVecs.nodeLocX[max_height_index] - coordInfoVecs.nodeLocX[n1]) +
-					// (coordInfoVecs.nodeLocY[max_height_index] - coordInfoVecs.nodeLocY[n1])*(coordInfoVecs.nodeLocY[max_height_index] - coordInfoVecs.nodeLocY[n1]) +
-					// 	(coordInfoVecs.nodeLocZ[max_height_index] - coordInfoVecs.nodeLocZ[n1])*(coordInfoVecs.nodeLocZ[max_height_index] - coordInfoVecs.nodeLocZ[n1]));
-					// generalParams.septin_ring_z += coordInfoVecs.nodeLocZ[n1];
-					double temp_dist = sqrt(dist_x*dist_x + dist_y*dist_y + dist_z*dist_z);
-					if (temp_dist >= dtb){
-						dtb = temp_dist;
-						/* "dtb" will be used to identify where the septin ring is located, and used to determine the Hill coefficient*/
-					}
-				}
-				//std::cout<<"dtb = "<<dtb<<std::endl;
-				generalParams.septin_ring_z = generalParams.septin_ring_z/boundary_node_list.size();
-				generalParams.boundary_z = generalParams.septin_ring_z - generalParams.Rmin;
-				/* dtb will be only calculated once so we can effectively keep the Hill eqn curve consistent with only horizontal shift */
-				dtb_max = dtb + (generalParams.Rmin);
-				// generalParams.septin_ring_z = 0.0;
-				// generalParams.boundary_z = 0.0;
-				// //for (int k = 0; k < boundary_edge_list.size(); k++){
-				// for (int k = 0; k < boundary_node_list.size(); k++){
-				// 	double n1 = boundary_node_list[k];//coordInfoVecs.edges2Nodes_1[boundary_edge_list[k]];
-				// 	generalParams.septin_ring_z += coordInfoVecs.nodeLocZ[n1];
-				// }
-				//generalParams.septin_ring_z = generalParams.septin_ring_z/boundary_node_list.size();
-				//generalParams.boundary_z = generalParams.septin_ring_z - generalParams.Rmin;
-				/* dtb will be only calculated once so we can effectively keep the Hill eqn curve consistent with only horizontal shift */
-				//generalParams.hilleqnconst = (dtb + generalParams.Rmin/4.0)/dtb_max;
-				generalParams.hilleqnconst = (dtb*dtb_scaler)/dtb_max;
-				std::cout<<"current hill constant K = "<<generalParams.hilleqnconst<<std::endl;
-
-				utilities_ptr->transferDtoH(generalParams, coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
-				utilities_ptr->gradient_weakening_update_host_vecs(sigma,
-					current_center_x,
-					current_center_y,
-					max_height,
-					dtb,
-					dtb_max,
-					generalParams,
-					coordInfoVecs,
-					build_ptr->hostSetInfoVecs);
-				utilities_ptr->transferHtoD(generalParams, coordInfoVecs, build_ptr->hostSetInfoVecs);//Currently this is treated as a backup of coordInfoVecs
-			}
-		}	
+			
 		if (end_of_relaxation == true){
 			std::random_device rand_dev;
 			// std::mt19937 generator2(rand_dev());
@@ -1596,6 +1435,7 @@ void System::solveSystem(){
 						max_height_index = k;
 					}
 				}
+				std::cout<<"max height occur at index "<<max_height_index<<std::endl;
 				double bdry_to_tip_height = 0.0;
 				for (int y = 0; y < boundary_edge_list.size(); y++){
 					// double edge_mdpt_x = (coordInfoVecs.nodeLocX[coordInfoVecs.edges2Nodes_1[boundary_edge_list[y]]] +
@@ -1980,6 +1820,7 @@ void System::solveSystem(){
 				
 				
 			// }
+			std::cout<<"VectorShuffleForGrowthLoop_COUNT = "<<VectorShuffleForGrowthLoop_COUNT<<std::endl;
 
 			std::random_device rand_dev;
 			std::mt19937 generator3(rand_dev());
@@ -1987,18 +1828,13 @@ void System::solveSystem(){
 			int MAX_GROWTH_TEST = VectorShuffleForGrowthLoop.size();
 			// bool triggered = false;
 			int true_DELTA = 0;
-			int suitableForGrowthCounter = 0;
 			// int MAX_GROWTH_PER_GROWTH_EVENT = 1;
-			//std::cout<<"BEGIN GROWTH ALGORITHM"<<std::endl;
+
+			generalParams.triangle_undergoing_growth.clear();
+
+			std::cout<<"BEGIN GROWTH ALGORITHM"<<std::endl;
 			utilities_ptr->transferDtoH(generalParams, coordInfoVecs, build_ptr->hostSetInfoVecs);
 			int GROWTH_COUNT = 0;
-			/*double Top1 = -100;
-			double Top2 = -100;
-			double Top3 = -100;
-			int Top1_indx = -1;
-			int Top2_indx = -1;
-			int Top3_indx = -1;
-			std::vector<int> largest_areaExp;*/
 			for (int p = 0; p < MAX_GROWTH_TEST; p++){
 				if (coordInfoVecs.edges2Nodes_1[VectorShuffleForGrowthLoop[p]] < 0 || coordInfoVecs.edges2Nodes_1[VectorShuffleForGrowthLoop[p]] == INT_MAX){
 					continue;
@@ -2006,67 +1842,7 @@ void System::solveSystem(){
 				else if (coordInfoVecs.edges2Nodes_2[VectorShuffleForGrowthLoop[p]] < 0 || coordInfoVecs.edges2Nodes_2[VectorShuffleForGrowthLoop[p]] == INT_MAX){
 					continue;
 				}
-				double candidate_area = utilities_ptr->find_suitable_location_to_grow(
-					VectorShuffleForGrowthLoop[p],
-					generalParams,
-					build_ptr->hostSetInfoVecs,
-					coordInfoVecs,
-					linearSpringInfoVecs,
-					bendingTriangleInfoVecs,
-					areaTriangleInfoVecs);
-				/*if (candidate_area > Top1 && candidate_area > Top2 && candidate_area > Top3){
-					Top1 = candidate_area;
-					Top1_indx = VectorShuffleForGrowthLoop[p];
-				}
-				else if (candidate_area > Top2 && candidate_area > Top3){
-					Top2 = candidate_area;
-					Top2_indx = VectorShuffleForGrowthLoop[p];
-				}
-				else if (candidate_area > Top3){
-					Top3 = candidate_area;
-					Top3_indx = VectorShuffleForGrowthLoop[p];
-				}*/
-				if (candidate_area > 0.0){
-					suitableForGrowthCounter += 1;
-				}
-				
-			}
-			std::cout<<"# of Suitable Edge to Growth : "<<suitableForGrowthCounter<<" "<<"VectorShuffleForGrowthLoop_COUNT : "<<VectorShuffleForGrowthLoop_COUNT<<std::endl;
-			/*largest_areaExp.push_back(Top1_indx);
-			largest_areaExp.push_back(Top2_indx);
-			largest_areaExp.push_back(Top3_indx);
-			if (largest_areaExp.size() > 0){
-				for (int q = 0; q < largest_areaExp.size(); q++){
-					//std::cout<<"begin growth test"<<std::endl;
-					if (largest_areaExp[q] < 0){
-						continue;
-					}
-					int DELTA = utilities_ptr->growth_host_vecs(
-						largest_areaExp[q],
-						generalParams,
-						build_ptr->hostSetInfoVecs,
-						coordInfoVecs,
-						linearSpringInfoVecs,
-						bendingTriangleInfoVecs,
-						areaTriangleInfoVecs);
-					if (DELTA >= 0){
-						GROWTH_COUNT += 1;//DELTA;
-						TOTAL_GROWTH_COUNTER += 1;//DELTA;
-					}
-					if (GROWTH_COUNT >= MAX_GROWTH_PER_GROWTH_EVENT){
-						break;
-					}
-				}
-			}*/
-
-			for (int p = 0; p < VectorShuffleForGrowthLoop.size(); p++){
 				//std::cout<<"begin growth test"<<std::endl;
-				if (coordInfoVecs.edges2Nodes_1[VectorShuffleForGrowthLoop[p]] < 0 || coordInfoVecs.edges2Nodes_1[VectorShuffleForGrowthLoop[p]] == INT_MAX){
-					continue;
-				}
-				else if (coordInfoVecs.edges2Nodes_2[VectorShuffleForGrowthLoop[p]] < 0 || coordInfoVecs.edges2Nodes_2[VectorShuffleForGrowthLoop[p]] == INT_MAX){
-					continue;
-				}
 				int DELTA = utilities_ptr->growth_host_vecs(
 					VectorShuffleForGrowthLoop[p],
 					generalParams,
@@ -2076,14 +1852,21 @@ void System::solveSystem(){
 					bendingTriangleInfoVecs,
 					areaTriangleInfoVecs);
 				if (DELTA >= 0){
-					GROWTH_COUNT += 1;//DELTA;
-					TOTAL_GROWTH_COUNTER += 1;//DELTA;
+					// double tri1 = coordInfoVecs.edges2Triangles_1[DELTA];
+					// double tri2 = coordInfoVecs.edges2Triangles_2[DELTA];
+					// double avg_conc = (coordInfoVecs.soln_per_triangle[tri1] + coordInfoVecs.soln_per_triangle[tri2])/2.0;
+					// std::cout<<" edge chosen for growth has avg_conc of : "<<avg_conc<<std::endl;
+					GROWTH_COUNT += 1;
+					TOTAL_GROWTH_COUNTER += 1;
 				}
+				else{
+					generalParams.triangle_undergoing_growth.clear();
+				}
+
 				if (GROWTH_COUNT >= MAX_GROWTH_PER_GROWTH_EVENT){
 					break;
 				}
 			}
-
 			TOTAL_GROWTH_ATTEMPT += 1;
 			utilities_ptr->transferHtoD(generalParams, coordInfoVecs, build_ptr->hostSetInfoVecs);
 			std::cout<<"END GROWTH ALGORITHM"<<std::endl;

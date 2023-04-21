@@ -29,7 +29,16 @@
 #include <thrust/execution_policy.h>
 #include <thrust/pair.h>
 #include <stdint.h>
+// #include "my_vector.h"
 
+
+
+// struct loc_EleNumber: public std::binary_function<ELEMENT, int, bool>
+// {
+//   bool operator () ( const ELEMENT &ele, const int &number ) const {
+//     return ele.Id == number;
+//     }
+// };
 //
 struct CapsidInfoVecs {
 	thrust::device_vector<int> id_bucket;	//bucket id
@@ -77,6 +86,23 @@ struct CapsidInfoVecs {
 
 //Data Structure for node location. velocity and force
 struct CoordInfoVecs {
+
+	double k_0;
+	double k_1;
+	double k_2;
+	double k_3;
+	double k_4;
+	double k_ss;//10.75;
+	double beta;///1.45;
+	double gamma;
+	double q1;
+	double h;
+
+	thrust::device_vector<double> b_per_triangle;
+
+	thrust::device_vector<double> u;
+
+	thrust::device_vector<double> soln_per_triangle;
 
 	thrust::device_vector<double> scaling_per_edge;
 
@@ -157,6 +183,10 @@ struct CoordInfoVecs {
 	thrust::device_vector<int> triangles2Edges_1;
 	thrust::device_vector<int> triangles2Edges_2;
 	thrust::device_vector<int> triangles2Edges_3;
+
+	thrust::device_vector<int> triangles2Triangles_1;
+	thrust::device_vector<int> triangles2Triangles_2;
+	thrust::device_vector<int> triangles2Triangles_3;
 
 };
 
@@ -316,8 +346,19 @@ struct LinearSpringInfoVecs {
 
 struct GeneralParams{
 	std::vector<int> edge_undergoing_growth;
+	bool nonuniform_wall_weakening_bend;
+	bool nonuniform_wall_weakening_linear;
+	bool nonuniform_wall_weakening_area;
 	bool nonuniform_wall_weakening;
+	double maxSpringScaler_linear = 1.0;
+	double maxSpringScaler_area = 1.0;
+	double maxSpringScaler_bend = 1.0;
 	double ratio_for_HillFunctionStiffness;
+
+	std::vector<int> triangle_undergoing_growth;
+	double chemdiff_time_step_size;
+	int current_total_sim_step;
+	double chemdiff_max_step;
 	double current_bud_area;
 	double kT;
 	double kT_growth;
@@ -367,6 +408,7 @@ struct GeneralParams{
 
 	double insertion_energy_cost;
 	double strain_threshold;
+	double strain_threshold2;
 
 	int SCALE_TYPE;
 	double scaling_pow;
@@ -398,6 +440,8 @@ public:
 	BendingTriangleInfoVecs bendingTriangleInfoVecs;
 	AreaTriangleInfoVecs areaTriangleInfoVecs;
 	LJInfoVecs ljInfoVecs;
+	// RBC rbc;
+	// ELEMENT element;
 
 	std::shared_ptr<Storage> storage;
 
@@ -434,6 +478,7 @@ public:
 	
 
 };
+
 
 
 #endif /*POLYMERSYSTEM_H_*/

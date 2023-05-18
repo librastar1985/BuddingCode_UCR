@@ -29,7 +29,7 @@ CPP_SRCS += \
 ../NodeAdvance.cu \
 ../MemRepulsionEnergy.cu \
 ../System.cu \
-../Edgeswap_test.cpp \
+../Utilities.cpp \
 ../SystemBuilder.cpp \
 ../Storage.cpp \
 ../main.cpp
@@ -50,7 +50,7 @@ OBJS += \
 ./NodeAdvance.o \
 ./MemRepulsionEnergy.o \
 ./System.o \
-./Edgeswap_test.o \
+./Utilities.o \
 ./SystemBuilder.o \
 ./Storage.o \
 ./main.o
@@ -70,7 +70,7 @@ CPP_DEPS += \
 ./NodeAdvance.d \
 ./MemRepulsionEnergy.d \
 ./System.d \
-./Edgeswap_test.d \
+./Utilities.d \
 ./SystemBuilder.d \
 ./Storage.d \
 ./main.d
